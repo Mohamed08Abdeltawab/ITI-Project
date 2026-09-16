@@ -491,7 +491,7 @@ export default function AppointmentsPage() {
           Reschedule Appointment
         </DialogTitle>
         <DialogContent className="space-y-4 pt-3">
-          <DialogContentText className="text-sm text-slate-500 dark:text-slate-400 mb-2">
+          <DialogContentText className="text-sm text-slate-500 dark:text-slate-400" sx={{ mb: 2 }}>
             Change your date and preferred consultation time slot for{" "}
             <span className="font-bold text-slate-800 dark:text-slate-200">
               {selectedAppointment?.doctorName}
