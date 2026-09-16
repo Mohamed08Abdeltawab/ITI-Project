@@ -1,12 +1,11 @@
-//
 import { createBrowserRouter } from "react-router";
 import RootLayout from "../layouts/RootLayout";
 
-//import pages
-import DoctorPage from "../pages/DoctorPage";
-import DotorDetailsPage from "../pages/DotorDetailsPage";
+// Import Standardized Pages
+import DoctorsPage from "../pages/DoctorsPage";
+import DoctorDetailsPage from "../pages/DoctorDetailsPage";
 import BookAppointmentPage from "../pages/BookAppointmentPage";
-import AppointmentPage from "../pages/AppointmentPage";
+import AppointmentsPage from "../pages/AppointmentsPage";
 import ProfilePage from "../pages/ProfilePage";
 import NotFoundPage from "../pages/NotFoundPage";
 
@@ -17,15 +16,15 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <DoctorPage />,
+        element: <DoctorsPage />,
       },
       {
         path: "doctors",
-        element: <DoctorPage />,
+        element: <DoctorsPage />,
       },
       {
         path: "doctors/:id",
-        element: <DotorDetailsPage />,
+        element: <DoctorDetailsPage />,
       },
       {
         path: "book/:doctorId?",
@@ -33,7 +32,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "appointments",
-        element: <AppointmentPage />,
+        element: <AppointmentsPage />,
       },
       {
         path: "profile",

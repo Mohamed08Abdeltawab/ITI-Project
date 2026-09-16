@@ -1,9 +1,38 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import {
+  Card,
+  CardContent,
+  Box,
+  Stack,
+  Typography,
+  Avatar,
+  Badge,
+  Chip,
+  Button,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
+import StarRoundedIcon from "@mui/icons-material/StarRounded";
+import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
+import FavoriteBorderRoundedIcon from "@mui/icons-material/FavoriteBorderRounded";
+import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
+import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 
-export default function DoctorCard({ doctor }) {
+export default function DoctorCard({ doctor, onToggleFavorite, isFav }) {
   const navigate = useNavigate();
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [internalFavorite, setInternalFavorite] = useState(false);
+
+  const isFavorite = isFav !== undefined ? isFav : internalFavorite;
+
+  const handleFavoriteClick = (e) => {
+    e.stopPropagation();
+    if (onToggleFavorite) {
+      onToggleFavorite(doctor);
+    } else {
+      setInternalFavorite((prev) => !prev);
+    }
+  };
 
   // Derive schedule string if not directly present
   const scheduleText =
@@ -15,113 +44,158 @@ export default function DoctorCard({ doctor }) {
       : "Mon - Thu (09:00 - 18:00)");
 
   return (
-    <div className="bg-white border border-slate-200/90 hover:border-teal-200 hover:shadow-lg transition-all duration-250 rounded-[22px] p-5 sm:p-6 flex flex-col justify-between h-full group">
-      <div>
-        {/* Top row: Avatar + Info + Favorite */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3.5 min-w-0">
-            {/* Avatar with active green dot */}
-            <div className="relative shrink-0">
-              <img
-                src={doctor.avatar}
-                alt={doctor.name}
-                className="w-14 h-14 rounded-2xl object-cover bg-slate-100"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src =
-                    "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=400&h=400";
+    <Card
+      elevation={0}
+      className="bg-white border border-slate-200/80 hover:border-teal-300 hover:shadow-lg transition-all duration-300 rounded-2xl flex flex-col justify-between h-full group"
+    >
+      <CardContent className="p-5 sm:p-6 flex flex-col justify-between h-full">
+        <Box>
+          {/* Top Row: Avatar with online badge + Doctor Info + Favorite Button */}
+          <Stack direction="row" className="items-start justify-between gap-3">
+            <Stack direction="row" className="items-center gap-3.5 min-w-0">
+              {/* Avatar with active green indicator */}
+              <Badge
+                overlap="circular"
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                variant="dot"
+                sx={{
+                  "& .MuiBadge-badge": {
+                    backgroundColor: "#10b981",
+                    color: "#10b981",
+                    boxShadow: "0 0 0 2px #ffffff",
+                    width: 12,
+                    height: 12,
+                    borderRadius: "50%",
+                  },
                 }}
-              />
-              <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full" />
-            </div>
+              >
+                <Avatar
+                  src={doctor.avatar}
+                  alt={doctor.name}
+                  variant="rounded"
+                  className="w-14 h-14 rounded-2xl bg-slate-100 object-cover shadow-xs"
+                  imgProps={{
+                    onError: (e) => {
+                      e.target.onerror = null;
+                      e.target.src =
+                        "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=400&h=400";
+                    },
+                  }}
+                />
+              </Badge>
 
-            {/* Name + Specialty & Experience */}
-            <div className="min-w-0">
-              <h3 className="font-bold text-slate-900 text-[15px] sm:text-base leading-tight truncate">
-                {doctor.name}
-              </h3>
-              <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-[#f0fdfa] text-[#0d9488] border border-[#ccfbf1]">
-                  {doctor.specialty}
-                </span>
-                <span className="text-xs text-slate-500 font-medium whitespace-nowrap">
-                  {doctor.experience || "10 yrs exp"}
-                </span>
-              </div>
-            </div>
-          </div>
+              {/* Name + Specialty + Experience */}
+              <Box className="min-w-0">
+                <Typography
+                  variant="subtitle1"
+                  className="font-bold text-slate-900 text-base leading-tight truncate"
+                >
+                  {doctor.name}
+                </Typography>
 
-          {/* Favorite button */}
-          <button
-            type="button"
-            onClick={() => setIsFavorite((prev) => !prev)}
-            className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-colors shrink-0 cursor-pointer ${
-              isFavorite
-                ? "bg-red-50 border-red-200 text-red-500"
-                : "bg-slate-50/80 border-slate-200/60 text-slate-400 hover:text-slate-600 hover:bg-slate-100"
-            }`}
-            aria-label="Add to favorites"
-          >
-            <svg
-              className="w-4 h-4"
-              viewBox="0 0 24 24"
-              fill={isFavorite ? "currentColor" : "none"}
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+                <Stack
+                  direction="row"
+                  className="items-center gap-2 mt-1.5 flex-wrap"
+                >
+                  <Chip
+                    label={doctor.specialty}
+                    size="small"
+                    className="bg-teal-50 text-teal-700 border border-teal-200/60 font-semibold text-xs h-6 rounded-md"
+                  />
+                  <Typography
+                    variant="caption"
+                    className="text-slate-500 font-medium text-xs whitespace-nowrap"
+                  >
+                    {doctor.experience || "10 yrs exp"}
+                  </Typography>
+                </Stack>
+              </Box>
+            </Stack>
+
+            {/* Favorite Action Button */}
+            <Tooltip
+              title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+              arrow
             >
-              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-            </svg>
-          </button>
-        </div>
+              <IconButton
+                size="small"
+                onClick={handleFavoriteClick}
+                aria-label="Add to favorites"
+                className={`w-9 h-9 rounded-xl border transition-colors shrink-0 ${
+                  isFavorite
+                    ? "bg-red-50 border-red-200 text-red-500 hover:bg-red-100"
+                    : "bg-slate-50 border-slate-200 text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+                }`}
+              >
+                {isFavorite ? (
+                  <FavoriteRoundedIcon sx={{ fontSize: 18 }} />
+                ) : (
+                  <FavoriteBorderRoundedIcon sx={{ fontSize: 18 }} />
+                )}
+              </IconButton>
+            </Tooltip>
+          </Stack>
 
-        {/* Rating badge */}
-        <div className="inline-flex items-center gap-1.5 bg-slate-50/80 border border-slate-100 rounded-lg px-2.5 py-1 mt-3 mb-2.5">
-          <svg
-            className="w-4 h-4 text-amber-400 fill-amber-400 shrink-0"
-            viewBox="0 0 24 24"
+          {/* Rating Pill */}
+          <Box className="inline-flex items-center gap-1.5 bg-slate-50 border border-slate-100 rounded-lg px-2.5 py-1 mt-3 mb-2.5">
+            <StarRoundedIcon sx={{ fontSize: 17, color: "#f59e0b" }} />
+            <Typography
+              variant="caption"
+              className="font-bold text-slate-900 text-xs"
+            >
+              {doctor.rating}
+            </Typography>
+            <Typography
+              variant="caption"
+              className="text-slate-400 text-xs font-normal"
+            >
+              ({doctor.reviewsCount || 124} reviews)
+            </Typography>
+          </Box>
+
+          {/* Bio Snippet */}
+          <Typography
+            variant="body2"
+            className="text-slate-600 text-xs sm:text-[13px] line-clamp-2 leading-relaxed mb-3.5"
           >
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-          </svg>
-          <span className="font-bold text-slate-900 text-xs">
-            {doctor.rating}
-          </span>
-          <span className="text-slate-400 text-xs font-normal">
-            ({doctor.reviewsCount || 124} reviews)
-          </span>
-        </div>
+            {doctor.bio}
+          </Typography>
 
-        {/* Bio description */}
-        <p className="text-slate-600 text-xs sm:text-[13px] line-clamp-2 leading-relaxed mb-3.5">
-          {doctor.bio}
-        </p>
+          {/* Schedule / Hours */}
+          <Box className="inline-flex items-center gap-1.5 bg-slate-50 border border-slate-100 text-slate-700 text-xs font-medium px-2.5 py-1.5 rounded-lg mb-4 w-full">
+            <CalendarMonthRoundedIcon
+              sx={{ fontSize: 15, color: "#0d9488" }}
+              className="shrink-0"
+            />
+            <Typography
+              variant="caption"
+              className="truncate text-slate-700 text-xs font-medium"
+            >
+              {scheduleText}
+            </Typography>
+          </Box>
+        </Box>
 
-        {/* Schedule / Hours pill */}
-        <div className="inline-flex items-center gap-1.5 bg-slate-50 border border-slate-150 text-slate-700 text-xs font-medium px-2.5 py-1.5 rounded-lg mb-5">
-          <span className="text-sm">🗓️</span>
-          <span className="truncate">{scheduleText}</span>
-        </div>
-      </div>
+        {/* Action Buttons */}
+        <Box className="grid grid-cols-2 gap-2.5 pt-3 border-t border-slate-100">
+          <Button
+            variant="outlined"
+            onClick={() => navigate(`/doctors/${doctor.id}`)}
+            className="w-full py-2 px-3 border-slate-200 text-slate-800 hover:bg-slate-50 hover:border-slate-300 text-xs sm:text-sm font-semibold rounded-xl transition-colors"
+          >
+            View Profile
+          </Button>
 
-      {/* Action buttons */}
-      <div className="grid grid-cols-2 gap-2.5 pt-2 border-t border-slate-100">
-        <button
-          type="button"
-          onClick={() => navigate(`/doctors/${doctor.id}`)}
-          className="w-full py-2.5 px-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 text-sm font-semibold rounded-xl transition-colors text-center cursor-pointer"
-        >
-          View Profile
-        </button>
-
-        <button
-          type="button"
-          onClick={() => navigate(`/book/${doctor.id}`)}
-          className="w-full py-2.5 px-3 bg-[#0d9488] hover:bg-[#0f766e] text-white text-sm font-semibold rounded-xl shadow-xs transition-colors text-center cursor-pointer"
-        >
-          Book Now
-        </button>
-      </div>
-    </div>
+          <Button
+            variant="contained"
+            onClick={() => navigate(`/book/${doctor.id}`)}
+            endIcon={<ArrowForwardRoundedIcon sx={{ fontSize: 16 }} />}
+            className="w-full py-2 px-3 bg-teal-600 hover:bg-teal-700 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-xs transition-colors"
+          >
+            Book Now
+          </Button>
+        </Box>
+      </CardContent>
+    </Card>
   );
 }
