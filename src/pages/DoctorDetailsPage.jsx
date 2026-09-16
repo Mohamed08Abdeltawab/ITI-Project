@@ -119,7 +119,7 @@ export default function DoctorDetailsPage() {
         <Button
           startIcon={<ArrowBackRoundedIcon />}
           onClick={() => navigate("/doctors")}
-          className="text-slate-600 hover:text-slate-900 font-semibold text-sm rounded-xl py-2 px-3"
+          className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-semibold text-sm rounded-xl py-2 px-3"
         >
           Back to Specialists
         </Button>
@@ -132,24 +132,24 @@ export default function DoctorDetailsPage() {
           }
           label="Verified Specialist"
           size="small"
-          className="bg-teal-50 text-teal-700 font-bold border border-teal-200/70 text-xs"
+          className="bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300 font-bold border border-teal-200/70 dark:border-teal-800/70 text-xs"
         />
       </Stack>
 
       {/* Doctor Profile Main Card */}
       <Card
         elevation={0}
-        className="bg-white border border-slate-200/90 rounded-3xl overflow-hidden shadow-xs"
+        className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/90 rounded-3xl overflow-hidden shadow-xs"
       >
         <Box className="grid grid-cols-1 md:grid-cols-12">
           {/* Doctor Portrait Column */}
-          <Box className="md:col-span-5 relative bg-slate-50 flex items-center justify-center p-6 sm:p-8 border-b md:border-b-0 md:border-r border-slate-150">
+          <Box className="md:col-span-5 relative bg-slate-50 dark:bg-slate-850 flex items-center justify-center p-6 sm:p-8 border-b md:border-b-0 md:border-r border-slate-150 dark:border-slate-700">
             <Box className="relative w-full max-w-sm aspect-square">
               <Avatar
                 src={doctor.avatar}
                 alt={doctor.name}
                 variant="rounded"
-                className="w-full h-full rounded-2xl object-cover shadow-sm bg-slate-100"
+                className="w-full h-full rounded-2xl object-cover shadow-sm bg-slate-100 dark:bg-slate-700"
                 imgProps={{
                   onError: (e) => {
                     e.target.onerror = null;
@@ -160,7 +160,7 @@ export default function DoctorDetailsPage() {
               />
               <Badge
                 overlap="circular"
-                className="absolute bottom-4 right-4 bg-emerald-500 text-white p-2 rounded-full shadow-md border-2 border-white"
+                className="absolute bottom-4 right-4 bg-emerald-500 text-white p-2 rounded-full shadow-md border-2 border-white dark:border-slate-800"
               >
                 <VerifiedRoundedIcon sx={{ fontSize: 20 }} />
               </Badge>
@@ -186,7 +186,7 @@ export default function DoctorDetailsPage() {
                     />
                   }
                   label={`${doctor.rating} Rating (${doctor.reviewsCount || 124} reviews)`}
-                  className="bg-amber-50 text-amber-800 border border-amber-200/60 font-semibold text-xs h-7 rounded-lg"
+                  className="bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60 font-semibold text-xs h-7 rounded-lg"
                 />
                 <Chip
                   icon={
@@ -195,7 +195,7 @@ export default function DoctorDetailsPage() {
                     />
                   }
                   label={doctor.experience || "10 yrs experience"}
-                  className="bg-slate-50 text-slate-700 border border-slate-200 font-medium text-xs h-7 rounded-lg"
+                  className="bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600 font-medium text-xs h-7 rounded-lg"
                 />
               </Stack>
 
@@ -203,14 +203,14 @@ export default function DoctorDetailsPage() {
               <Typography
                 variant="h4"
                 component="h1"
-                className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight"
+                className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight"
               >
                 {doctor.name}
               </Typography>
 
               <Typography
                 variant="body2"
-                className="text-teal-700 font-semibold text-sm mt-0.5 mb-4"
+                className="text-teal-700 dark:text-teal-400 font-semibold text-sm mt-0.5 mb-4"
               >
                 Consultant • {doctor.specialty} Specialist
               </Typography>
@@ -218,12 +218,12 @@ export default function DoctorDetailsPage() {
               {/* Bio description */}
               <Typography
                 variant="body1"
-                className="text-slate-600 text-sm sm:text-base leading-relaxed mb-6"
+                className="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed mb-6"
               >
                 {doctor.bio}
               </Typography>
 
-              <Divider className="my-6 border-slate-150" />
+              <Divider className="my-6 border-slate-150 dark:border-slate-700" />
 
               {/* Working Schedule & Days */}
               <Box className="mb-6 space-y-3">
@@ -233,7 +233,7 @@ export default function DoctorDetailsPage() {
                   />
                   <Typography
                     variant="subtitle2"
-                    className="font-bold text-slate-800 text-sm uppercase tracking-wider"
+                    className="font-bold text-slate-800 dark:text-slate-200 text-sm uppercase tracking-wider"
                   >
                     Available Working Days
                   </Typography>
@@ -246,7 +246,7 @@ export default function DoctorDetailsPage() {
                         key={day}
                         label={day}
                         size="medium"
-                        className="bg-slate-100 text-slate-700 font-bold rounded-xl px-2 text-xs"
+                        className="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl px-2 text-xs"
                       />
                     ))}
                 </Stack>
@@ -261,7 +261,7 @@ export default function DoctorDetailsPage() {
                     />
                     <Typography
                       variant="subtitle2"
-                      className="font-bold text-slate-800 text-sm uppercase tracking-wider"
+                      className="font-bold text-slate-800 dark:text-slate-200 text-sm uppercase tracking-wider"
                     >
                       Available Consultation Slots
                     </Typography>
@@ -269,7 +269,7 @@ export default function DoctorDetailsPage() {
                   {selectedSlot && (
                     <Typography
                       variant="caption"
-                      className="text-teal-700 font-bold text-xs"
+                      className="text-teal-700 dark:text-teal-400 font-bold text-xs"
                     >
                       Selected: {selectedSlot}
                     </Typography>
@@ -289,7 +289,7 @@ export default function DoctorDetailsPage() {
                           className={`rounded-xl font-semibold text-xs py-1.5 px-1 transition-all ${
                             isSelected
                               ? "bg-teal-600 text-white shadow-xs"
-                              : "bg-teal-50/70 border border-teal-200/80 text-teal-800 hover:bg-teal-100"
+                              : "bg-teal-50/70 dark:bg-teal-950/40 border border-teal-200/80 dark:border-teal-800/70 text-teal-800 dark:text-teal-300 hover:bg-teal-100 dark:hover:bg-teal-900/50"
                           }`}
                         />
                       );
@@ -299,20 +299,20 @@ export default function DoctorDetailsPage() {
             </Box>
 
             {/* Bottom Action CTA Banner */}
-            <Box className="bg-slate-50 border border-slate-150 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-auto">
+            <Box className="bg-slate-50 dark:bg-slate-900/60 border border-slate-150 dark:border-slate-700 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-auto">
               <Box>
                 <Typography
                   variant="caption"
-                  className="text-slate-500 font-medium block text-xs"
+                  className="text-slate-500 dark:text-slate-400 font-medium block text-xs"
                 >
                   Standard Consultation Fee
                 </Typography>
                 <Typography
                   variant="h6"
-                  className="font-extrabold text-teal-600 leading-none"
+                  className="font-extrabold text-teal-600 dark:text-teal-400 leading-none"
                 >
                   {doctor.fee || "$120"}
-                  <span className="text-xs text-slate-500 font-normal ml-1">
+                  <span className="text-xs text-slate-500 dark:text-slate-400 font-normal ml-1">
                     / comprehensive visit
                   </span>
                 </Typography>

@@ -22,8 +22,9 @@ import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import BloodtypeRoundedIcon from "@mui/icons-material/BloodtypeRounded";
 import ContactEmergencyRoundedIcon from "@mui/icons-material/ContactEmergencyRounded";
-import DarkModeRoundedIcon from "@mui/icons-material/DarkModeRounded";
-import LightModeRoundedIcon from "@mui/icons-material/LightModeRounded";
+import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
+import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
+import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
 import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import NoteAltRoundedIcon from "@mui/icons-material/NoteAltRounded";
@@ -33,6 +34,7 @@ import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import { getDoctors } from "../services/api";
 import DoctorCard from "../components/DoctorCard";
+import { useThemeStore } from "../stores/useThemeStore";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -47,8 +49,10 @@ export default function ProfilePage() {
     insuranceProvider: "CarePlus Shield #99281-CP",
   });
 
-  // Theme Toggle State
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  // Global Theme Store
+  const themeMode = useThemeStore((state) => state.themeMode);
+  const toggleTheme = useThemeStore((state) => state.toggleTheme);
+  const isDarkMode = themeMode === "dark";
 
   // Favorite Doctors State
   const [favoriteDoctors, setFavoriteDoctors] = useState([]);
@@ -93,15 +97,10 @@ export default function ProfilePage() {
     setSnackbarOpen(true);
   };
 
-  const handleThemeSwitch = (e) => {
-    const checked = e.target.checked;
-    setIsDarkMode(checked);
-    if (typeof document !== "undefined") {
-      document.documentElement.classList.toggle("dark", checked);
-    }
-    setSnackbarMessage(
-      checked ? "Dark mode activated!" : "Light mode activated!",
-    );
+  const handleThemeToggle = () => {
+    toggleTheme();
+    const nextMode = themeMode === "light" ? "Dark" : "Light";
+    setSnackbarMessage(`${nextMode} mode activated!`);
     setSnackbarOpen(true);
   };
 
@@ -143,7 +142,7 @@ export default function ProfilePage() {
       {/* Profile Header Card */}
       <Card
         elevation={0}
-        className="bg-gradient-to-r from-white via-white to-teal-50/50 border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-xs"
+        className="bg-gradient-to-r from-white via-white to-teal-50/50 dark:from-slate-800 dark:via-slate-850 dark:to-teal-950/30 border border-slate-200/90 dark:border-slate-700 rounded-3xl p-6 sm:p-8 shadow-xs"
       >
         <Stack
           direction={{ xs: "column", sm: "row" }}
@@ -154,12 +153,12 @@ export default function ProfilePage() {
               overlap="circular"
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               badgeContent={
-                <Box className="w-5 h-5 rounded-full bg-teal-600 text-white flex items-center justify-center border-2 border-white">
+                <Box className="w-5 h-5 rounded-full bg-teal-600 text-white flex items-center justify-center border-2 border-white dark:border-slate-800">
                   <CheckCircleRoundedIcon sx={{ fontSize: 13 }} />
                 </Box>
               }
             >
-              <Avatar className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-slate-900 text-white font-bold text-2xl sm:text-3xl shadow-sm">
+              <Avatar className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-slate-900 dark:bg-teal-600 text-white font-bold text-2xl sm:text-3xl shadow-sm">
                 JD
               </Avatar>
             </Badge>
@@ -168,22 +167,25 @@ export default function ProfilePage() {
               <Stack direction="row" className="items-center gap-2 mb-1">
                 <Typography
                   variant="h5"
-                  className="font-extrabold text-slate-900 leading-tight"
+                  className="font-extrabold text-slate-900 dark:text-white leading-tight"
                 >
                   {profile.fullName}
                 </Typography>
                 <Chip
                   label="Verified Patient"
                   size="small"
-                  className="bg-emerald-50 text-emerald-800 border border-emerald-200/80 font-bold text-xs"
+                  className="bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60 font-bold text-xs"
                 />
               </Stack>
-              <Typography variant="body2" className="text-slate-500 text-sm">
+              <Typography
+                variant="body2"
+                className="text-slate-500 dark:text-slate-400 text-sm"
+              >
                 Patient ID: #CP-884920 • Member since 2023
               </Typography>
               <Typography
                 variant="caption"
-                className="text-teal-700 font-semibold block mt-0.5"
+                className="text-teal-700 dark:text-teal-400 font-semibold block mt-0.5"
               >
                 Primary Insurance: {profile.insuranceProvider}
               </Typography>
@@ -191,24 +193,24 @@ export default function ProfilePage() {
           </Stack>
 
           {/* Theme Switcher Quick Widget */}
-          <Box className="bg-white border border-slate-200 rounded-2xl p-3 sm:px-4 flex items-center gap-3 shadow-xs">
+          <Box className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-3 sm:px-4 flex items-center gap-3 shadow-xs">
             {isDarkMode ? (
-              <DarkModeRoundedIcon sx={{ fontSize: 20, color: "#0d9488" }} />
+              <LightModeOutlinedIcon sx={{ fontSize: 20, color: "#f59e0b" }} />
             ) : (
-              <LightModeRoundedIcon sx={{ fontSize: 20, color: "#f59e0b" }} />
+              <DarkModeOutlinedIcon sx={{ fontSize: 20, color: "#0d9488" }} />
             )}
             <FormControlLabel
               control={
                 <Switch
                   checked={isDarkMode}
-                  onChange={handleThemeSwitch}
+                  onChange={handleThemeToggle}
                   color="primary"
                   sx={{
                     "& .MuiSwitch-switchBase.Mui-checked": {
-                      color: "#0d9488",
+                      color: isDarkMode ? "#14b8a6" : "#0d9488",
                     },
                     "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                      backgroundColor: "#0d9488",
+                      backgroundColor: isDarkMode ? "#14b8a6" : "#0d9488",
                     },
                   }}
                 />
@@ -216,7 +218,7 @@ export default function ProfilePage() {
               label={
                 <Typography
                   variant="caption"
-                  className="font-bold text-slate-700"
+                  className="font-bold text-slate-700 dark:text-slate-200"
                 >
                   {isDarkMode ? "Dark Theme" : "Light Theme"}
                 </Typography>
@@ -227,19 +229,24 @@ export default function ProfilePage() {
         </Stack>
       </Card>
 
-      {/* Grid: Profile Form + useRef Demonstration */}
+      {/* Grid: Profile Form + App Preferences & useRef Demonstration */}
       <Box className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: User Profile Form */}
         <Box className="lg:col-span-7">
           <Card
             elevation={0}
-            className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8"
+            className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 rounded-3xl p-6 sm:p-8"
           >
             <Stack direction="row" className="items-center gap-2 mb-6">
-              <PersonRoundedIcon sx={{ fontSize: 22, color: "#0d9488" }} />
+              <PersonRoundedIcon
+                sx={{
+                  fontSize: 22,
+                  color: isDarkMode ? "#14b8a6" : "#0d9488",
+                }}
+              />
               <Typography
                 variant="h6"
-                className="font-bold text-slate-900 leading-tight"
+                className="font-bold text-slate-900 dark:text-white leading-tight"
               >
                 Personal Medical Information
               </Typography>
@@ -262,7 +269,10 @@ export default function ProfilePage() {
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     borderRadius: "14px",
-                    "&.Mui-focused fieldset": { borderColor: "#0d9488" },
+                    bgcolor: isDarkMode ? "#1e293b" : "#ffffff",
+                    "&.Mui-focused fieldset": {
+                      borderColor: isDarkMode ? "#14b8a6" : "#0d9488",
+                    },
                   },
                 }}
               />
@@ -285,7 +295,10 @@ export default function ProfilePage() {
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "14px",
-                      "&.Mui-focused fieldset": { borderColor: "#0d9488" },
+                      bgcolor: isDarkMode ? "#1e293b" : "#ffffff",
+                      "&.Mui-focused fieldset": {
+                        borderColor: isDarkMode ? "#14b8a6" : "#0d9488",
+                      },
                     },
                   }}
                 />
@@ -306,7 +319,10 @@ export default function ProfilePage() {
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "14px",
-                      "&.Mui-focused fieldset": { borderColor: "#0d9488" },
+                      bgcolor: isDarkMode ? "#1e293b" : "#ffffff",
+                      "&.Mui-focused fieldset": {
+                        borderColor: isDarkMode ? "#14b8a6" : "#0d9488",
+                      },
                     },
                   }}
                 />
@@ -332,7 +348,10 @@ export default function ProfilePage() {
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "14px",
-                      "&.Mui-focused fieldset": { borderColor: "#0d9488" },
+                      bgcolor: isDarkMode ? "#1e293b" : "#ffffff",
+                      "&.Mui-focused fieldset": {
+                        borderColor: isDarkMode ? "#14b8a6" : "#0d9488",
+                      },
                     },
                   }}
                 >
@@ -356,7 +375,10 @@ export default function ProfilePage() {
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "14px",
-                      "&.Mui-focused fieldset": { borderColor: "#0d9488" },
+                      bgcolor: isDarkMode ? "#1e293b" : "#ffffff",
+                      "&.Mui-focused fieldset": {
+                        borderColor: isDarkMode ? "#14b8a6" : "#0d9488",
+                      },
                     },
                   }}
                 />
@@ -380,7 +402,10 @@ export default function ProfilePage() {
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     borderRadius: "14px",
-                    "&.Mui-focused fieldset": { borderColor: "#0d9488" },
+                    bgcolor: isDarkMode ? "#1e293b" : "#ffffff",
+                    "&.Mui-focused fieldset": {
+                      borderColor: isDarkMode ? "#14b8a6" : "#0d9488",
+                    },
                   },
                 }}
               />
@@ -399,18 +424,135 @@ export default function ProfilePage() {
           </Card>
         </Box>
 
-        {/* Right Column: useRef Uncontrolled Input Demo */}
-        <Box className="lg:col-span-5">
+        {/* Right Column: App Preferences & useRef Uncontrolled Input Demo */}
+        <Box className="lg:col-span-5 flex flex-col gap-6">
+          {/* App Preferences Section */}
           <Card
             elevation={0}
-            className="bg-white border border-teal-100 rounded-3xl p-6 sm:p-8 flex flex-col justify-between h-full bg-gradient-to-b from-white to-teal-50/20"
+            className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 rounded-3xl p-6 sm:p-7 shadow-xs"
+          >
+            <Stack
+              direction="row"
+              className="items-center justify-between gap-3 mb-4"
+            >
+              <Stack direction="row" className="items-center gap-2.5">
+                <Box className="w-9 h-9 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center">
+                  <TuneRoundedIcon sx={{ fontSize: 20 }} />
+                </Box>
+                <Box>
+                  <Typography
+                    variant="h6"
+                    className="font-bold text-slate-900 dark:text-white leading-tight text-base sm:text-lg"
+                  >
+                    App Preferences
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    className="text-slate-500 dark:text-slate-400 text-xs"
+                  >
+                    Theme &amp; visual appearance
+                  </Typography>
+                </Box>
+              </Stack>
+
+              <Chip
+                label={isDarkMode ? "Dark Mode" : "Light Mode"}
+                size="small"
+                icon={
+                  isDarkMode ? (
+                    <LightModeOutlinedIcon
+                      sx={{
+                        fontSize: "16px !important",
+                        color: "#f59e0b !important",
+                      }}
+                    />
+                  ) : (
+                    <DarkModeOutlinedIcon
+                      sx={{
+                        fontSize: "16px !important",
+                        color: "#0d9488 !important",
+                      }}
+                    />
+                  )
+                }
+                className={`font-bold text-xs ${
+                  isDarkMode
+                    ? "bg-slate-700 text-teal-300 border border-slate-600"
+                    : "bg-teal-50 text-teal-700 border border-teal-200"
+                }`}
+              />
+            </Stack>
+
+            <Box className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-150 dark:border-slate-700/80">
+              <Stack
+                direction="row"
+                className="items-center justify-between gap-4"
+              >
+                <Box className="min-w-0">
+                  <Typography
+                    variant="subtitle2"
+                    className="font-bold text-slate-900 dark:text-white text-sm"
+                  >
+                    {isDarkMode ? "Dark Theme Enabled" : "Light Theme Enabled"}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed block mt-0.5"
+                  >
+                    {isDarkMode
+                      ? "Dark palette (#0b1120 default, #1e293b paper) with brand teal accent."
+                      : "Light palette (#f8fafc default, #ffffff paper) with brand teal accent."}
+                  </Typography>
+                </Box>
+
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={isDarkMode}
+                      onChange={handleThemeToggle}
+                      color="primary"
+                      sx={{
+                        "& .MuiSwitch-switchBase.Mui-checked": {
+                          color: "#14b8a6",
+                        },
+                        "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
+                          {
+                            backgroundColor: "#14b8a6",
+                          },
+                      }}
+                    />
+                  }
+                  label=""
+                  className="m-0"
+                />
+              </Stack>
+            </Box>
+
+            <Typography
+              variant="caption"
+              className="text-slate-400 dark:text-slate-500 text-xs block mt-3 px-1"
+            >
+              ✓ Synchronized across Material UI v5, Tailwind CSS, and saved in
+              localStorage.
+            </Typography>
+          </Card>
+
+          {/* Emergency Medical Memo Card */}
+          <Card
+            elevation={0}
+            className="bg-white dark:bg-slate-800 border border-teal-100 dark:border-slate-700 rounded-3xl p-6 sm:p-8 flex flex-col justify-between h-full bg-gradient-to-b from-white to-teal-50/20 dark:from-slate-800 dark:to-teal-950/20"
           >
             <Box>
               <Stack direction="row" className="items-center gap-2 mb-2">
-                <NoteAltRoundedIcon sx={{ fontSize: 22, color: "#0d9488" }} />
+                <NoteAltRoundedIcon
+                  sx={{
+                    fontSize: 22,
+                    color: isDarkMode ? "#14b8a6" : "#0d9488",
+                  }}
+                />
                 <Typography
                   variant="h6"
-                  className="font-bold text-slate-900 leading-tight"
+                  className="font-bold text-slate-900 dark:text-white leading-tight"
                 >
                   Emergency Medical Memo
                 </Typography>
@@ -418,25 +560,24 @@ export default function ProfilePage() {
 
               <Typography
                 variant="body2"
-                className="text-slate-500 text-xs sm:text-sm mb-4"
+                className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mb-4"
               >
                 Demonstration of an{" "}
-                <span className="font-bold text-teal-700">
+                <span className="font-bold text-teal-700 dark:text-teal-400">
                   uncontrolled input
                 </span>{" "}
                 using React&apos;s{" "}
-                <code className="bg-slate-100 px-1.5 py-0.5 rounded text-slate-800 text-xs font-mono">
+                <code className="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded text-slate-800 dark:text-slate-200 text-xs font-mono">
                   useRef
                 </code>{" "}
-                hook. Value is managed directly by the DOM without triggering
-                state re-renders.
+                hook.
               </Typography>
 
               {/* Uncontrolled Input Element */}
               <Box className="mb-4">
                 <Typography
                   variant="caption"
-                  className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5"
+                  className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5"
                 >
                   Uncontrolled Note (Allergies / Instructions)
                 </Typography>
@@ -452,8 +593,10 @@ export default function ProfilePage() {
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "14px",
-                      bgcolor: "#ffffff",
-                      "&.Mui-focused fieldset": { borderColor: "#0d9488" },
+                      bgcolor: isDarkMode ? "#1e293b" : "#ffffff",
+                      "&.Mui-focused fieldset": {
+                        borderColor: isDarkMode ? "#14b8a6" : "#0d9488",
+                      },
                     },
                   }}
                 />
@@ -470,7 +613,7 @@ export default function ProfilePage() {
                   size="small"
                   startIcon={<VisibilityRoundedIcon />}
                   onClick={handleReadRef}
-                  className="rounded-xl border-teal-200 text-teal-700 hover:bg-teal-50 text-xs font-bold"
+                  className="rounded-xl border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300 hover:bg-teal-50 dark:hover:bg-teal-950/40 text-xs font-bold"
                 >
                   Read via Ref
                 </Button>
@@ -480,7 +623,7 @@ export default function ProfilePage() {
                   size="small"
                   startIcon={<EditRoundedIcon />}
                   onClick={handleFocusRef}
-                  className="rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold"
+                  className="rounded-xl border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 text-xs font-semibold"
                 >
                   Focus via Ref
                 </Button>
@@ -490,7 +633,7 @@ export default function ProfilePage() {
                   size="small"
                   startIcon={<ClearAllRoundedIcon />}
                   onClick={handleClearRef}
-                  className="rounded-xl border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold"
+                  className="rounded-xl border-red-200 dark:border-red-900/60 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 text-xs font-semibold"
                 >
                   Clear via Ref
                 </Button>
@@ -500,16 +643,16 @@ export default function ProfilePage() {
               {refOutputMessage && (
                 <Alert
                   severity="info"
-                  className="rounded-xl text-xs font-medium border border-teal-150 bg-teal-50/80 text-teal-900"
+                  className="rounded-xl text-xs font-medium border border-teal-150 dark:border-teal-900 bg-teal-50/80 dark:bg-teal-950/50 text-teal-900 dark:text-teal-200"
                 >
                   {refOutputMessage}
                 </Alert>
               )}
             </Box>
 
-            <Box className="mt-4 pt-3 border-t border-slate-150 text-xs text-slate-400">
+            <Box className="mt-4 pt-3 border-t border-slate-150 dark:border-slate-700 text-xs text-slate-400 dark:text-slate-500">
               ⚡ Directly interacts with DOM via{" "}
-              <code className="text-slate-600 font-mono">
+              <code className="text-slate-600 dark:text-slate-300 font-mono">
                 medicalMemoRef.current
               </code>
             </Box>
@@ -527,7 +670,7 @@ export default function ProfilePage() {
             <FavoriteRoundedIcon sx={{ fontSize: 22, color: "#ef4444" }} />
             <Typography
               variant="h6"
-              className="font-bold text-slate-900 tracking-tight"
+              className="font-bold text-slate-900 dark:text-white tracking-tight"
             >
               Favorite Doctors ({favoriteDoctors.length})
             </Typography>
@@ -536,7 +679,7 @@ export default function ProfilePage() {
           <Button
             size="small"
             onClick={() => navigate("/doctors")}
-            className="text-teal-600 font-bold text-xs hover:underline"
+            className="text-teal-600 dark:text-teal-400 font-bold text-xs hover:underline"
           >
             Explore More Specialists →
           </Button>
@@ -585,8 +728,8 @@ export default function ProfilePage() {
         <Alert
           severity="success"
           variant="filled"
-          className="rounded-xl font-semibold text-sm shadow-md"
-          sx={{ bgcolor: "#0d9488" }}
+          className="rounded-xl font-semibold text-sm shadow-md text-white"
+          sx={{ bgcolor: isDarkMode ? "#14b8a6" : "#0d9488" }}
         >
           {snackbarMessage}
         </Alert>

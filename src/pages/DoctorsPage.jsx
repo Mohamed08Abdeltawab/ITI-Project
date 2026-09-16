@@ -136,7 +136,7 @@ export default function DoctorsPage() {
   return (
     <Box className="space-y-6">
       {/* Hero Header Banner */}
-      <Box className="bg-gradient-to-r from-white via-white to-teal-50/60 border border-slate-200/90 rounded-3xl p-6 sm:p-10 relative overflow-hidden shadow-xs">
+      <Box className="bg-gradient-to-r from-white via-white to-teal-50/60 dark:from-slate-800 dark:via-slate-800 dark:to-teal-950/40 border border-slate-200/90 dark:border-slate-700/80 rounded-3xl p-6 sm:p-10 relative overflow-hidden shadow-xs transition-colors">
         <Box className="max-w-3xl">
           <Chip
             icon={
@@ -146,13 +146,13 @@ export default function DoctorsPage() {
             }
             label="CAREPOINT SPECIALIST NETWORK"
             size="small"
-            className="bg-teal-50 text-teal-700 border border-teal-200/70 font-bold tracking-wider uppercase text-xs mb-4"
+            className="bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300 border border-teal-200/70 dark:border-teal-800/70 font-bold tracking-wider uppercase text-xs mb-4"
           />
 
           <Typography
             variant="h3"
             component="h1"
-            className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight"
+            className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight"
           >
             Find Trusted Doctors &amp; Book
             <br className="hidden sm:inline" /> Appointments
@@ -160,7 +160,7 @@ export default function DoctorsPage() {
 
           <Typography
             variant="body1"
-            className="mt-3 text-slate-600 text-sm sm:text-base leading-relaxed max-w-xl"
+            className="mt-3 text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed max-w-xl"
           >
             Connect with verified medical specialists, review credentials and
             real-time availability, and book your consultation instantly.
@@ -189,16 +189,7 @@ export default function DoctorsPage() {
           sx={{
             "& .MuiOutlinedInput-root": {
               borderRadius: "16px",
-              bgcolor: "#ffffff",
-              "& fieldset": {
-                borderColor: "#e2e8f0",
-              },
-              "&:hover fieldset": {
-                borderColor: "#cbd5e1",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "#0d9488",
-              },
+              bgcolor: "background.paper",
             },
           }}
         />
@@ -220,7 +211,7 @@ export default function DoctorsPage() {
               className={`rounded-xl text-sm font-semibold transition-all py-1.5 px-1 ${
                 isActive
                   ? "bg-teal-600 text-white shadow-xs"
-                  : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
+                  : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/60"
               }`}
               sx={{
                 height: 38,
@@ -239,10 +230,16 @@ export default function DoctorsPage() {
         className="items-start sm:items-center justify-between gap-3 pt-2"
       >
         <Stack direction="row" className="items-center gap-2 text-sm">
-          <Typography variant="body2" className="font-semibold text-slate-800">
+          <Typography
+            variant="body2"
+            className="font-semibold text-slate-800 dark:text-slate-200"
+          >
             Showing {filteredAndSortedDoctors.length} doctors available
           </Typography>
-          <Typography variant="body2" className="text-slate-300">
+          <Typography
+            variant="body2"
+            className="text-slate-300 dark:text-slate-600"
+          >
             •
           </Typography>
           <Chip
@@ -253,7 +250,7 @@ export default function DoctorsPage() {
             }
             label="Verified Practitioners"
             size="small"
-            className="bg-emerald-50 text-emerald-800 border border-emerald-200/80 font-semibold text-xs"
+            className="bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60 font-semibold text-xs"
           />
         </Stack>
 
@@ -263,23 +260,20 @@ export default function DoctorsPage() {
           className="items-center gap-2 self-end sm:self-auto"
         >
           <FilterListRoundedIcon sx={{ fontSize: 18, color: "#64748b" }} />
-          <Typography variant="caption" className="text-slate-500 font-medium">
+          <Typography
+            variant="caption"
+            className="text-slate-500 dark:text-slate-400 font-medium"
+          >
             Sort by:
           </Typography>
           <FormControl size="small">
             <Select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-white rounded-xl text-sm font-semibold text-slate-800"
+              className="bg-white dark:bg-slate-800 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-200"
               sx={{
                 borderRadius: "12px",
                 height: 38,
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "#e2e8f0",
-                },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "#0d9488",
-                },
               }}
             >
               <MenuItem value="Top Rated">Top Rated</MenuItem>
@@ -374,17 +368,20 @@ export default function DoctorsPage() {
       {!loading && !error && filteredAndSortedDoctors.length === 0 && (
         <Card
           elevation={0}
-          className="bg-white border border-slate-200 rounded-3xl p-10 text-center max-w-md mx-auto my-8"
+          className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-10 text-center max-w-md mx-auto my-8"
         >
-          <Box className="w-14 h-14 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mx-auto mb-4">
+          <Box className="w-14 h-14 rounded-2xl bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 flex items-center justify-center mx-auto mb-4">
             <SearchOffRoundedIcon sx={{ fontSize: 30 }} />
           </Box>
-          <Typography variant="h6" className="font-bold text-slate-800">
+          <Typography
+            variant="h6"
+            className="font-bold text-slate-800 dark:text-white"
+          >
             No doctors found
           </Typography>
           <Typography
             variant="body2"
-            className="text-slate-500 text-sm mt-1 mb-5"
+            className="text-slate-500 dark:text-slate-400 text-sm mt-1 mb-5"
           >
             No medical specialists match your search criteria. Try adjusting
             your query or reset filters.
@@ -415,13 +412,22 @@ export default function DoctorsPage() {
       {!loading && !error && filteredAndSortedDoctors.length > 0 && (
         <Stack
           direction={{ xs: "column", sm: "row" }}
-          className="items-center justify-between gap-4 pt-6 pb-8 border-t border-slate-100"
+          className="items-center justify-between gap-4 pt-6 pb-8 border-t border-slate-100 dark:border-slate-800"
         >
-          <Typography variant="body2" className="text-slate-500 font-medium">
+          <Typography
+            variant="body2"
+            className="text-slate-500 dark:text-slate-400 font-medium"
+          >
             Showing{" "}
-            <span className="font-bold text-slate-800">{startIndex}</span> to{" "}
-            <span className="font-bold text-slate-800">{endIndex}</span> of{" "}
-            <span className="font-bold text-slate-800">
+            <span className="font-bold text-slate-800 dark:text-slate-200">
+              {startIndex}
+            </span>{" "}
+            to{" "}
+            <span className="font-bold text-slate-800 dark:text-slate-200">
+              {endIndex}
+            </span>{" "}
+            of{" "}
+            <span className="font-bold text-slate-800 dark:text-slate-200">
               {filteredAndSortedDoctors.length}
             </span>{" "}
             specialists

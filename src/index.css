@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   body {
     font-family:
@@ -11,7 +13,15 @@
       Helvetica,
       Arial,
       sans-serif;
-    background-color: #fcfdfe;
+    background-color: #f8fafc;
     color: #0f172a;
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease;
+  }
+
+  .dark body {
+    background-color: #0b1120;
+    color: #f8fafc;
   }
 }

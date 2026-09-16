@@ -46,7 +46,7 @@ export default function DoctorCard({ doctor, onToggleFavorite, isFav }) {
   return (
     <Card
       elevation={0}
-      className="bg-white border border-slate-200/80 hover:border-teal-300 hover:shadow-lg transition-all duration-300 rounded-2xl flex flex-col justify-between h-full group"
+      className="bg-white dark:bg-[#1e293b] border border-slate-200/80 dark:border-slate-700/80 hover:border-teal-300 dark:hover:border-teal-500/60 hover:shadow-lg transition-all duration-300 rounded-2xl flex flex-col justify-between h-full group"
     >
       <CardContent className="p-5 sm:p-6 flex flex-col justify-between h-full">
         <Box>
@@ -73,7 +73,7 @@ export default function DoctorCard({ doctor, onToggleFavorite, isFav }) {
                   src={doctor.avatar}
                   alt={doctor.name}
                   variant="rounded"
-                  className="w-14 h-14 rounded-2xl bg-slate-100 object-cover shadow-xs"
+                  className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-700 object-cover shadow-xs"
                   imgProps={{
                     onError: (e) => {
                       e.target.onerror = null;
@@ -88,7 +88,7 @@ export default function DoctorCard({ doctor, onToggleFavorite, isFav }) {
               <Box className="min-w-0">
                 <Typography
                   variant="subtitle1"
-                  className="font-bold text-slate-900 text-base leading-tight truncate"
+                  className="font-bold text-slate-900 dark:text-white text-base leading-tight truncate"
                 >
                   {doctor.name}
                 </Typography>
@@ -100,11 +100,11 @@ export default function DoctorCard({ doctor, onToggleFavorite, isFav }) {
                   <Chip
                     label={doctor.specialty}
                     size="small"
-                    className="bg-teal-50 text-teal-700 border border-teal-200/60 font-semibold text-xs h-6 rounded-md"
+                    className="bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300 border border-teal-200/60 dark:border-teal-800/60 font-semibold text-xs h-6 rounded-md"
                   />
                   <Typography
                     variant="caption"
-                    className="text-slate-500 font-medium text-xs whitespace-nowrap"
+                    className="text-slate-500 dark:text-slate-400 font-medium text-xs whitespace-nowrap"
                   >
                     {doctor.experience || "10 yrs exp"}
                   </Typography>
@@ -123,8 +123,8 @@ export default function DoctorCard({ doctor, onToggleFavorite, isFav }) {
                 aria-label="Add to favorites"
                 className={`w-9 h-9 rounded-xl border transition-colors shrink-0 ${
                   isFavorite
-                    ? "bg-red-50 border-red-200 text-red-500 hover:bg-red-100"
-                    : "bg-slate-50 border-slate-200 text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+                    ? "bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-900/60 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/40"
+                    : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
                 }`}
               >
                 {isFavorite ? (
@@ -137,17 +137,17 @@ export default function DoctorCard({ doctor, onToggleFavorite, isFav }) {
           </Stack>
 
           {/* Rating Pill */}
-          <Box className="inline-flex items-center gap-1.5 bg-slate-50 border border-slate-100 rounded-lg px-2.5 py-1 mt-3 mb-2.5">
+          <Box className="inline-flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/70 border border-slate-100 dark:border-slate-700/70 rounded-lg px-2.5 py-1 mt-3 mb-2.5">
             <StarRoundedIcon sx={{ fontSize: 17, color: "#f59e0b" }} />
             <Typography
               variant="caption"
-              className="font-bold text-slate-900 text-xs"
+              className="font-bold text-slate-900 dark:text-white text-xs"
             >
               {doctor.rating}
             </Typography>
             <Typography
               variant="caption"
-              className="text-slate-400 text-xs font-normal"
+              className="text-slate-400 dark:text-slate-400 text-xs font-normal"
             >
               ({doctor.reviewsCount || 124} reviews)
             </Typography>
@@ -156,20 +156,20 @@ export default function DoctorCard({ doctor, onToggleFavorite, isFav }) {
           {/* Bio Snippet */}
           <Typography
             variant="body2"
-            className="text-slate-600 text-xs sm:text-[13px] line-clamp-2 leading-relaxed mb-3.5"
+            className="text-slate-600 dark:text-slate-300 text-xs sm:text-[13px] line-clamp-2 leading-relaxed mb-3.5"
           >
             {doctor.bio}
           </Typography>
 
           {/* Schedule / Hours */}
-          <Box className="inline-flex items-center gap-1.5 bg-slate-50 border border-slate-100 text-slate-700 text-xs font-medium px-2.5 py-1.5 rounded-lg mb-4 w-full">
+          <Box className="inline-flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/70 border border-slate-100 dark:border-slate-700/70 text-slate-700 dark:text-slate-300 text-xs font-medium px-2.5 py-1.5 rounded-lg mb-4 w-full">
             <CalendarMonthRoundedIcon
               sx={{ fontSize: 15, color: "#0d9488" }}
               className="shrink-0"
             />
             <Typography
               variant="caption"
-              className="truncate text-slate-700 text-xs font-medium"
+              className="truncate text-slate-700 dark:text-slate-300 text-xs font-medium"
             >
               {scheduleText}
             </Typography>
@@ -177,11 +177,11 @@ export default function DoctorCard({ doctor, onToggleFavorite, isFav }) {
         </Box>
 
         {/* Action Buttons */}
-        <Box className="grid grid-cols-2 gap-2.5 pt-3 border-t border-slate-100">
+        <Box className="grid grid-cols-2 gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-700/80">
           <Button
             variant="outlined"
             onClick={() => navigate(`/doctors/${doctor.id}`)}
-            className="w-full py-2 px-3 border-slate-200 text-slate-800 hover:bg-slate-50 hover:border-slate-300 text-xs sm:text-sm font-semibold rounded-xl transition-colors"
+            className="w-full py-2 px-3 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 text-xs sm:text-sm font-semibold rounded-xl transition-colors"
           >
             View Profile
           </Button>

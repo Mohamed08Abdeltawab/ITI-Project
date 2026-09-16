@@ -21,17 +21,22 @@ import MedicalServicesRoundedIcon from "@mui/icons-material/MedicalServicesRound
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
 import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
-import DarkModeRoundedIcon from "@mui/icons-material/DarkModeRounded";
-import LightModeRoundedIcon from "@mui/icons-material/LightModeRounded";
+import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
+import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import LocalHospitalRoundedIcon from "@mui/icons-material/LocalHospitalRounded";
+import { useThemeStore } from "../stores/useThemeStore";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Global theme state from Zustand
+  const themeMode = useThemeStore((state) => state.themeMode);
+  const toggleTheme = useThemeStore((state) => state.toggleTheme);
+  const isDarkMode = themeMode === "dark";
 
   const isDoctorsActive =
     location.pathname === "/" || location.pathname.startsWith("/doctors");
@@ -69,17 +74,10 @@ export default function Navbar() {
     setMobileOpen(false);
   };
 
-  const handleThemeToggle = () => {
-    setIsDarkMode((prev) => !prev);
-    if (typeof document !== "undefined") {
-      document.documentElement.classList.toggle("dark");
-    }
-  };
-
   return (
     <Box
       component="header"
-      className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 transition-colors"
+      className="sticky top-0 z-50 bg-white/95 dark:bg-[#0b1120]/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 transition-colors duration-200"
     >
       <Box className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
         {/* Brand Logo */}
@@ -93,9 +91,9 @@ export default function Navbar() {
           </Box>
           <Typography
             variant="h6"
-            className="font-extrabold tracking-tight text-slate-900"
+            className="font-extrabold tracking-tight text-slate-900 dark:text-white"
           >
-            Care<span className="text-teal-600">Point</span>
+            Care<span className="text-teal-600 dark:text-teal-400">Point</span>
           </Typography>
         </NavLink>
 
@@ -112,8 +110,8 @@ export default function Navbar() {
                 to={item.path}
                 className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
                   item.isActive
-                    ? "bg-teal-50 text-teal-600 font-bold"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                    ? "bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 font-bold"
+                    : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/60"
                 }`}
               >
                 <Icon sx={{ fontSize: 18 }} />
@@ -135,25 +133,49 @@ export default function Navbar() {
 
         {/* Desktop Side Actions (md and above) */}
         <Box className="hidden md:flex items-center gap-3">
-          <Tooltip title={isDarkMode ? "Light Mode" : "Dark Mode"} arrow>
+          <Tooltip
+            title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            arrow
+          >
             <IconButton
-              onClick={handleThemeToggle}
+              onClick={toggleTheme}
               size="small"
               aria-label="Toggle dark mode"
-              className="w-9 h-9 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+              className="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
+              sx={{
+                transition:
+                  "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease",
+                "&:hover": {
+                  transform: "rotate(15deg) scale(1.05)",
+                },
+              }}
             >
-              {isDarkMode ? (
-                <LightModeRoundedIcon sx={{ fontSize: 19 }} />
-              ) : (
-                <DarkModeRoundedIcon sx={{ fontSize: 19 }} />
-              )}
+              <Box
+                component="span"
+                sx={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "transform 0.3s ease, opacity 0.3s ease",
+                }}
+              >
+                {isDarkMode ? (
+                  <LightModeOutlinedIcon
+                    sx={{ fontSize: 19, color: "#f59e0b" }}
+                  />
+                ) : (
+                  <DarkModeOutlinedIcon
+                    sx={{ fontSize: 19, color: "#0d9488" }}
+                  />
+                )}
+              </Box>
             </IconButton>
           </Tooltip>
 
           <Divider
             orientation="vertical"
             flexItem
-            className="h-5 my-auto border-slate-200"
+            className="h-5 my-auto border-slate-200 dark:border-slate-700"
           />
 
           <Tooltip title="User Profile" arrow>
@@ -161,7 +183,7 @@ export default function Navbar() {
               onClick={() => navigate("/profile")}
               size="small"
               aria-label="User Profile"
-              className="w-9 h-9 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-xs"
+              className="w-9 h-9 rounded-xl bg-slate-900 dark:bg-slate-800 text-white hover:bg-slate-800 dark:hover:bg-slate-700 transition-colors shadow-xs"
             >
               <PersonRoundedIcon sx={{ fontSize: 20 }} />
             </IconButton>
@@ -171,23 +193,35 @@ export default function Navbar() {
         {/* Mobile Action Controls (xs to sm) */}
         <Box className="flex md:hidden items-center gap-1.5">
           <IconButton
-            onClick={handleThemeToggle}
+            onClick={toggleTheme}
             size="small"
             aria-label="Toggle dark mode"
-            className="w-9 h-9 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50"
+            className="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
           >
-            {isDarkMode ? (
-              <LightModeRoundedIcon sx={{ fontSize: 19 }} />
-            ) : (
-              <DarkModeRoundedIcon sx={{ fontSize: 19 }} />
-            )}
+            <Box
+              component="span"
+              sx={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "transform 0.3s ease",
+              }}
+            >
+              {isDarkMode ? (
+                <LightModeOutlinedIcon
+                  sx={{ fontSize: 19, color: "#f59e0b" }}
+                />
+              ) : (
+                <DarkModeOutlinedIcon sx={{ fontSize: 19, color: "#0d9488" }} />
+              )}
+            </Box>
           </IconButton>
 
           <IconButton
             onClick={handleDrawerToggle}
             size="small"
             aria-label="Open navigation menu"
-            className="w-9 h-9 rounded-xl border border-slate-200 text-slate-900 hover:bg-slate-50"
+            className="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             <MenuRoundedIcon sx={{ fontSize: 22 }} />
           </IconButton>
@@ -204,9 +238,12 @@ export default function Navbar() {
           sx: {
             width: { xs: "82vw", sm: 340 },
             maxWidth: 360,
-            bgcolor: "#ffffff",
-            borderLeft: "1px solid #f1f5f9",
-            boxShadow: "-8px 0 32px rgba(15, 23, 42, 0.08)",
+            bgcolor: isDarkMode ? "#1e293b" : "#ffffff",
+            color: isDarkMode ? "#f8fafc" : "#0f172a",
+            borderLeft: isDarkMode ? "1px solid #334155" : "1px solid #f1f5f9",
+            boxShadow: isDarkMode
+              ? "-8px 0 32px rgba(0, 0, 0, 0.4)"
+              : "-8px 0 32px rgba(15, 23, 42, 0.08)",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
@@ -215,7 +252,7 @@ export default function Navbar() {
       >
         <Box className="flex flex-col flex-grow">
           {/* Drawer Header */}
-          <Box className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+          <Box className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-800">
             <NavLink
               to="/"
               className="flex items-center gap-2.5 text-decoration-none"
@@ -226,9 +263,10 @@ export default function Navbar() {
               </Box>
               <Typography
                 variant="subtitle1"
-                className="font-bold tracking-tight text-slate-900"
+                className="font-bold tracking-tight text-slate-900 dark:text-white"
               >
-                Care<span className="text-teal-600">Point</span>
+                Care
+                <span className="text-teal-600 dark:text-teal-400">Point</span>
               </Typography>
             </NavLink>
 
@@ -236,7 +274,7 @@ export default function Navbar() {
               onClick={handleDrawerToggle}
               size="small"
               aria-label="Close navigation menu"
-              className="text-slate-500 border border-slate-200 rounded-xl hover:bg-slate-50"
+              className="text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800"
             >
               <CloseRoundedIcon sx={{ fontSize: 20 }} />
             </IconButton>
@@ -246,7 +284,7 @@ export default function Navbar() {
           <Box className="px-3 py-4">
             <Typography
               variant="caption"
-              className="px-3 mb-2 block font-bold tracking-wider uppercase text-slate-400 text-xs"
+              className="px-3 mb-2 block font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500 text-xs"
             >
               Navigation Menu
             </Typography>
@@ -260,13 +298,15 @@ export default function Navbar() {
                       onClick={() => handleNavClick(item.path)}
                       className={`rounded-xl py-2.5 px-3.5 transition-all ${
                         item.isActive
-                          ? "bg-teal-50 text-teal-600 font-bold"
-                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                          ? "bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 font-bold"
+                          : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
                       }`}
                     >
                       <ListItemIcon
                         className={`min-w-9 ${
-                          item.isActive ? "text-teal-600" : "text-slate-500"
+                          item.isActive
+                            ? "text-teal-600 dark:text-teal-400"
+                            : "text-slate-500 dark:text-slate-400"
                         }`}
                       >
                         <IconComponent sx={{ fontSize: 22 }} />
@@ -294,22 +334,22 @@ export default function Navbar() {
         </Box>
 
         {/* Drawer Footer Actions */}
-        <Box className="p-4 bg-slate-50/70 border-t border-slate-100">
+        <Box className="p-4 bg-slate-50/70 dark:bg-slate-900/60 border-t border-slate-100 dark:border-slate-800">
           {/* User Account Snippet */}
-          <Box className="flex items-center gap-3 p-3 mb-3 rounded-2xl bg-white border border-slate-150 shadow-xs">
-            <Box className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-sm">
+          <Box className="flex items-center gap-3 p-3 mb-3 rounded-2xl bg-white dark:bg-slate-850 border border-slate-150 dark:border-slate-700 shadow-xs">
+            <Box className="w-10 h-10 rounded-xl bg-slate-900 dark:bg-teal-600 text-white flex items-center justify-center font-bold text-sm">
               JD
             </Box>
             <Box className="min-w-0 flex-1">
               <Typography
                 variant="body2"
-                className="font-bold text-slate-900 leading-tight truncate"
+                className="font-bold text-slate-900 dark:text-white leading-tight truncate"
               >
                 John Doe
               </Typography>
               <Typography
                 variant="caption"
-                className="text-slate-500 block text-xs truncate"
+                className="text-slate-500 dark:text-slate-400 block text-xs truncate"
               >
                 Patient Account
               </Typography>
@@ -319,14 +359,18 @@ export default function Navbar() {
           {/* Action List */}
           <Stack spacing={0.5}>
             <ListItemButton
-              onClick={handleThemeToggle}
-              className="rounded-xl py-2 px-3 text-slate-700 hover:bg-slate-100"
+              onClick={toggleTheme}
+              className="rounded-xl py-2 px-3 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             >
-              <ListItemIcon className="min-w-8 text-slate-500">
+              <ListItemIcon className="min-w-8 text-slate-500 dark:text-slate-400">
                 {isDarkMode ? (
-                  <LightModeRoundedIcon sx={{ fontSize: 20 }} />
+                  <LightModeOutlinedIcon
+                    sx={{ fontSize: 20, color: "#f59e0b" }}
+                  />
                 ) : (
-                  <DarkModeRoundedIcon sx={{ fontSize: 20 }} />
+                  <DarkModeOutlinedIcon
+                    sx={{ fontSize: 20, color: "#0d9488" }}
+                  />
                 )}
               </ListItemIcon>
               <ListItemText
@@ -339,15 +383,19 @@ export default function Navbar() {
               <Chip
                 label={isDarkMode ? "ON" : "OFF"}
                 size="small"
-                className="bg-teal-50 text-teal-600 font-bold text-xs h-5"
+                className={`font-bold text-xs h-5 ${
+                  isDarkMode
+                    ? "bg-teal-900/50 text-teal-300"
+                    : "bg-teal-50 text-teal-600"
+                }`}
               />
             </ListItemButton>
 
             <ListItemButton
               onClick={() => handleNavClick("/profile")}
-              className="rounded-xl py-2 px-3 text-slate-700 hover:bg-slate-100"
+              className="rounded-xl py-2 px-3 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
             >
-              <ListItemIcon className="min-w-8 text-slate-500">
+              <ListItemIcon className="min-w-8 text-slate-500 dark:text-slate-400">
                 <SettingsRoundedIcon sx={{ fontSize: 20 }} />
               </ListItemIcon>
               <ListItemText
@@ -361,7 +409,7 @@ export default function Navbar() {
 
             <ListItemButton
               onClick={() => setMobileOpen(false)}
-              className="rounded-xl py-2 px-3 text-red-600 hover:bg-red-50"
+              className="rounded-xl py-2 px-3 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
             >
               <ListItemIcon className="min-w-8 text-red-600">
                 <LogoutRoundedIcon sx={{ fontSize: 20 }} />

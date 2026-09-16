@@ -6,7 +6,7 @@ import Navbar from "../components/Navbar";
 
 export default function RootLayout() {
   return (
-    <Box className="min-h-screen flex flex-col bg-[#fcfdfe] text-slate-900 font-sans antialiased">
+    <Box className="min-h-screen flex flex-col bg-[#f8fafc] dark:bg-[#0b1120] text-slate-900 dark:text-[#f8fafc] font-sans antialiased transition-colors duration-200">
       <Navbar />
 
       <Box
@@ -18,7 +18,7 @@ export default function RootLayout() {
 
       <Box
         component="footer"
-        className="py-8 border-t border-slate-100 bg-white/70 backdrop-blur-sm mt-auto"
+        className="py-8 border-t border-slate-100 dark:border-slate-800/80 bg-white/70 dark:bg-[#0b1120]/70 backdrop-blur-sm mt-auto transition-colors duration-200"
       >
         <Box className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Stack
@@ -31,22 +31,24 @@ export default function RootLayout() {
               </Box>
               <Typography
                 variant="body2"
-                className="font-bold text-slate-800 tracking-tight"
+                className="font-bold text-slate-800 dark:text-slate-200 tracking-tight"
               >
-                Care<span className="text-teal-600">Point</span> Healthcare
+                Care
+                <span className="text-teal-600 dark:text-teal-400">Point</span>{" "}
+                Healthcare
               </Typography>
             </Stack>
 
             <Stack
               direction="row"
-              className="items-center gap-1.5 text-xs text-slate-500"
+              className="items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400"
             >
               <VerifiedUserRoundedIcon
                 sx={{ fontSize: 16, color: "#0d9488" }}
               />
               <Typography
                 variant="caption"
-                className="text-slate-500 font-medium"
+                className="text-slate-500 dark:text-slate-400 font-medium"
               >
                 Verified Medical Provider Network • HIPAA Compliant
               </Typography>
@@ -54,7 +56,7 @@ export default function RootLayout() {
 
             <Typography
               variant="caption"
-              className="text-xs text-slate-400 font-normal text-center sm:text-right"
+              className="text-xs text-slate-400 dark:text-slate-500 font-normal text-center sm:text-right"
             >
               © {new Date().getFullYear()} CarePoint. All rights reserved.
             </Typography>
