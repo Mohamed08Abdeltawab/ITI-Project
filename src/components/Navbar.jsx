@@ -134,7 +134,7 @@ export default function Navbar() {
         </Box>
 
         {/* Desktop Side Actions (md and above) */}
-        <Stack direction="row" className="hidden md:flex items-center gap-3">
+        <Box className="hidden md:flex items-center gap-3">
           <Tooltip title={isDarkMode ? "Light Mode" : "Dark Mode"} arrow>
             <IconButton
               onClick={handleThemeToggle}
@@ -166,10 +166,10 @@ export default function Navbar() {
               <PersonRoundedIcon sx={{ fontSize: 20 }} />
             </IconButton>
           </Tooltip>
-        </Stack>
+        </Box>
 
         {/* Mobile Action Controls (xs to sm) */}
-        <Stack direction="row" className="flex md:hidden items-center gap-1.5">
+        <Box className="flex md:hidden items-center gap-1.5">
           <IconButton
             onClick={handleThemeToggle}
             size="small"
@@ -191,7 +191,7 @@ export default function Navbar() {
           >
             <MenuRoundedIcon sx={{ fontSize: 22 }} />
           </IconButton>
-        </Stack>
+        </Box>
       </Box>
 
       {/* Mobile Drawer (Sidebar) */}

@@ -136,7 +136,10 @@ export default function ProfilePage() {
   };
 
   return (
-    <Box className="space-y-8 max-w-5xl mx-auto py-2">
+    <Box
+      sx={{ display: "flex", flexDirection: "column", gap: 4 }}
+      className="flex flex-col gap-8 max-w-5xl mx-auto py-2"
+    >
       {/* Profile Header Card */}
       <Card
         elevation={0}
@@ -245,7 +248,8 @@ export default function ProfilePage() {
             <Box
               component="form"
               onSubmit={handleSaveProfile}
-              className="space-y-4"
+              sx={{ display: "flex", flexDirection: "column", gap: 3 }}
+              className="flex flex-col gap-6"
             >
               <TextField
                 fullWidth
@@ -263,7 +267,7 @@ export default function ProfilePage() {
                 }}
               />
 
-              <Box className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Box className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <TextField
                   fullWidth
                   label="Email Address"
@@ -308,7 +312,7 @@ export default function ProfilePage() {
                 />
               </Box>
 
-              <Box className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Box className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <TextField
                   fullWidth
                   select
@@ -514,7 +518,10 @@ export default function ProfilePage() {
       </Box>
 
       {/* Favorite Doctors Section */}
-      <Box className="space-y-4 pt-2">
+      <Box
+        sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+        className="flex flex-col gap-4 pt-2"
+      >
         <Stack direction="row" className="items-center justify-between">
           <Stack direction="row" className="items-center gap-2">
             <FavoriteRoundedIcon sx={{ fontSize: 22, color: "#ef4444" }} />
