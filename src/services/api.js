@@ -7,13 +7,31 @@ const apiClient = axios.create({
   },
 });
 
+// ==========================================
+// Doctor Endpoints
+// ==========================================
 export const getDoctors = () => apiClient.get("/doctors");
 export const getDoctorById = (id) => apiClient.get(`/doctors/${id}`);
+
+// ==========================================
+// Appointments CRUD Endpoints
+// ==========================================
+
+// Read (All): GET /appointments
+export const getAppointments = () => apiClient.get("/appointments");
+
+// Read (Single): GET /appointments/:id
+export const getAppointmentById = (id) => apiClient.get(`/appointments/${id}`);
+
+// Create: POST /appointments
 export const createAppointment = (appointmentData) =>
   apiClient.post("/appointments", appointmentData);
-export const getAppointments = () => apiClient.get("/appointments");
-export const updateAppointment = (id, data) =>
-  apiClient.patch(`/appointments/${id}`, data);
+
+// Update: PATCH /appointments/:id (or PUT)
+export const updateAppointment = (id, updatedData) =>
+  apiClient.patch(`/appointments/${id}`, updatedData);
+
+// Delete: DELETE /appointments/:id
 export const deleteAppointment = (id) =>
   apiClient.delete(`/appointments/${id}`);
 

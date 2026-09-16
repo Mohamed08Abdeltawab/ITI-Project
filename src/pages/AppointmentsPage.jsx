@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router";
 import {
   Box,
@@ -6,8 +6,10 @@ import {
   Typography,
   Card,
   CardContent,
+  Avatar,
   Chip,
   Button,
+  IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -17,6 +19,8 @@ import {
   Alert,
   Snackbar,
   Skeleton,
+  CircularProgress,
+  Tooltip,
 } from "@mui/material";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
@@ -28,13 +32,19 @@ import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import EventBusyRoundedIcon from "@mui/icons-material/EventBusyRounded";
+import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
+import MedicalServicesRoundedIcon from "@mui/icons-material/MedicalServicesRounded";
+import NotesRoundedIcon from "@mui/icons-material/NotesRounded";
+
 import {
   getAppointments,
+  getDoctors,
   updateAppointment,
   deleteAppointment,
 } from "../services/api";
 
-const RESCHEDULE_SLOTS = [
+const DEFAULT_SLOTS = [
   "09:00 AM",
   "10:30 AM",
   "11:30 AM",
@@ -44,28 +54,34 @@ const RESCHEDULE_SLOTS = [
   "05:00 PM",
 ];
 
+const STATUS_TABS = ["Upcoming", "Completed", "Cancelled", "All"];
+
 export default function AppointmentsPage() {
   const navigate = useNavigate();
 
+  // Data state
   const [appointments, setAppointments] = useState([]);
+  const [doctorsMap, setDoctorsMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [statusFilter, setStatusFilter] = useState("All");
 
-  // Reschedule Modal state
+  // Active status filter tab: "Upcoming", "Completed", "Cancelled", or "All"
+  const [statusFilter, setStatusFilter] = useState("Upcoming");
+
+  // Reschedule / Edit Modal state
   const [rescheduleDialogOpen, setRescheduleDialogOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
-  const [rescheduleDate, setRescheduleDate] = useState("");
-  const [rescheduleSlot, setRescheduleSlot] = useState("");
-  const [rescheduleNotes, setRescheduleNotes] = useState("");
+  const [editDate, setEditDate] = useState("");
+  const [editSlot, setEditSlot] = useState("");
+  const [editNotes, setEditNotes] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // Cancel Confirmation Dialog state
+  // Cancel Confirmation Modal state
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [appointmentToCancel, setAppointmentToCancel] = useState(null);
   const [isCancelling, setIsCancelling] = useState(false);
 
-  // Snackbar Notification state
+  // Toast / Feedback Snackbar state
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -74,61 +90,119 @@ export default function AppointmentsPage() {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const fetchAppointmentsList = () => {
-    getAppointments()
-      .then((res) => {
-        setAppointments(Array.isArray(res.data) ? res.data : []);
+  // Fetch appointments and doctors list to enrich appointments with avatars & specialties
+  const fetchAppointments = useCallback(() => {
+    let isMounted = true;
+    Promise.all([getAppointments(), getDoctors().catch(() => ({ data: [] }))])
+      .then(([appointmentsRes, doctorsRes]) => {
+        if (!isMounted) return;
+        const appData = Array.isArray(appointmentsRes.data)
+          ? appointmentsRes.data
+          : [];
+        const docData = Array.isArray(doctorsRes.data) ? doctorsRes.data : [];
+
+        const docMap = {};
+        docData.forEach((doc) => {
+          if (doc && doc.id) {
+            docMap[String(doc.id)] = doc;
+          }
+        });
+
+        setAppointments(appData);
+        setDoctorsMap(docMap);
         setError(null);
       })
       .catch((err) => {
-        setError(err.message || "Failed to load appointments list.");
+        if (!isMounted) return;
+        console.error("Error fetching appointments:", err);
+        setError(
+          err.response?.data?.message ||
+            err.message ||
+            "Failed to load appointments. Please ensure json-server is running on port 5000.",
+        );
       })
       .finally(() => {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       });
-  };
 
-  useEffect(() => {
-    fetchAppointmentsList();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  // Filter appointments based on active tab
-  const filteredAppointments = appointments.filter((app) => {
-    if (statusFilter === "All") return true;
-    return app.status === statusFilter;
-  });
+  useEffect(() => {
+    return fetchAppointments();
+  }, [fetchAppointments]);
 
-  // Open Reschedule modal
+  const handleRefresh = () => {
+    setLoading(true);
+    fetchAppointments();
+  };
+
+  // Tab counts
+  const counts = useMemo(() => {
+    return {
+      Upcoming: appointments.filter((a) => a.status === "Upcoming").length,
+      Completed: appointments.filter((a) => a.status === "Completed").length,
+      Cancelled: appointments.filter((a) => a.status === "Cancelled").length,
+      All: appointments.length,
+    };
+  }, [appointments]);
+
+  // Filtered appointments by selected status tab
+  const filteredAppointments = useMemo(() => {
+    if (statusFilter === "All") return appointments;
+    return appointments.filter((a) => a.status === statusFilter);
+  }, [appointments, statusFilter]);
+
+  // Helper to open the Reschedule modal
   const handleOpenReschedule = (app) => {
     setSelectedAppointment(app);
-    setRescheduleDate(app.date || today);
-    setRescheduleSlot(app.timeSlot || RESCHEDULE_SLOTS[0]);
-    setRescheduleNotes(app.notes || "");
+    setEditDate(app.date || today);
+    setEditSlot(app.timeSlot || DEFAULT_SLOTS[0]);
+    setEditNotes(app.notes || "");
     setRescheduleDialogOpen(true);
   };
 
-  // Submit Reschedule update
-  const handleConfirmReschedule = async () => {
+  // Submit Reschedule (Update)
+  const handleConfirmReschedule = async (e) => {
+    if (e) e.preventDefault();
     if (!selectedAppointment) return;
+
     setIsUpdating(true);
+    const updatedPayload = {
+      date: editDate,
+      timeSlot: editSlot,
+      notes: editNotes.trim(),
+      status: "Upcoming", // Keep or set to upcoming on reschedule
+    };
+
     try {
-      await updateAppointment(selectedAppointment.id, {
-        date: rescheduleDate,
-        timeSlot: rescheduleSlot,
-        notes: rescheduleNotes,
-        status: "Upcoming",
-      });
+      const res = await updateAppointment(
+        selectedAppointment.id,
+        updatedPayload,
+      );
+
+      // Update local state directly without full page reload
+      setAppointments((prev) =>
+        prev.map((item) =>
+          item.id === selectedAppointment.id
+            ? { ...item, ...(res.data || updatedPayload) }
+            : item,
+        ),
+      );
+
       setSnackbar({
         open: true,
         message: "Appointment rescheduled successfully!",
         severity: "success",
       });
       setRescheduleDialogOpen(false);
-      fetchAppointmentsList();
-    } catch {
+    } catch (err) {
+      console.error("Reschedule failed:", err);
       setSnackbar({
         open: true,
-        message: "Failed to reschedule appointment. Please try again.",
+        message: "Failed to update appointment. Please try again.",
         severity: "error",
       });
     } finally {
@@ -136,61 +210,56 @@ export default function AppointmentsPage() {
     }
   };
 
-  // Open Cancel dialog
+  // Open Cancel Dialog
   const handleOpenCancel = (app) => {
     setAppointmentToCancel(app);
     setCancelDialogOpen(true);
   };
 
-  // Confirm Cancel
+  // Confirm Delete / Cancellation
   const handleConfirmCancel = async () => {
     if (!appointmentToCancel) return;
+
     setIsCancelling(true);
     try {
-      // Option: update status to Cancelled rather than hard delete, or hard delete
-      await updateAppointment(appointmentToCancel.id, {
-        status: "Cancelled",
-      });
+      // Execute DELETE request via API layer
+      await deleteAppointment(appointmentToCancel.id);
+
+      // Immediately remove item from local UI state
+      setAppointments((prev) =>
+        prev.filter((item) => item.id !== appointmentToCancel.id),
+      );
+
       setSnackbar({
         open: true,
-        message: "Appointment cancelled successfully.",
+        message: "Appointment cancelled and removed from your schedule.",
         severity: "info",
       });
       setCancelDialogOpen(false);
-      fetchAppointmentsList();
-    } catch {
-      // Fallback if patch fails, try delete
-      try {
-        await deleteAppointment(appointmentToCancel.id);
-        setSnackbar({
-          open: true,
-          message: "Appointment removed.",
-          severity: "info",
-        });
-        setCancelDialogOpen(false);
-        fetchAppointmentsList();
-      } catch {
-        setSnackbar({
-          open: true,
-          message: "Could not cancel appointment. Please try again.",
-          severity: "error",
-        });
-      }
+    } catch (err) {
+      console.error("Delete failed:", err);
+      setSnackbar({
+        open: true,
+        message: "Failed to cancel appointment. Please try again.",
+        severity: "error",
+      });
     } finally {
       setIsCancelling(false);
     }
   };
 
-  const statusCounts = {
-    All: appointments.length,
-    Upcoming: appointments.filter((a) => a.status === "Upcoming").length,
-    Completed: appointments.filter((a) => a.status === "Completed").length,
-    Cancelled: appointments.filter((a) => a.status === "Cancelled").length,
-  };
+  // Get available slots for the selected appointment doctor
+  const currentDoctor = selectedAppointment
+    ? doctorsMap[String(selectedAppointment.doctorId)]
+    : null;
+  const availableSlots =
+    currentDoctor?.slots && currentDoctor.slots.length > 0
+      ? currentDoctor.slots
+      : DEFAULT_SLOTS;
 
   return (
-    <Box className="space-y-6 max-w-5xl mx-auto py-2">
-      {/* Header Banner */}
+    <Box className="space-y-6 max-w-5xl mx-auto py-2 px-3 sm:px-4">
+      {/* Top Header Banner */}
       <Stack
         direction={{ xs: "column", sm: "row" }}
         className="items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800"
@@ -207,8 +276,8 @@ export default function AppointmentsPage() {
             variant="body2"
             className="text-slate-500 dark:text-slate-400 mt-1"
           >
-            Manage your booked medical visits, reschedule dates, or view
-            consultation details.
+            Manage upcoming consultations, reschedule your dates, or review past
+            visit records.
           </Typography>
         </Box>
 
@@ -216,35 +285,68 @@ export default function AppointmentsPage() {
           variant="contained"
           startIcon={<AddRoundedIcon />}
           onClick={() => navigate("/doctors")}
-          className="bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl px-4 py-2.5 shadow-xs"
+          className="bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl px-4 py-2.5 shadow-sm capitalize transition-all"
         >
-          Book New Visit
+          Book New Appointment
         </Button>
       </Stack>
 
-      {/* Filter Tabs */}
-      <Stack direction="row" spacing={1.5} className="overflow-x-auto pb-1">
-        {["All", "Upcoming", "Completed", "Cancelled"].map((status) => {
-          const isActive = statusFilter === status;
-          return (
-            <Chip
-              key={status}
-              label={`${status} (${statusCounts[status] || 0})`}
-              clickable
-              onClick={() => setStatusFilter(status)}
-              className={`rounded-xl text-xs sm:text-sm font-semibold transition-all px-1 py-1 ${
-                isActive
-                  ? "bg-teal-600 text-white shadow-xs"
-                  : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/60"
-              }`}
+      {/* Filter Tabs & Refresh Action */}
+      <Stack
+        direction="row"
+        className="items-center justify-between gap-3 overflow-x-auto pb-1"
+      >
+        <Stack direction="row" spacing={1} className="shrink-0">
+          {STATUS_TABS.map((status) => {
+            const isActive = statusFilter === status;
+            const count = counts[status] ?? 0;
+            return (
+              <Chip
+                key={status}
+                label={`${status} (${count})`}
+                clickable
+                onClick={() => setStatusFilter(status)}
+                className={`rounded-xl text-xs sm:text-sm font-semibold transition-all px-1.5 py-1 ${
+                  isActive
+                    ? "bg-teal-600 text-white shadow-xs font-bold"
+                    : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/60"
+                }`}
+              />
+            );
+          })}
+        </Stack>
+
+        <Tooltip title="Refresh appointments" arrow>
+          <IconButton
+            size="small"
+            onClick={handleRefresh}
+            disabled={loading}
+            className="rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+          >
+            <RefreshRoundedIcon
+              fontSize="small"
+              className={loading ? "animate-spin text-teal-600" : ""}
             />
-          );
-        })}
+          </IconButton>
+        </Tooltip>
       </Stack>
 
-      {/* Error state */}
+      {/* Error Feedback Alert */}
       {error && (
-        <Alert severity="error" className="rounded-2xl">
+        <Alert
+          severity="error"
+          action={
+            <Button
+              color="inherit"
+              size="small"
+              onClick={handleRefresh}
+              startIcon={<RefreshRoundedIcon fontSize="small" />}
+            >
+              Retry
+            </Button>
+          }
+          className="rounded-2xl border border-red-200 dark:border-red-900/50"
+        >
           {error}
         </Alert>
       )}
@@ -258,49 +360,77 @@ export default function AppointmentsPage() {
               elevation={0}
               className="border border-slate-200/80 dark:border-slate-700/80 bg-white dark:bg-slate-800 rounded-2xl p-6"
             >
-              <CardContent className="p-0 space-y-3">
-                <Skeleton variant="text" width="40%" height={28} />
-                <Skeleton variant="text" width="60%" height={20} />
-                <Skeleton
-                  variant="rectangular"
-                  height={50}
-                  className="rounded-xl"
-                />
+              <CardContent className="p-0">
+                <Box className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <Stack direction="row" spacing={2.5} className="items-center">
+                    <Skeleton
+                      variant="circular"
+                      width={64}
+                      height={64}
+                      className="shrink-0"
+                    />
+                    <Box className="space-y-2 min-w-[200px]">
+                      <Skeleton variant="text" width="70%" height={26} />
+                      <Skeleton variant="text" width="45%" height={18} />
+                      <Skeleton variant="text" width="90%" height={18} />
+                    </Box>
+                  </Stack>
+                  <Stack direction="row" spacing={1.5} className="self-end">
+                    <Skeleton
+                      variant="rectangular"
+                      width={100}
+                      height={36}
+                      className="rounded-xl"
+                    />
+                    <Skeleton
+                      variant="rectangular"
+                      width={80}
+                      height={36}
+                      className="rounded-xl"
+                    />
+                  </Stack>
+                </Box>
               </CardContent>
             </Card>
           ))}
         </Stack>
       )}
 
-      {/* Empty State */}
+      {/* Empty State Illustration */}
       {!loading && !error && filteredAppointments.length === 0 && (
         <Card
           elevation={0}
-          className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-10 sm:p-14 text-center max-w-lg mx-auto my-8"
+          className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-10 sm:p-14 text-center max-w-lg mx-auto my-8 shadow-xs"
         >
-          <Box className="w-16 h-16 rounded-2xl bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 flex items-center justify-center mx-auto mb-4">
-            <CalendarMonthRoundedIcon sx={{ fontSize: 34 }} />
+          <Box className="w-18 h-18 rounded-2xl bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 flex items-center justify-center mx-auto mb-4 border border-teal-100 dark:border-teal-900/60 shadow-inner">
+            <EventBusyRoundedIcon sx={{ fontSize: 38 }} />
           </Box>
           <Typography
             variant="h6"
-            className="font-bold text-slate-800 dark:text-white"
+            className="font-extrabold text-slate-900 dark:text-white"
           >
-            No appointments found
+            No {statusFilter !== "All" ? statusFilter.toLowerCase() : ""}{" "}
+            appointments
           </Typography>
           <Typography
             variant="body2"
-            className="text-slate-500 dark:text-slate-400 text-sm mt-1.5 mb-6"
+            className="text-slate-500 dark:text-slate-400 text-sm mt-1.5 mb-6 leading-relaxed"
           >
-            {statusFilter === "All"
-              ? "You don't have any scheduled appointments yet. Find a trusted doctor to book your visit."
-              : `You have no ${statusFilter.toLowerCase()} appointments at this time.`}
+            {statusFilter === "Upcoming"
+              ? "You do not have any upcoming visits booked. Check our top verified specialists and schedule an appointment in minutes."
+              : statusFilter === "Completed"
+                ? "You do not have any completed consultations in your history yet."
+                : statusFilter === "Cancelled"
+                  ? "No cancelled appointments recorded in your account."
+                  : "No appointments match your filter. Book your first visit today."}
           </Typography>
           <Button
             variant="contained"
             onClick={() => navigate("/doctors")}
-            className="bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl px-6 py-2.5 shadow-xs"
+            startIcon={<MedicalServicesRoundedIcon />}
+            className="bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl px-6 py-2.5 shadow-sm capitalize"
           >
-            Browse Specialists
+            Find a Doctor
           </Button>
         </Card>
       )}
@@ -311,150 +441,200 @@ export default function AppointmentsPage() {
           {filteredAppointments.map((app) => {
             const isCancelled = app.status === "Cancelled";
             const isCompleted = app.status === "Completed";
+            const isUpcoming =
+              app.status === "Upcoming" || (!isCancelled && !isCompleted);
+
+            // Enrich doctor info via doctorsMap if available
+            const docInfo = doctorsMap[String(app.doctorId)];
+            const doctorAvatar = app.doctorAvatar || docInfo?.avatar || "";
+            const doctorSpecialty =
+              app.doctorSpecialty ||
+              docInfo?.specialty ||
+              "General Practitioner";
+
             return (
               <Card
                 key={app.id}
                 elevation={0}
-                className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/90 rounded-2xl p-5 sm:p-6 hover:shadow-md transition-shadow"
+                className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/90 hover:border-teal-400/60 dark:hover:border-teal-500/60 rounded-2xl p-5 sm:p-6 transition-all duration-200 shadow-xs hover:shadow-md group"
               >
                 <CardContent className="p-0">
-                  <Box className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                    {/* Main Info */}
-                    <Box className="space-y-2">
-                      <Stack
-                        direction="row"
-                        className="items-center gap-2.5 flex-wrap"
+                  <Box className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+                    {/* Left: Doctor Profile & Appointment Metadata */}
+                    <Box className="flex items-start gap-4">
+                      {/* Doctor Avatar */}
+                      <Avatar
+                        src={doctorAvatar}
+                        alt={app.doctorName || "Doctor"}
+                        className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl border-2 border-teal-500/20 shadow-xs shrink-0 bg-teal-50 dark:bg-slate-700 text-teal-700 font-bold"
                       >
-                        <Typography
-                          variant="h6"
-                          className="font-bold text-slate-900 dark:text-white leading-tight"
+                        {app.doctorName
+                          ? app.doctorName
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")
+                              .slice(0, 2)
+                          : "DR"}
+                      </Avatar>
+
+                      {/* Doctor & Patient Info */}
+                      <Box className="space-y-1.5 min-w-0">
+                        <Stack
+                          direction="row"
+                          className="items-center gap-2.5 flex-wrap"
                         >
-                          {app.doctorName || "Specialist Consultation"}
+                          <Typography
+                            variant="h6"
+                            className="font-extrabold text-slate-900 dark:text-white text-base sm:text-lg leading-tight"
+                          >
+                            {app.doctorName || "Specialist Consultation"}
+                          </Typography>
+
+                          {/* Status Badge */}
+                          <Chip
+                            label={app.status || "Upcoming"}
+                            size="small"
+                            className={`font-bold text-xs rounded-lg px-0.5 ${
+                              isCancelled
+                                ? "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-900/60"
+                                : isCompleted
+                                  ? "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60"
+                                  : "bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60"
+                            }`}
+                          />
+
+                          {/* Consultation Type Badge */}
+                          <Chip
+                            icon={
+                              app.type === "Video Consultation" ? (
+                                <VideocamRoundedIcon sx={{ fontSize: 16 }} />
+                              ) : (
+                                <LocalHospitalRoundedIcon
+                                  sx={{ fontSize: 16 }}
+                                />
+                              )
+                            }
+                            label={app.type || "In-Clinic"}
+                            size="small"
+                            className="bg-slate-100 dark:bg-slate-700/80 text-slate-700 dark:text-slate-300 font-semibold text-xs rounded-lg"
+                          />
+                        </Stack>
+
+                        <Typography
+                          variant="body2"
+                          className="text-teal-600 dark:text-teal-400 font-semibold text-xs sm:text-sm"
+                        >
+                          {doctorSpecialty}
                         </Typography>
 
-                        {/* Status Chip */}
-                        <Chip
-                          label={app.status || "Upcoming"}
-                          size="small"
-                          className={`font-bold text-xs rounded-lg ${
-                            isCancelled
-                              ? "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-900/60"
-                              : isCompleted
-                                ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60"
-                                : "bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60"
-                          }`}
-                        />
-
-                        {/* Consultation Type Chip */}
-                        <Chip
-                          icon={
-                            app.type === "Video Consultation" ? (
-                              <VideocamRoundedIcon sx={{ fontSize: 16 }} />
-                            ) : (
-                              <LocalHospitalRoundedIcon sx={{ fontSize: 16 }} />
-                            )
-                          }
-                          label={app.type || "In-Clinic"}
-                          size="small"
-                          className="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs rounded-lg"
-                        />
-                      </Stack>
-
-                      {/* Patient & Date Meta */}
-                      <Stack
-                        direction={{ xs: "column", sm: "row" }}
-                        className="items-start sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 pt-1"
-                      >
-                        <Stack direction="row" className="items-center gap-1.5">
-                          <PersonRoundedIcon
-                            sx={{ fontSize: 16, color: "#0d9488" }}
-                          />
-                          <Typography
-                            variant="caption"
-                            className="text-slate-700 dark:text-slate-300 font-semibold text-xs"
-                          >
-                            {app.patientName}
-                          </Typography>
-                        </Stack>
-
-                        <Stack direction="row" className="items-center gap-1.5">
-                          <CalendarMonthRoundedIcon
-                            sx={{ fontSize: 16, color: "#0d9488" }}
-                          />
-                          <Typography
-                            variant="caption"
-                            className="text-slate-700 dark:text-slate-300 font-medium text-xs"
-                          >
-                            {app.date}
-                          </Typography>
-                        </Stack>
-
-                        <Stack direction="row" className="items-center gap-1.5">
-                          <AccessTimeRoundedIcon
-                            sx={{ fontSize: 16, color: "#0d9488" }}
-                          />
-                          <Typography
-                            variant="caption"
-                            className="text-slate-700 dark:text-slate-300 font-medium text-xs"
-                          >
-                            {app.timeSlot}
-                          </Typography>
-                        </Stack>
-                      </Stack>
-
-                      {/* Contact & Notes Snippet */}
-                      {(app.phone || app.email || app.notes) && (
-                        <Box className="pt-2 text-xs text-slate-500 dark:text-slate-400 space-y-1">
+                        {/* Date & Time Slot Meta Badges */}
+                        <Stack
+                          direction="row"
+                          className="items-center gap-3 sm:gap-4 text-xs text-slate-600 dark:text-slate-300 pt-1 flex-wrap"
+                        >
                           <Stack
                             direction="row"
-                            className="items-center gap-3 flex-wrap"
+                            className="items-center gap-1.5"
                           >
-                            {app.phone && (
-                              <Stack
-                                direction="row"
-                                className="items-center gap-1"
-                              >
-                                <PhoneOutlinedIcon sx={{ fontSize: 14 }} />
-                                <span>{app.phone}</span>
-                              </Stack>
-                            )}
-                            {app.email && (
-                              <Stack
-                                direction="row"
-                                className="items-center gap-1"
-                              >
-                                <EmailOutlinedIcon sx={{ fontSize: 14 }} />
-                                <span>{app.email}</span>
-                              </Stack>
-                            )}
+                            <CalendarMonthRoundedIcon
+                              sx={{ fontSize: 16, color: "#0d9488" }}
+                            />
+                            <span className="font-medium text-slate-800 dark:text-slate-200">
+                              {app.date}
+                            </span>
                           </Stack>
-                          {app.notes && (
-                            <Typography
-                              variant="caption"
-                              className="text-slate-600 dark:text-slate-400 italic block mt-1 line-clamp-1"
+
+                          <Stack
+                            direction="row"
+                            className="items-center gap-1.5"
+                          >
+                            <AccessTimeRoundedIcon
+                              sx={{ fontSize: 16, color: "#0d9488" }}
+                            />
+                            <span className="font-medium text-slate-800 dark:text-slate-200">
+                              {app.timeSlot}
+                            </span>
+                          </Stack>
+
+                          {app.patientName && (
+                            <Stack
+                              direction="row"
+                              className="items-center gap-1.5"
                             >
-                              Note: {app.notes}
-                            </Typography>
+                              <PersonRoundedIcon
+                                sx={{ fontSize: 16, color: "#0d9488" }}
+                              />
+                              <span className="font-semibold text-slate-700 dark:text-slate-300">
+                                {app.patientName}
+                              </span>
+                            </Stack>
                           )}
-                        </Box>
-                      )}
+                        </Stack>
+
+                        {/* Patient Contacts & Notes */}
+                        {(app.phone || app.email || app.notes) && (
+                          <Box className="pt-2 text-xs text-slate-500 dark:text-slate-400 space-y-1">
+                            <Stack
+                              direction="row"
+                              className="items-center gap-3 flex-wrap"
+                            >
+                              {app.phone && (
+                                <Stack
+                                  direction="row"
+                                  className="items-center gap-1"
+                                >
+                                  <PhoneOutlinedIcon sx={{ fontSize: 14 }} />
+                                  <span>{app.phone}</span>
+                                </Stack>
+                              )}
+                              {app.email && (
+                                <Stack
+                                  direction="row"
+                                  className="items-center gap-1"
+                                >
+                                  <EmailOutlinedIcon sx={{ fontSize: 14 }} />
+                                  <span>{app.email}</span>
+                                </Stack>
+                              )}
+                            </Stack>
+
+                            {app.notes && (
+                              <Stack
+                                direction="row"
+                                className="items-start gap-1 pt-0.5"
+                              >
+                                <NotesRoundedIcon
+                                  sx={{
+                                    fontSize: 14,
+                                    mt: 0.2,
+                                    color: "#94a3b8",
+                                  }}
+                                />
+                                <span className="italic text-slate-600 dark:text-slate-400 line-clamp-2">
+                                  {app.notes}
+                                </span>
+                              </Stack>
+                            )}
+                          </Box>
+                        )}
+                      </Box>
                     </Box>
 
-                    {/* Action Buttons */}
-                    {!isCancelled && !isCompleted && (
+                    {/* Right: Actions for active appointments */}
+                    {isUpcoming && (
                       <Stack
-                        direction="row"
+                        direction={{ xs: "row", sm: "row" }}
                         spacing={1.5}
-                        className="self-end lg:self-center shrink-0"
+                        className="self-end lg:self-center shrink-0 pt-2 lg:pt-0"
                       >
                         <Button
                           variant="outlined"
                           size="small"
                           startIcon={<EditCalendarRoundedIcon />}
                           onClick={() => handleOpenReschedule(app)}
-                          className="rounded-xl border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold px-3 py-1.5"
+                          className="rounded-xl border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-teal-50 dark:hover:bg-teal-950/40 hover:border-teal-300 hover:text-teal-700 dark:hover:text-teal-300 text-xs font-bold px-3.5 py-2 capitalize transition-all"
                         >
-                          Reschedule
+                          Reschedule / Edit
                         </Button>
 
                         <Button
@@ -463,7 +643,7 @@ export default function AppointmentsPage() {
                           color="error"
                           startIcon={<CancelRoundedIcon />}
                           onClick={() => handleOpenCancel(app)}
-                          className="rounded-xl border-red-200 dark:border-red-900/60 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 text-xs font-semibold px-3 py-1.5"
+                          className="rounded-xl border-rose-200 dark:border-rose-900/60 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-xs font-bold px-3.5 py-2 capitalize transition-all"
                         >
                           Cancel
                         </Button>
@@ -477,164 +657,235 @@ export default function AppointmentsPage() {
         </Stack>
       )}
 
-      {/* Reschedule Dialog Modal */}
+      {/* ========================================================= */}
+      {/* Reschedule / Edit Modal Dialog */}
+      {/* ========================================================= */}
       <Dialog
         open={rescheduleDialogOpen}
         onClose={() => !isUpdating && setRescheduleDialogOpen(false)}
         maxWidth="sm"
         fullWidth
         PaperProps={{
-          sx: { borderRadius: "20px", p: 1, bgcolor: "background.paper" },
+          sx: {
+            borderRadius: "24px",
+            p: { xs: 1, sm: 1.5 },
+            bgcolor: "background.paper",
+            boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.2)",
+          },
         }}
       >
-        <DialogTitle className="font-extrabold text-slate-900 dark:text-white pb-2">
-          Reschedule Appointment
+        <DialogTitle className="font-extrabold text-slate-900 dark:text-white pb-2 flex items-center justify-between">
+          <span>Reschedule / Edit Appointment</span>
+          <Chip
+            label={selectedAppointment?.type || "In-Clinic"}
+            size="small"
+            className="bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300 font-bold text-xs"
+          />
         </DialogTitle>
-        <DialogContent className="space-y-4 pt-3">
-          <DialogContentText className="text-sm text-slate-500 dark:text-slate-400" sx={{ mb: 2 }}>
-            Change your date and preferred consultation time slot for{" "}
-            <span className="font-bold text-slate-800 dark:text-slate-200">
-              {selectedAppointment?.doctorName}
-            </span>
-            .
-          </DialogContentText>
 
-          <TextField
-            fullWidth
-            type="date"
-            label="New Appointment Date"
-            size="small"
-            slotProps={{
-              inputLabel: { shrink: true },
-              htmlInput: { min: today },
-            }}
-            value={rescheduleDate}
-            onChange={(e) => setRescheduleDate(e.target.value)}
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                borderRadius: "12px",
-                bgcolor: "background.paper",
-              },
-            }}
-          />
+        <form onSubmit={handleConfirmReschedule}>
+          <DialogContent className="space-y-4 pt-1">
+            <DialogContentText className="text-sm text-slate-500 dark:text-slate-400 mb-3">
+              Modify consultation timing with{" "}
+              <span className="font-bold text-slate-900 dark:text-slate-100">
+                {selectedAppointment?.doctorName}
+              </span>
+              . Changes will take effect immediately.
+            </DialogContentText>
 
-          <Box>
-            <Typography
-              variant="caption"
-              className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2"
-            >
-              Select New Time Slot *
-            </Typography>
-            <Box className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {RESCHEDULE_SLOTS.map((slot) => {
-                const isSelected = rescheduleSlot === slot;
-                return (
-                  <Button
-                    key={slot}
-                    variant={isSelected ? "contained" : "outlined"}
-                    size="small"
-                    onClick={() => setRescheduleSlot(slot)}
-                    className={`rounded-xl text-xs font-semibold py-1.5 ${
-                      isSelected
-                        ? "bg-teal-600 text-white shadow-xs"
-                        : "border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
-                    }`}
-                  >
-                    {slot}
-                  </Button>
-                );
-              })}
+            {/* Date Input */}
+            <Box>
+              <Typography
+                variant="caption"
+                className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5"
+              >
+                New Consultation Date *
+              </Typography>
+              <TextField
+                fullWidth
+                type="date"
+                size="small"
+                value={editDate}
+                onChange={(e) => setEditDate(e.target.value)}
+                slotProps={{
+                  htmlInput: { min: today },
+                }}
+                required
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "14px",
+                  },
+                }}
+              />
             </Box>
-          </Box>
 
-          <TextField
-            fullWidth
-            multiline
-            rows={2}
-            label="Update Notes (Optional)"
-            size="small"
-            value={rescheduleNotes}
-            onChange={(e) => setRescheduleNotes(e.target.value)}
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                borderRadius: "12px",
-                bgcolor: "background.paper",
-              },
-            }}
-          />
-        </DialogContent>
-        <DialogActions className="px-6 pb-4 pt-2">
-          <Button
-            onClick={() => setRescheduleDialogOpen(false)}
-            disabled={isUpdating}
-            className="text-slate-600 dark:text-slate-400 font-semibold"
-          >
-            Close
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleConfirmReschedule}
-            disabled={isUpdating || !rescheduleDate || !rescheduleSlot}
-            className="bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl px-5"
-          >
-            {isUpdating ? "Saving..." : "Confirm Reschedule"}
-          </Button>
-        </DialogActions>
+            {/* Time Slot Selection */}
+            <Box>
+              <Typography
+                variant="caption"
+                className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2"
+              >
+                Select Consultation Time Slot *
+              </Typography>
+              <Box className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {availableSlots.map((slot) => {
+                  const isSelected = editSlot === slot;
+                  return (
+                    <Button
+                      key={slot}
+                      type="button"
+                      variant={isSelected ? "contained" : "outlined"}
+                      size="small"
+                      onClick={() => setEditSlot(slot)}
+                      className={`rounded-xl text-xs font-bold py-2 capitalize transition-all ${
+                        isSelected
+                          ? "bg-teal-600 text-white shadow-xs"
+                          : "border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                      }`}
+                    >
+                      {slot}
+                    </Button>
+                  );
+                })}
+              </Box>
+            </Box>
+
+            {/* Patient Notes */}
+            <Box>
+              <Typography
+                variant="caption"
+                className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5"
+              >
+                Patient Notes & Instructions (Optional)
+              </Typography>
+              <TextField
+                fullWidth
+                multiline
+                rows={3}
+                placeholder="Mention any symptoms or questions for the doctor..."
+                size="small"
+                value={editNotes}
+                onChange={(e) => setEditNotes(e.target.value)}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "14px",
+                  },
+                }}
+              />
+            </Box>
+          </DialogContent>
+
+          <DialogActions className="px-6 pb-4 pt-3 gap-2">
+            <Button
+              type="button"
+              onClick={() => setRescheduleDialogOpen(false)}
+              disabled={isUpdating}
+              className="text-slate-600 dark:text-slate-400 font-semibold rounded-xl capitalize"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={isUpdating || !editDate || !editSlot}
+              startIcon={
+                isUpdating ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : (
+                  <EditCalendarRoundedIcon />
+                )
+              }
+              className="bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl px-5 py-2 shadow-xs capitalize"
+            >
+              {isUpdating ? "Saving Changes..." : "Save Changes"}
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
 
-      {/* Cancel Confirmation Dialog */}
+      {/* ========================================================= */}
+      {/* Cancel Confirmation Dialog Modal */}
+      {/* ========================================================= */}
       <Dialog
         open={cancelDialogOpen}
         onClose={() => !isCancelling && setCancelDialogOpen(false)}
         maxWidth="xs"
         fullWidth
         PaperProps={{
-          sx: { borderRadius: "20px", p: 1, bgcolor: "background.paper" },
+          sx: {
+            borderRadius: "24px",
+            p: 1.5,
+            bgcolor: "background.paper",
+            boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.2)",
+          },
         }}
       >
-        <DialogTitle className="font-extrabold text-slate-900 dark:text-white pb-1">
-          Cancel Appointment?
+        <DialogTitle className="font-extrabold text-slate-900 dark:text-white pb-1 flex items-center gap-2">
+          <CancelRoundedIcon className="text-rose-600" />
+          <span>Cancel Appointment?</span>
         </DialogTitle>
         <DialogContent>
-          <DialogContentText className="text-sm text-slate-600 dark:text-slate-300">
-            Are you sure you want to cancel your consultation with{" "}
+          <DialogContentText className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed pt-1">
+            Are you sure you want to cancel your appointment with{" "}
             <span className="font-bold text-slate-900 dark:text-white">
               {appointmentToCancel?.doctorName}
             </span>{" "}
-            on {appointmentToCancel?.date} at {appointmentToCancel?.timeSlot}?
+            scheduled on{" "}
+            <span className="font-bold text-teal-600 dark:text-teal-400">
+              {appointmentToCancel?.date}
+            </span>{" "}
+            at{" "}
+            <span className="font-bold text-teal-600 dark:text-teal-400">
+              {appointmentToCancel?.timeSlot}
+            </span>
+            ?
           </DialogContentText>
+          <Box className="mt-3 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/40 text-xs text-rose-700 dark:text-rose-300">
+            This action will permanently delete this booking from your active
+            schedule.
+          </Box>
         </DialogContent>
-        <DialogActions className="px-6 pb-4">
+        <DialogActions className="px-6 pb-3 pt-2 gap-2">
           <Button
             onClick={() => setCancelDialogOpen(false)}
             disabled={isCancelling}
-            className="text-slate-600 dark:text-slate-400 font-semibold"
+            className="text-slate-600 dark:text-slate-400 font-semibold rounded-xl capitalize"
           >
-            Keep Appointment
+            Keep Visit
           </Button>
           <Button
             variant="contained"
             color="error"
             onClick={handleConfirmCancel}
             disabled={isCancelling}
-            className="bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl px-4"
+            startIcon={
+              isCancelling ? (
+                <CircularProgress size={16} color="inherit" />
+              ) : (
+                <CancelRoundedIcon />
+              )
+            }
+            className="bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl px-4 py-2 shadow-xs capitalize"
           >
             {isCancelling ? "Cancelling..." : "Yes, Cancel Visit"}
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Feedback Snackbar */}
+      {/* ========================================================= */}
+      {/* Feedback Toast / Snackbar */}
+      {/* ========================================================= */}
       <Snackbar
         open={snackbar.open}
-        autoHideDuration={3000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert
           severity={snackbar.severity}
           variant="filled"
-          className="rounded-xl font-semibold shadow-md text-sm"
+          onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+          className="rounded-xl font-semibold shadow-lg text-sm"
           sx={{
             bgcolor:
               snackbar.severity === "success"
