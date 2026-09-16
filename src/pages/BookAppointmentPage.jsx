@@ -418,12 +418,14 @@ export default function BookAppointmentPage() {
                   variant="outlined"
                   size="small"
                   type="email"
-                  InputProps={{
-                    startAdornment: (
-                      <EmailOutlinedIcon
-                        sx={{ fontSize: 18, color: "#94a3b8", mr: 1 }}
-                      />
-                    ),
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <EmailOutlinedIcon
+                          sx={{ fontSize: 18, color: "#94a3b8", mr: 1 }}
+                        />
+                      ),
+                    },
                   }}
                   {...register("email", {
                     required: "Email address is required",
@@ -449,12 +451,14 @@ export default function BookAppointmentPage() {
                   variant="outlined"
                   size="small"
                   type="tel"
-                  InputProps={{
-                    startAdornment: (
-                      <PhoneOutlinedIcon
-                        sx={{ fontSize: 18, color: "#94a3b8", mr: 1 }}
-                      />
-                    ),
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <PhoneOutlinedIcon
+                          sx={{ fontSize: 18, color: "#94a3b8", mr: 1 }}
+                        />
+                      ),
+                    },
                   }}
                   {...register("phone", {
                     required: "Phone number is required",
@@ -596,8 +600,10 @@ export default function BookAppointmentPage() {
               type="date"
               label="Appointment Date"
               size="small"
-              InputLabelProps={{ shrink: true }}
-              inputProps={{ min: today }}
+              slotProps={{
+                inputLabel: { shrink: true },
+                htmlInput: { min: today },
+              }}
               {...register("date", {
                 required: "Appointment date is required",
               })}

@@ -429,11 +429,11 @@ export default function ProfilePage() {
           {/* App Preferences Section */}
           <Card
             elevation={0}
-            className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 rounded-3xl p-6 sm:p-7 shadow-xs"
+            className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 rounded-3xl p-7 sm:p-8 shadow-xs min-h-[300px] flex flex-col justify-between"
           >
             <Stack
               direction="row"
-              className="items-center justify-between gap-3 mb-4"
+              className="items-center justify-between gap-3 mb-4 sm:mb-5"
             >
               <Stack direction="row" className="items-center gap-2.5">
                 <Box className="w-9 h-9 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center">
@@ -483,7 +483,7 @@ export default function ProfilePage() {
               />
             </Stack>
 
-            <Box className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-150 dark:border-slate-700/80">
+            <Box className="p-5 sm:p-6 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-150 dark:border-slate-700/80 my-auto">
               <Stack
                 direction="row"
                 className="items-center justify-between gap-4"
@@ -530,7 +530,7 @@ export default function ProfilePage() {
 
             <Typography
               variant="caption"
-              className="text-slate-400 dark:text-slate-500 text-xs block mt-3 px-1"
+              className="text-slate-400 dark:text-slate-500 text-xs block mt-4 px-1"
             >
               ✓ Synchronized across Material UI v5, Tailwind CSS, and saved in
               localStorage.

@@ -504,8 +504,10 @@ export default function AppointmentsPage() {
             type="date"
             label="New Appointment Date"
             size="small"
-            InputLabelProps={{ shrink: true }}
-            inputProps={{ min: today }}
+            slotProps={{
+              inputLabel: { shrink: true },
+              htmlInput: { min: today },
+            }}
             value={rescheduleDate}
             onChange={(e) => setRescheduleDate(e.target.value)}
             sx={{

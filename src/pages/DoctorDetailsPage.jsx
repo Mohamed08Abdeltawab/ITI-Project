@@ -5,12 +5,11 @@ import {
   Stack,
   Typography,
   Card,
+  CardMedia,
   Chip,
   Button,
   Alert,
   Divider,
-  Avatar,
-  Badge,
   Skeleton,
 } from "@mui/material";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
@@ -64,17 +63,18 @@ export default function DoctorDetailsPage() {
         />
         <Card
           elevation={0}
-          className="border border-slate-200/90 rounded-3xl p-6 sm:p-8"
+          className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/90 rounded-3xl overflow-hidden shadow-xs"
         >
-          <Box className="grid grid-cols-1 md:grid-cols-12 gap-8">
-            <Box className="md:col-span-4">
+          <Box className="grid grid-cols-1 md:grid-cols-12">
+            <Box className="md:col-span-5 min-h-[340px] md:min-h-[480px]">
               <Skeleton
-                variant="rounded"
-                height={320}
-                className="rounded-2xl w-full"
+                variant="rectangular"
+                width="100%"
+                height="100%"
+                className="w-full h-full min-h-[340px]"
               />
             </Box>
-            <Box className="md:col-span-8 space-y-4">
+            <Box className="md:col-span-7 p-6 sm:p-8 md:p-10 space-y-4">
               <Skeleton variant="text" width="60%" height={40} />
               <Skeleton variant="text" width="30%" height={24} />
               <Skeleton
@@ -143,27 +143,44 @@ export default function DoctorDetailsPage() {
       >
         <Box className="grid grid-cols-1 md:grid-cols-12">
           {/* Doctor Portrait Column */}
-          <Box className="md:col-span-5 relative bg-slate-50 dark:bg-slate-850 flex items-center justify-center p-6 sm:p-8 border-b md:border-b-0 md:border-r border-slate-150 dark:border-slate-700">
-            <Box className="relative w-full max-w-sm aspect-square">
-              <Avatar
-                src={doctor.avatar}
-                alt={doctor.name}
-                variant="rounded"
-                className="w-full h-full rounded-2xl object-cover shadow-sm bg-slate-100 dark:bg-slate-700"
-                imgProps={{
-                  onError: (e) => {
-                    e.target.onerror = null;
-                    e.target.src =
-                      "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=600&h=600";
-                  },
-                }}
-              />
-              <Badge
-                overlap="circular"
-                className="absolute bottom-4 right-4 bg-emerald-500 text-white p-2 rounded-full shadow-md border-2 border-white dark:border-slate-800"
-              >
-                <VerifiedRoundedIcon sx={{ fontSize: 20 }} />
-              </Badge>
+          <Box className="md:col-span-5 relative bg-slate-100 dark:bg-slate-900 min-h-[340px] md:min-h-full border-b md:border-b-0 md:border-r border-slate-150 dark:border-slate-700 overflow-hidden">
+            <CardMedia
+              component="img"
+              image={doctor.avatar}
+              alt={doctor.name}
+              sx={{
+                width: "100%",
+                height: { xs: 340, sm: 400, md: "100%" },
+                position: { md: "absolute" },
+                inset: 0,
+                objectFit: "cover",
+                objectPosition: "top center",
+                display: "block",
+              }}
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src =
+                  "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=600&h=600";
+              }}
+            />
+            <Box
+              sx={{
+                position: "absolute",
+                bottom: 16,
+                right: 16,
+                bgcolor: "#10b981",
+                color: "#ffffff",
+                p: 1,
+                borderRadius: "50%",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                border: "2px solid #ffffff",
+                zIndex: 2,
+              }}
+            >
+              <VerifiedRoundedIcon sx={{ fontSize: 22 }} />
             </Box>
           </Box>
 
