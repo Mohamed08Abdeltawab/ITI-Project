@@ -86,14 +86,17 @@ export default function DoctorDetailsPage() {
           </Grid>
           <Grid item xs={12} md={8}>
             <CardContent sx={{ p: { xs: 3, md: 4 } }}>
-              <Stack direction="row" spacing={1} mb={2}>
+              <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
                 <Chip label={doctor.specialty} color="primary" />
                 <Chip
                   icon={<StarIcon sx={{ "&&": { color: "#faaf00" } }} />}
                   label={`${doctor.rating} Rating`}
                   variant="outlined"
                 />
-                <Chip label={`${doctor.experience} Experience`} variant="outlined" />
+                <Chip
+                  label={`${doctor.experience} Experience`}
+                  variant="outlined"
+                />
               </Stack>
 
               <Typography variant="h4" fontWeight="bold" gutterBottom>
@@ -109,7 +112,7 @@ export default function DoctorDetailsPage() {
               <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
                 Available Working Days:
               </Typography>
-              <Stack direction="row" spacing={1} mb={3}>
+              <Stack direction="row" spacing={1} sx={{ mb: 3 }}>
                 {doctor.workingDays.map((day) => (
                   <Chip key={day} label={day} size="small" />
                 ))}
@@ -118,9 +121,19 @@ export default function DoctorDetailsPage() {
               <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
                 Available Time Slots:
               </Typography>
-              <Stack direction="row" spacing={1} mb={4} flexWrap="wrap">
+              <Stack
+                direction="row"
+                spacing={1}
+                useFlexGap
+                sx={{ mb: 4, flexWrap: "wrap" }}
+              >
                 {doctor.slots.map((slot) => (
-                  <Chip key={slot} label={slot} color="info" variant="outlined" />
+                  <Chip
+                    key={slot}
+                    label={slot}
+                    color="info"
+                    variant="outlined"
+                  />
                 ))}
               </Stack>
 
