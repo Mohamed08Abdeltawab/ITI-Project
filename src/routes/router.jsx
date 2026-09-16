@@ -24,7 +24,7 @@ export const router = createBrowserRouter([
         element: <DoctorPage />,
       },
       {
-        path: "doctors/:is",
+        path: "doctors/:id",
         element: <DotorDetailsPage />,
       },
       {
