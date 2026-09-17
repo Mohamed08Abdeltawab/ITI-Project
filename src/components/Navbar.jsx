@@ -29,7 +29,7 @@ import LocalHospitalRoundedIcon from "@mui/icons-material/LocalHospitalRounded";
 import { useThemeStore } from "../stores/useThemeStore";
 
 export default function Navbar() {
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false); //state for mobile
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -40,6 +40,7 @@ export default function Navbar() {
 
   const isDoctorsActive =
     location.pathname === "/" || location.pathname.startsWith("/doctors");
+
   const isAppointmentsActive = location.pathname.startsWith("/appointments");
   const isProfileActive = location.pathname.startsWith("/profile");
 
@@ -70,8 +71,8 @@ export default function Navbar() {
   };
 
   const handleNavClick = (path) => {
-    navigate(path);
-    setMobileOpen(false);
+    navigate(path); //go to path
+    setMobileOpen(false); //then close this list
   };
 
   return (
@@ -103,20 +104,22 @@ export default function Navbar() {
           className="hidden md:flex items-center gap-2 lg:gap-3"
         >
           {navLinks.map((item) => {
+            //map in your navLinks object and show them
             const Icon = item.icon;
             return (
+              //create naveLink
               <NavLink
                 key={item.label}
                 to={item.path}
                 className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
-                  item.isActive
+                  item.isActive //if active give them a style as seleceted if not give static style
                     ? "bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 font-bold"
                     : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/60"
                 }`}
               >
                 <Icon sx={{ fontSize: 18 }} />
                 <span>{item.label}</span>
-                {item.badgeCount !== undefined && (
+                {item.badgeCount !== undefined && ( //show badge count beside label
                   <Chip
                     label={item.badgeCount}
                     size="small"

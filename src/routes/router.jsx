@@ -15,7 +15,7 @@ export const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       {
-        index: true,
+        index: true,//automatically reote to index  instead of write path = ""
         element: <DoctorsPage />,
       },
       {
