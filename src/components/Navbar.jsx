@@ -78,7 +78,7 @@ export default function Navbar() {
   return (
     <Box
       component="header"
-      className="sticky top-0 z-50 bg-white/95 dark:bg-[#0b1120]/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 transition-colors duration-200"
+      className="sticky top-0 z-50 bg-white/95 dark:bg-[#0b1120]/95 backdrop-blur-md border-b border-[var(--border-color)] transition-colors duration-200"
     >
       <Box className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
         {/* Brand Logo */}
@@ -92,7 +92,7 @@ export default function Navbar() {
           </Box>
           <Typography
             variant="h6"
-            className="font-extrabold tracking-tight text-slate-900 dark:text-white"
+            className="font-extrabold tracking-tight text-[var(--text-primary)]"
           >
             Care<span className="text-teal-600 dark:text-teal-400">Point</span>
           </Typography>
@@ -144,7 +144,7 @@ export default function Navbar() {
               onClick={toggleTheme}
               size="small"
               aria-label="Toggle dark mode"
-              className="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
+              className="w-9 h-9 rounded-xl border border-[var(--border-color)] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
               sx={{
                 transition:
                   "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease",
@@ -178,7 +178,7 @@ export default function Navbar() {
           <Divider
             orientation="vertical"
             flexItem
-            className="h-5 my-auto border-slate-200 dark:border-slate-700"
+            className="h-5 my-auto border-[var(--border-color)]"
           />
 
           <Tooltip title="User Profile" arrow>
@@ -199,7 +199,7 @@ export default function Navbar() {
             onClick={toggleTheme}
             size="small"
             aria-label="Toggle dark mode"
-            className="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
+            className="w-9 h-9 rounded-xl border border-[var(--border-color)] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
           >
             <Box
               component="span"
@@ -224,7 +224,7 @@ export default function Navbar() {
             onClick={handleDrawerToggle}
             size="small"
             aria-label="Open navigation menu"
-            className="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800"
+            className="w-9 h-9 rounded-xl border border-[var(--border-color)] text-[var(--text-primary)] hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             <MenuRoundedIcon sx={{ fontSize: 22 }} />
           </IconButton>
@@ -241,9 +241,9 @@ export default function Navbar() {
           sx: {
             width: { xs: "82vw", sm: 340 },
             maxWidth: 360,
-            bgcolor: isDarkMode ? "#1e293b" : "#ffffff",
-            color: isDarkMode ? "#f8fafc" : "#0f172a",
-            borderLeft: isDarkMode ? "1px solid #334155" : "1px solid #f1f5f9",
+            bgcolor: "var(--bg-secondary)",
+            color: "var(--text-primary)",
+            borderLeft: "1px solid var(--border-color)",
             boxShadow: isDarkMode
               ? "-8px 0 32px rgba(0, 0, 0, 0.4)"
               : "-8px 0 32px rgba(15, 23, 42, 0.08)",
@@ -255,7 +255,7 @@ export default function Navbar() {
       >
         <Box className="flex flex-col flex-grow">
           {/* Drawer Header */}
-          <Box className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-800">
+          <Box className="flex items-center justify-between px-5 py-4 border-b border-[var(--border-color)]">
             <NavLink
               to="/"
               className="flex items-center gap-2.5 text-decoration-none"
@@ -266,7 +266,7 @@ export default function Navbar() {
               </Box>
               <Typography
                 variant="subtitle1"
-                className="font-bold tracking-tight text-slate-900 dark:text-white"
+                className="font-bold tracking-tight text-[var(--text-primary)]"
               >
                 Care
                 <span className="text-teal-600 dark:text-teal-400">Point</span>
@@ -277,7 +277,7 @@ export default function Navbar() {
               onClick={handleDrawerToggle}
               size="small"
               aria-label="Close navigation menu"
-              className="text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800"
+              className="text-slate-500 dark:text-slate-400 border border-[var(--border-color)] rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800"
             >
               <CloseRoundedIcon sx={{ fontSize: 20 }} />
             </IconButton>
@@ -337,22 +337,22 @@ export default function Navbar() {
         </Box>
 
         {/* Drawer Footer Actions */}
-        <Box className="p-4 bg-slate-50/70 dark:bg-slate-900/60 border-t border-slate-100 dark:border-slate-800">
+        <Box className="p-4 bg-slate-50/70 dark:bg-slate-900/60 border-t border-[var(--border-color)]">
           {/* User Account Snippet */}
-          <Box className="flex items-center gap-3 p-3 mb-3 rounded-2xl bg-white dark:bg-slate-850 border border-slate-150 dark:border-slate-700 shadow-xs">
+          <Box className="flex items-center gap-3 p-3 mb-3 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-color)] shadow-xs">
             <Box className="w-10 h-10 rounded-xl bg-slate-900 dark:bg-teal-600 text-white flex items-center justify-center font-bold text-sm">
               JD
             </Box>
             <Box className="min-w-0 flex-1">
               <Typography
                 variant="body2"
-                className="font-bold text-slate-900 dark:text-white leading-tight truncate"
+                className="font-bold text-[var(--text-primary)] leading-tight truncate"
               >
                 John Doe
               </Typography>
               <Typography
                 variant="caption"
-                className="text-slate-500 dark:text-slate-400 block text-xs truncate"
+                className="text-[var(--text-secondary)] block text-xs truncate"
               >
                 Patient Account
               </Typography>

@@ -262,19 +262,19 @@ export default function AppointmentsPage() {
       {/* Top Header Banner */}
       <Stack
         direction={{ xs: "column", sm: "row" }}
-        className="items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800"
+        className="items-start sm:items-center justify-between gap-4 pb-4 border-b border-[var(--border-color)]"
       >
         <Box>
           <Typography
             variant="h4"
             component="h1"
-            className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight"
+            className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] tracking-tight"
           >
             My Appointments
           </Typography>
           <Typography
             variant="body2"
-            className="text-slate-500 dark:text-slate-400 mt-1"
+            className="text-[var(--text-secondary)] mt-1"
           >
             Manage upcoming consultations, reschedule your dates, or review past
             visit records.
@@ -309,7 +309,7 @@ export default function AppointmentsPage() {
                 className={`rounded-xl text-xs sm:text-sm font-semibold transition-all px-1.5 py-1 ${
                   isActive
                     ? "bg-teal-600 text-white shadow-xs font-bold"
-                    : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/60"
+                    : "bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:bg-slate-50 dark:hover:bg-slate-700/60"
                 }`}
               />
             );
@@ -321,7 +321,7 @@ export default function AppointmentsPage() {
             size="small"
             onClick={handleRefresh}
             disabled={loading}
-            className="rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="rounded-xl border border-[var(--border-color)] text-[var(--text-secondary)] hover:bg-slate-100 dark:hover:bg-slate-800"
           >
             <RefreshRoundedIcon
               fontSize="small"
@@ -358,7 +358,7 @@ export default function AppointmentsPage() {
             <Card
               key={idx}
               elevation={0}
-              className="border border-slate-200/80 dark:border-slate-700/80 bg-white dark:bg-slate-800 rounded-2xl p-6"
+              className="border border-[var(--border-color)] bg-[var(--bg-secondary)] rounded-2xl p-6"
             >
               <CardContent className="p-0">
                 <Box className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -400,21 +400,21 @@ export default function AppointmentsPage() {
       {!loading && !error && filteredAppointments.length === 0 && (
         <Card
           elevation={0}
-          className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-10 sm:p-14 text-center max-w-lg mx-auto my-8 shadow-xs"
+          className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl p-10 sm:p-14 text-center max-w-lg mx-auto my-8 shadow-xs"
         >
           <Box className="w-18 h-18 rounded-2xl bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 flex items-center justify-center mx-auto mb-4 border border-teal-100 dark:border-teal-900/60 shadow-inner">
             <EventBusyRoundedIcon sx={{ fontSize: 38 }} />
           </Box>
           <Typography
             variant="h6"
-            className="font-extrabold text-slate-900 dark:text-white"
+            className="font-extrabold text-[var(--text-primary)]"
           >
             No {statusFilter !== "All" ? statusFilter.toLowerCase() : ""}{" "}
             appointments
           </Typography>
           <Typography
             variant="body2"
-            className="text-slate-500 dark:text-slate-400 text-sm mt-1.5 mb-6 leading-relaxed"
+            className="text-[var(--text-secondary)] text-sm mt-1.5 mb-6 leading-relaxed"
           >
             {statusFilter === "Upcoming"
               ? "You do not have any upcoming visits booked. Check our top verified specialists and schedule an appointment in minutes."
@@ -456,7 +456,7 @@ export default function AppointmentsPage() {
               <Card
                 key={app.id}
                 elevation={0}
-                className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/90 hover:border-teal-400/60 dark:hover:border-teal-500/60 rounded-2xl p-5 sm:p-6 transition-all duration-200 shadow-xs hover:shadow-md group"
+                className="bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-teal-400/60 dark:hover:border-teal-500/60 rounded-2xl p-5 sm:p-6 transition-all duration-200 shadow-xs hover:shadow-md group"
               >
                 <CardContent className="p-0">
                   <Box className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
@@ -485,7 +485,7 @@ export default function AppointmentsPage() {
                         >
                           <Typography
                             variant="h6"
-                            className="font-extrabold text-slate-900 dark:text-white text-base sm:text-lg leading-tight"
+                            className="font-extrabold text-[var(--text-primary)] text-base sm:text-lg leading-tight"
                           >
                             {app.doctorName || "Specialist Consultation"}
                           </Typography>
@@ -530,7 +530,7 @@ export default function AppointmentsPage() {
                         {/* Date & Time Slot Meta Badges */}
                         <Stack
                           direction="row"
-                          className="items-center gap-3 sm:gap-4 text-xs text-slate-600 dark:text-slate-300 pt-1 flex-wrap"
+                          className="items-center gap-3 sm:gap-4 text-xs text-[var(--text-secondary)] pt-1 flex-wrap"
                         >
                           <Stack
                             direction="row"
@@ -539,7 +539,7 @@ export default function AppointmentsPage() {
                             <CalendarMonthRoundedIcon
                               sx={{ fontSize: 16, color: "#0d9488" }}
                             />
-                            <span className="font-medium text-slate-800 dark:text-slate-200">
+                            <span className="font-medium text-[var(--text-primary)]">
                               {app.date}
                             </span>
                           </Stack>
@@ -551,7 +551,7 @@ export default function AppointmentsPage() {
                             <AccessTimeRoundedIcon
                               sx={{ fontSize: 16, color: "#0d9488" }}
                             />
-                            <span className="font-medium text-slate-800 dark:text-slate-200">
+                            <span className="font-medium text-[var(--text-primary)]">
                               {app.timeSlot}
                             </span>
                           </Stack>
@@ -564,7 +564,7 @@ export default function AppointmentsPage() {
                               <PersonRoundedIcon
                                 sx={{ fontSize: 16, color: "#0d9488" }}
                               />
-                              <span className="font-semibold text-slate-700 dark:text-slate-300">
+                              <span className="font-semibold text-[var(--text-primary)]">
                                 {app.patientName}
                               </span>
                             </Stack>
@@ -573,7 +573,7 @@ export default function AppointmentsPage() {
 
                         {/* Patient Contacts & Notes */}
                         {(app.phone || app.email || app.notes) && (
-                          <Box className="pt-2 text-xs text-slate-500 dark:text-slate-400 space-y-1">
+                          <Box className="pt-2 text-xs text-[var(--text-secondary)] space-y-1">
                             <Stack
                               direction="row"
                               className="items-center gap-3 flex-wrap"
@@ -610,7 +610,7 @@ export default function AppointmentsPage() {
                                     color: "#94a3b8",
                                   }}
                                 />
-                                <span className="italic text-slate-600 dark:text-slate-400 line-clamp-2">
+                                <span className="italic text-[var(--text-secondary)] line-clamp-2">
                                   {app.notes}
                                 </span>
                               </Stack>
@@ -632,7 +632,7 @@ export default function AppointmentsPage() {
                           size="small"
                           startIcon={<EditCalendarRoundedIcon />}
                           onClick={() => handleOpenReschedule(app)}
-                          className="rounded-xl border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-teal-50 dark:hover:bg-teal-950/40 hover:border-teal-300 hover:text-teal-700 dark:hover:text-teal-300 text-xs font-bold px-3.5 py-2 capitalize transition-all"
+                          className="rounded-xl border border-[var(--border-color)] text-[var(--text-primary)] hover:bg-teal-50 dark:hover:bg-teal-950/40 hover:border-teal-300 hover:text-teal-700 dark:hover:text-teal-300 text-xs font-bold px-3.5 py-2 capitalize transition-all"
                         >
                           Reschedule / Edit
                         </Button>
@@ -674,7 +674,7 @@ export default function AppointmentsPage() {
           },
         }}
       >
-        <DialogTitle className="font-extrabold text-slate-900 dark:text-white pb-2 flex items-center justify-between">
+        <DialogTitle className="font-extrabold text-[var(--text-primary)] pb-2 flex items-center justify-between">
           <span>Reschedule / Edit Appointment</span>
           <Chip
             label={selectedAppointment?.type || "In-Clinic"}
@@ -685,9 +685,9 @@ export default function AppointmentsPage() {
 
         <form onSubmit={handleConfirmReschedule}>
           <DialogContent className="space-y-4 pt-1">
-            <DialogContentText className="text-sm text-slate-500 dark:text-slate-400 mb-3">
+            <DialogContentText className="text-sm text-[var(--text-secondary)] mb-3">
               Modify consultation timing with{" "}
-              <span className="font-bold text-slate-900 dark:text-slate-100">
+              <span className="font-bold text-[var(--text-primary)]">
                 {selectedAppointment?.doctorName}
               </span>
               . Changes will take effect immediately.
@@ -697,7 +697,7 @@ export default function AppointmentsPage() {
             <Box>
               <Typography
                 variant="caption"
-                className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5"
+                className="block text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-1.5"
               >
                 New Consultation Date *
               </Typography>
@@ -723,7 +723,7 @@ export default function AppointmentsPage() {
             <Box>
               <Typography
                 variant="caption"
-                className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2"
+                className="block text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-2"
               >
                 Select Consultation Time Slot *
               </Typography>
@@ -740,7 +740,7 @@ export default function AppointmentsPage() {
                       className={`rounded-xl text-xs font-bold py-2 capitalize transition-all ${
                         isSelected
                           ? "bg-teal-600 text-white shadow-xs"
-                          : "border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                          : "border border-[var(--border-color)] text-[var(--text-secondary)] bg-[var(--bg-secondary)] hover:bg-slate-50 dark:hover:bg-slate-800"
                       }`}
                     >
                       {slot}
@@ -754,7 +754,7 @@ export default function AppointmentsPage() {
             <Box>
               <Typography
                 variant="caption"
-                className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5"
+                className="block text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-1.5"
               >
                 Patient Notes & Instructions (Optional)
               </Typography>
@@ -780,7 +780,7 @@ export default function AppointmentsPage() {
               type="button"
               onClick={() => setRescheduleDialogOpen(false)}
               disabled={isUpdating}
-              className="text-slate-600 dark:text-slate-400 font-semibold rounded-xl capitalize"
+              className="text-[var(--text-secondary)] font-semibold rounded-xl capitalize"
             >
               Cancel
             </Button>
@@ -820,14 +820,14 @@ export default function AppointmentsPage() {
           },
         }}
       >
-        <DialogTitle className="font-extrabold text-slate-900 dark:text-white pb-1 flex items-center gap-2">
+        <DialogTitle className="font-extrabold text-[var(--text-primary)] pb-1 flex items-center gap-2">
           <CancelRoundedIcon className="text-rose-600" />
           <span>Cancel Appointment?</span>
         </DialogTitle>
         <DialogContent>
-          <DialogContentText className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed pt-1">
+          <DialogContentText className="text-sm text-[var(--text-secondary)] leading-relaxed pt-1">
             Are you sure you want to cancel your appointment with{" "}
-            <span className="font-bold text-slate-900 dark:text-white">
+            <span className="font-bold text-[var(--text-primary)]">
               {appointmentToCancel?.doctorName}
             </span>{" "}
             scheduled on{" "}
@@ -849,7 +849,7 @@ export default function AppointmentsPage() {
           <Button
             onClick={() => setCancelDialogOpen(false)}
             disabled={isCancelling}
-            className="text-slate-600 dark:text-slate-400 font-semibold rounded-xl capitalize"
+            className="text-[var(--text-secondary)] font-semibold rounded-xl capitalize"
           >
             Keep Visit
           </Button>

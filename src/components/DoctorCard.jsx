@@ -46,7 +46,7 @@ export default function DoctorCard({ doctor, onToggleFavorite, isFav }) {
   return (
     <Card
       elevation={0}
-      className="bg-white dark:bg-[#1e293b] border border-slate-200/80 dark:border-slate-700/80 hover:border-teal-300 dark:hover:border-teal-500/60 hover:shadow-lg transition-all duration-300 rounded-2xl flex flex-col justify-between h-full group"
+      className="bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-teal-300 dark:hover:border-teal-500/60 hover:shadow-lg transition-all duration-300 rounded-2xl flex flex-col justify-between h-full group"
     >
       <CardContent className="p-5 sm:p-6 flex flex-col justify-between h-full">
         <Box>
@@ -88,7 +88,7 @@ export default function DoctorCard({ doctor, onToggleFavorite, isFav }) {
               <Box className="min-w-0">
                 <Typography
                   variant="subtitle1"
-                  className="font-bold text-slate-900 dark:text-white text-base leading-tight truncate"
+                  className="font-bold text-[var(--text-primary)] text-base leading-tight truncate"
                 >
                   {doctor.name}
                 </Typography>
@@ -104,7 +104,7 @@ export default function DoctorCard({ doctor, onToggleFavorite, isFav }) {
                   />
                   <Typography
                     variant="caption"
-                    className="text-slate-500 dark:text-slate-400 font-medium text-xs whitespace-nowrap"
+                    className="text-[var(--text-secondary)] font-medium text-xs whitespace-nowrap"
                   >
                     {doctor.experience || "10 yrs exp"}
                   </Typography>
@@ -141,13 +141,13 @@ export default function DoctorCard({ doctor, onToggleFavorite, isFav }) {
             <StarRoundedIcon sx={{ fontSize: 17, color: "#f59e0b" }} />
             <Typography
               variant="caption"
-              className="font-bold text-slate-900 dark:text-white text-xs"
+              className="font-bold text-[var(--text-primary)] text-xs"
             >
               {doctor.rating}
             </Typography>
             <Typography
               variant="caption"
-              className="text-slate-400 dark:text-slate-400 text-xs font-normal"
+              className="text-[var(--text-muted)] text-xs font-normal"
             >
               ({doctor.reviewsCount || 124} reviews)
             </Typography>
@@ -156,20 +156,20 @@ export default function DoctorCard({ doctor, onToggleFavorite, isFav }) {
           {/* Bio Snippet */}
           <Typography
             variant="body2"
-            className="text-slate-600 dark:text-slate-300 text-xs sm:text-[13px] line-clamp-2 leading-relaxed mb-3.5"
+            className="text-[var(--text-secondary)] text-xs sm:text-[13px] line-clamp-2 leading-relaxed mb-3.5"
           >
             {doctor.bio}
           </Typography>
 
           {/* Schedule / Hours */}
-          <Box className="inline-flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/70 border border-slate-100 dark:border-slate-700/70 text-slate-700 dark:text-slate-300 text-xs font-medium px-2.5 py-1.5 rounded-lg mb-4 w-full">
+          <Box className="inline-flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/70 border border-slate-100 dark:border-slate-700/70 text-[var(--text-secondary)] text-xs font-medium px-2.5 py-1.5 rounded-lg mb-4 w-full">
             <CalendarMonthRoundedIcon
               sx={{ fontSize: 15, color: "#0d9488" }}
               className="shrink-0"
             />
             <Typography
               variant="caption"
-              className="truncate text-slate-700 dark:text-slate-300 text-xs font-medium"
+              className="truncate text-[var(--text-secondary)] text-xs font-medium"
             >
               {scheduleText}
             </Typography>
@@ -177,11 +177,11 @@ export default function DoctorCard({ doctor, onToggleFavorite, isFav }) {
         </Box>
 
         {/* Action Buttons */}
-        <Box className="grid grid-cols-2 gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-700/80">
+        <Box className="grid grid-cols-2 gap-2.5 pt-3 border-t border-[var(--border-color)]">
           <Button
             variant="outlined"
             onClick={() => navigate(`/doctors/${doctor.id}`)}
-            className="w-full py-2 px-3 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 text-xs sm:text-sm font-semibold rounded-xl transition-colors"
+            className="w-full py-2 px-3 border border-[var(--border-color)] text-[var(--text-primary)] hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 text-xs sm:text-sm font-semibold rounded-xl transition-colors"
           >
             View Profile
           </Button>

@@ -181,7 +181,7 @@ export default function BookAppointmentPage() {
         <Button
           startIcon={<ArrowBackRoundedIcon />}
           onClick={() => navigate("/doctors")}
-          className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-semibold text-sm rounded-xl py-2 px-3"
+          className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-semibold text-sm rounded-xl py-2 px-3"
         >
           Back to Doctors
         </Button>
@@ -196,20 +196,20 @@ export default function BookAppointmentPage() {
       {/* Main Form Card */}
       <Card
         elevation={0}
-        className="w-full max-w-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/90 rounded-3xl shadow-sm p-6 sm:p-8 md:p-10"
+        className="w-full max-w-2xl bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl shadow-sm p-6 sm:p-8 md:p-10"
       >
         {/* Title Header */}
         <Box className="mb-6">
           <Typography
             variant="h4"
             component="h1"
-            className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight"
+            className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] tracking-tight"
           >
             Book an Appointment
           </Typography>
           <Typography
             variant="body2"
-            className="text-slate-500 dark:text-slate-400 mt-1"
+            className="text-[var(--text-secondary)] mt-1"
           >
             Complete the form below to secure your consultation slot with
             CarePoint.
@@ -224,11 +224,11 @@ export default function BookAppointmentPage() {
 
         {/* Doctor Summary Section / Doctor Selector */}
         {loadingDoctor ? (
-          <Box className="flex items-center justify-center p-8 bg-slate-50 dark:bg-slate-850 rounded-2xl border border-slate-100 dark:border-slate-700 mb-6">
+          <Box className="flex items-center justify-center p-8 bg-slate-50 dark:bg-slate-850 rounded-2xl border border-[var(--border-color)] mb-6">
             <CircularProgress size={26} className="text-teal-600" />
             <Typography
               variant="body2"
-              className="ml-3 text-slate-600 dark:text-slate-300 font-medium"
+              className="ml-3 text-[var(--text-secondary)] font-medium"
             >
               Loading doctor information...
             </Typography>
@@ -299,7 +299,7 @@ export default function BookAppointmentPage() {
                     <Stack direction="row" className="items-center gap-2">
                       <Typography
                         variant="subtitle1"
-                        className="font-bold text-slate-900 dark:text-white leading-tight"
+                        className="font-bold text-[var(--text-primary)] leading-tight"
                       >
                         {selectedDoctor.name}
                       </Typography>
@@ -380,7 +380,7 @@ export default function BookAppointmentPage() {
               />
               <Typography
                 variant="subtitle2"
-                className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300"
+                className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]"
               >
                 Patient Information
               </Typography>
@@ -500,7 +500,7 @@ export default function BookAppointmentPage() {
                     className={`cursor-pointer border rounded-2xl p-4 transition-all flex items-start justify-between ${
                       field.value === "In-Clinic"
                         ? "border-teal-600 dark:border-teal-500 bg-teal-50/60 dark:bg-teal-950/40 shadow-xs"
-                        : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/60"
+                        : "border-[var(--border-color)] bg-[var(--bg-secondary)] hover:bg-slate-50 dark:hover:bg-slate-700/60"
                     }`}
                   >
                     <Stack direction="row" className="items-start gap-3">
@@ -516,7 +516,7 @@ export default function BookAppointmentPage() {
                       <Box>
                         <Typography
                           variant="subtitle2"
-                          className="font-bold text-slate-900 dark:text-white leading-tight"
+                          className="font-bold text-[var(--text-primary)] leading-tight"
                         >
                           In-Clinic Visit
                         </Typography>
@@ -542,7 +542,7 @@ export default function BookAppointmentPage() {
                     className={`cursor-pointer border rounded-2xl p-4 transition-all flex items-start justify-between ${
                       field.value === "Video Consultation"
                         ? "border-teal-600 dark:border-teal-500 bg-teal-50/60 dark:bg-teal-950/40 shadow-xs"
-                        : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/60"
+                        : "border-[var(--border-color)] bg-[var(--bg-secondary)] hover:bg-slate-50 dark:hover:bg-slate-700/60"
                     }`}
                   >
                     <Stack direction="row" className="items-start gap-3">
@@ -558,7 +558,7 @@ export default function BookAppointmentPage() {
                       <Box>
                         <Typography
                           variant="subtitle2"
-                          className="font-bold text-slate-900 dark:text-white leading-tight"
+                          className="font-bold text-[var(--text-primary)] leading-tight"
                         >
                           Video Call
                         </Typography>
@@ -589,7 +589,7 @@ export default function BookAppointmentPage() {
               />
               <Typography
                 variant="subtitle2"
-                className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300"
+                className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]"
               >
                 Date &amp; Schedule
               </Typography>
@@ -631,7 +631,7 @@ export default function BookAppointmentPage() {
                     >
                       <Typography
                         variant="caption"
-                        className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 flex items-center gap-1.5"
+                        className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] flex items-center gap-1.5"
                       >
                         <AccessTimeRoundedIcon
                           sx={{ fontSize: 15, color: "#0d9488" }}
@@ -667,7 +667,7 @@ export default function BookAppointmentPage() {
                             className={`py-2 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
                               isSelected
                                 ? "bg-teal-600 text-white shadow-xs"
-                                : "border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-teal-300"
+                                : "border border-[var(--border-color)] text-[var(--text-primary)] bg-[var(--bg-secondary)] hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-teal-300"
                             }`}
                           >
                             {slot}
@@ -718,13 +718,13 @@ export default function BookAppointmentPage() {
           <Stack
             direction={{ xs: "column", sm: "row" }}
             spacing={2}
-            className="pt-4 border-t border-slate-150 dark:border-slate-700"
+            className="pt-4 border-t border-[var(--border-color)]"
           >
             <Button
               variant="outlined"
               onClick={() => navigate("/doctors")}
               disabled={isSubmitting}
-              className="w-full sm:w-1/3 py-3 rounded-xl font-semibold border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+              className="w-full sm:w-1/3 py-3 rounded-xl font-semibold border border-[var(--border-color)] text-[var(--text-secondary)] hover:bg-slate-50 dark:hover:bg-slate-800"
             >
               Cancel / Back
             </Button>

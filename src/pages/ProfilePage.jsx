@@ -142,7 +142,7 @@ export default function ProfilePage() {
       {/* Profile Header Card */}
       <Card
         elevation={0}
-        className="bg-gradient-to-r from-white via-white to-teal-50/50 dark:from-slate-800 dark:via-slate-850 dark:to-teal-950/30 border border-slate-200/90 dark:border-slate-700 rounded-3xl p-6 sm:p-8 shadow-xs"
+        className="bg-gradient-to-r from-white via-white to-teal-50/50 dark:from-slate-800 dark:via-slate-850 dark:to-teal-950/30 border border-[var(--border-color)] rounded-3xl p-6 sm:p-8 shadow-xs"
       >
         <Stack
           direction={{ xs: "column", sm: "row" }}
@@ -167,7 +167,7 @@ export default function ProfilePage() {
               <Stack direction="row" className="items-center gap-2 mb-1">
                 <Typography
                   variant="h5"
-                  className="font-extrabold text-slate-900 dark:text-white leading-tight"
+                  className="font-extrabold text-[var(--text-primary)] leading-tight"
                 >
                   {profile.fullName}
                 </Typography>
@@ -179,7 +179,7 @@ export default function ProfilePage() {
               </Stack>
               <Typography
                 variant="body2"
-                className="text-slate-500 dark:text-slate-400 text-sm"
+                className="text-[var(--text-secondary)] text-sm"
               >
                 Patient ID: #CP-884920 • Member since 2023
               </Typography>
@@ -193,7 +193,7 @@ export default function ProfilePage() {
           </Stack>
 
           {/* Theme Switcher Quick Widget */}
-          <Box className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-3 sm:px-4 flex items-center gap-3 shadow-xs">
+          <Box className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl p-3 sm:px-4 flex items-center gap-3 shadow-xs">
             {isDarkMode ? (
               <LightModeOutlinedIcon sx={{ fontSize: 20, color: "#f59e0b" }} />
             ) : (
@@ -218,7 +218,7 @@ export default function ProfilePage() {
               label={
                 <Typography
                   variant="caption"
-                  className="font-bold text-slate-700 dark:text-slate-200"
+                  className="font-bold text-[var(--text-primary)]"
                 >
                   {isDarkMode ? "Dark Theme" : "Light Theme"}
                 </Typography>
@@ -235,7 +235,7 @@ export default function ProfilePage() {
         <Box className="lg:col-span-7">
           <Card
             elevation={0}
-            className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 rounded-3xl p-6 sm:p-8"
+            className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl p-6 sm:p-8"
           >
             <Stack direction="row" className="items-center gap-2 mb-6">
               <PersonRoundedIcon
@@ -246,7 +246,7 @@ export default function ProfilePage() {
               />
               <Typography
                 variant="h6"
-                className="font-bold text-slate-900 dark:text-white leading-tight"
+                className="font-bold text-[var(--text-primary)] leading-tight"
               >
                 Personal Medical Information
               </Typography>
@@ -429,7 +429,7 @@ export default function ProfilePage() {
           {/* App Preferences Section */}
           <Card
             elevation={0}
-            className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 rounded-3xl p-7 sm:p-8 shadow-xs min-h-[300px] flex flex-col justify-between"
+            className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl p-7 sm:p-8 shadow-xs min-h-[300px] flex flex-col justify-between"
           >
             <Stack
               direction="row"
@@ -442,13 +442,13 @@ export default function ProfilePage() {
                 <Box>
                   <Typography
                     variant="h6"
-                    className="font-bold text-slate-900 dark:text-white leading-tight text-base sm:text-lg"
+                    className="font-bold text-[var(--text-primary)] leading-tight text-base sm:text-lg"
                   >
                     App Preferences
                   </Typography>
                   <Typography
                     variant="caption"
-                    className="text-slate-500 dark:text-slate-400 text-xs"
+                    className="text-[var(--text-secondary)] text-xs"
                   >
                     Theme &amp; visual appearance
                   </Typography>
@@ -483,7 +483,7 @@ export default function ProfilePage() {
               />
             </Stack>
 
-            <Box className="p-5 sm:p-6 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-150 dark:border-slate-700/80 my-auto">
+            <Box className="p-5 sm:p-6 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-[var(--border-color)] my-auto">
               <Stack
                 direction="row"
                 className="items-center justify-between gap-4"
@@ -491,13 +491,13 @@ export default function ProfilePage() {
                 <Box className="min-w-0">
                   <Typography
                     variant="subtitle2"
-                    className="font-bold text-slate-900 dark:text-white text-sm"
+                    className="font-bold text-[var(--text-primary)] text-sm"
                   >
                     {isDarkMode ? "Dark Theme Enabled" : "Light Theme Enabled"}
                   </Typography>
                   <Typography
                     variant="caption"
-                    className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed block mt-0.5"
+                    className="text-[var(--text-secondary)] text-xs leading-relaxed block mt-0.5"
                   >
                     {isDarkMode
                       ? "Dark palette (#0b1120 default, #1e293b paper) with brand teal accent."
@@ -540,7 +540,7 @@ export default function ProfilePage() {
           {/* Emergency Medical Memo Card */}
           <Card
             elevation={0}
-            className="bg-white dark:bg-slate-800 border border-teal-100 dark:border-slate-700 rounded-3xl p-6 sm:p-8 flex flex-col justify-between h-full bg-gradient-to-b from-white to-teal-50/20 dark:from-slate-800 dark:to-teal-950/20"
+            className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl p-6 sm:p-8 flex flex-col justify-between h-full bg-gradient-to-b from-white to-teal-50/20 dark:from-slate-800 dark:to-teal-950/20"
           >
             <Box>
               <Stack direction="row" className="items-center gap-2 mb-2">
@@ -552,7 +552,7 @@ export default function ProfilePage() {
                 />
                 <Typography
                   variant="h6"
-                  className="font-bold text-slate-900 dark:text-white leading-tight"
+                  className="font-bold text-[var(--text-primary)] leading-tight"
                 >
                   Emergency Medical Memo
                 </Typography>
@@ -560,7 +560,7 @@ export default function ProfilePage() {
 
               <Typography
                 variant="body2"
-                className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mb-4"
+                className="text-[var(--text-secondary)] text-xs sm:text-sm mb-4"
               >
                 Demonstration of an{" "}
                 <span className="font-bold text-teal-700 dark:text-teal-400">
@@ -593,7 +593,7 @@ export default function ProfilePage() {
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "14px",
-                      bgcolor: isDarkMode ? "#1e293b" : "#ffffff",
+                      bgcolor: "var(--bg-secondary)",
                       "&.Mui-focused fieldset": {
                         borderColor: isDarkMode ? "#14b8a6" : "#0d9488",
                       },
@@ -623,7 +623,7 @@ export default function ProfilePage() {
                   size="small"
                   startIcon={<EditRoundedIcon />}
                   onClick={handleFocusRef}
-                  className="rounded-xl border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 text-xs font-semibold"
+                  className="rounded-xl border border-[var(--border-color)] text-[var(--text-secondary)] hover:bg-slate-50 dark:hover:bg-slate-700/50 text-xs font-semibold"
                 >
                   Focus via Ref
                 </Button>
@@ -650,9 +650,9 @@ export default function ProfilePage() {
               )}
             </Box>
 
-            <Box className="mt-4 pt-3 border-t border-slate-150 dark:border-slate-700 text-xs text-slate-400 dark:text-slate-500">
+            <Box className="mt-4 pt-3 border-t border-[var(--border-color)] text-xs text-slate-400 dark:text-slate-500">
               ⚡ Directly interacts with DOM via{" "}
-              <code className="text-slate-600 dark:text-slate-300 font-mono">
+              <code className="text-[var(--text-secondary)] font-mono">
                 medicalMemoRef.current
               </code>
             </Box>
@@ -670,7 +670,7 @@ export default function ProfilePage() {
             <FavoriteRoundedIcon sx={{ fontSize: 22, color: "#ef4444" }} />
             <Typography
               variant="h6"
-              className="font-bold text-slate-900 dark:text-white tracking-tight"
+              className="font-bold text-[var(--text-primary)] tracking-tight"
             >
               Favorite Doctors ({favoriteDoctors.length})
             </Typography>

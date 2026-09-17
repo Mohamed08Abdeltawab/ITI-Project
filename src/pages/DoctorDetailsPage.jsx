@@ -63,7 +63,7 @@ export default function DoctorDetailsPage() {
         />
         <Card
           elevation={0}
-          className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/90 rounded-3xl overflow-hidden shadow-xs"
+          className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl overflow-hidden shadow-xs"
         >
           <Box className="grid grid-cols-1 md:grid-cols-12">
             <Box className="md:col-span-5 min-h-[340px] md:min-h-[480px]">
@@ -119,7 +119,7 @@ export default function DoctorDetailsPage() {
         <Button
           startIcon={<ArrowBackRoundedIcon />}
           onClick={() => navigate("/doctors")}
-          className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-semibold text-sm rounded-xl py-2 px-3"
+          className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-semibold text-sm rounded-xl py-2 px-3"
         >
           Back to Specialists
         </Button>
@@ -139,11 +139,11 @@ export default function DoctorDetailsPage() {
       {/* Doctor Profile Main Card */}
       <Card
         elevation={0}
-        className="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/90 rounded-3xl overflow-hidden shadow-xs"
+        className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl overflow-hidden shadow-xs"
       >
         <Box className="grid grid-cols-1 md:grid-cols-12">
           {/* Doctor Portrait Column */}
-          <Box className="md:col-span-5 relative bg-slate-100 dark:bg-slate-900 min-h-[340px] md:min-h-full border-b md:border-b-0 md:border-r border-slate-150 dark:border-slate-700 overflow-hidden">
+          <Box className="md:col-span-5 relative bg-slate-100 dark:bg-slate-900 min-h-[340px] md:min-h-full border-b md:border-b-0 md:border-r border-[var(--border-color)] overflow-hidden">
             <CardMedia
               component="img"
               image={doctor.avatar}
@@ -220,7 +220,7 @@ export default function DoctorDetailsPage() {
               <Typography
                 variant="h4"
                 component="h1"
-                className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight"
+                className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] tracking-tight"
               >
                 {doctor.name}
               </Typography>
@@ -235,12 +235,12 @@ export default function DoctorDetailsPage() {
               {/* Bio description */}
               <Typography
                 variant="body1"
-                className="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed mb-6"
+                className="text-[var(--text-secondary)] text-sm sm:text-base leading-relaxed mb-6"
               >
                 {doctor.bio}
               </Typography>
 
-              <Divider className="my-6 border-slate-150 dark:border-slate-700" />
+              <Divider className="my-6 border-[var(--border-color)]" />
 
               {/* Working Schedule & Days */}
               <Box className="mb-6 space-y-3">
@@ -250,7 +250,7 @@ export default function DoctorDetailsPage() {
                   />
                   <Typography
                     variant="subtitle2"
-                    className="font-bold text-slate-800 dark:text-slate-200 text-sm uppercase tracking-wider"
+                    className="font-bold text-[var(--text-primary)] text-sm uppercase tracking-wider"
                   >
                     Available Working Days
                   </Typography>
@@ -278,7 +278,7 @@ export default function DoctorDetailsPage() {
                     />
                     <Typography
                       variant="subtitle2"
-                      className="font-bold text-slate-800 dark:text-slate-200 text-sm uppercase tracking-wider"
+                      className="font-bold text-[var(--text-primary)] text-sm uppercase tracking-wider"
                     >
                       Available Consultation Slots
                     </Typography>
@@ -316,11 +316,11 @@ export default function DoctorDetailsPage() {
             </Box>
 
             {/* Bottom Action CTA Banner */}
-            <Box className="bg-slate-50 dark:bg-slate-900/60 border border-slate-150 dark:border-slate-700 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-auto">
+            <Box className="bg-slate-50 dark:bg-slate-900/60 border border-[var(--border-color)] rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-auto">
               <Box>
                 <Typography
                   variant="caption"
-                  className="text-slate-500 dark:text-slate-400 font-medium block text-xs"
+                  className="text-[var(--text-secondary)] font-medium block text-xs"
                 >
                   Standard Consultation Fee
                 </Typography>

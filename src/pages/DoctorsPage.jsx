@@ -152,7 +152,7 @@ export default function DoctorsPage() {
           <Typography
             variant="h3"
             component="h1"
-            className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight"
+            className="text-2xl sm:text-4xl font-extrabold text-[var(--text-primary)] tracking-tight leading-tight"
           >
             Find Trusted Doctors &amp; Book
             <br className="hidden sm:inline" /> Appointments
@@ -160,7 +160,7 @@ export default function DoctorsPage() {
 
           <Typography
             variant="body1"
-            className="mt-3 text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed max-w-xl"
+            className="mt-3 text-[var(--text-secondary)] text-sm sm:text-base leading-relaxed max-w-xl"
           >
             Connect with verified medical specialists, review credentials and
             real-time availability, and book your consultation instantly.
@@ -211,7 +211,7 @@ export default function DoctorsPage() {
               className={`rounded-xl text-sm font-semibold transition-all py-1.5 px-1 ${
                 isActive
                   ? "bg-teal-600 text-white shadow-xs"
-                  : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/60"
+                  : "bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:bg-slate-50 dark:hover:bg-slate-700/60"
               }`}
               sx={{
                 height: 38,
@@ -232,7 +232,7 @@ export default function DoctorsPage() {
         <Stack direction="row" className="items-center gap-2 text-sm">
           <Typography
             variant="body2"
-            className="font-semibold text-slate-800 dark:text-slate-200"
+            className="font-semibold text-[var(--text-primary)]"
           >
             Showing {filteredAndSortedDoctors.length} doctors available
           </Typography>
@@ -270,7 +270,7 @@ export default function DoctorsPage() {
             <Select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-white dark:bg-slate-800 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-200"
+              className="bg-[var(--bg-secondary)] rounded-xl text-sm font-semibold text-[var(--text-primary)]"
               sx={{
                 borderRadius: "12px",
                 height: 38,
@@ -311,7 +311,7 @@ export default function DoctorsPage() {
             <Card
               key={idx}
               elevation={0}
-              className="border border-slate-200/80 rounded-2xl p-5"
+              className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl p-5"
             >
               <CardContent className="p-0 space-y-4">
                 <Stack direction="row" className="items-center gap-3.5">
@@ -368,20 +368,20 @@ export default function DoctorsPage() {
       {!loading && !error && filteredAndSortedDoctors.length === 0 && (
         <Card
           elevation={0}
-          className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-10 text-center max-w-md mx-auto my-8"
+          className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl p-10 text-center max-w-md mx-auto my-8"
         >
           <Box className="w-14 h-14 rounded-2xl bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 flex items-center justify-center mx-auto mb-4">
             <SearchOffRoundedIcon sx={{ fontSize: 30 }} />
           </Box>
           <Typography
             variant="h6"
-            className="font-bold text-slate-800 dark:text-white"
+            className="font-bold text-[var(--text-primary)]"
           >
             No doctors found
           </Typography>
           <Typography
             variant="body2"
-            className="text-slate-500 dark:text-slate-400 text-sm mt-1 mb-5"
+            className="text-[var(--text-secondary)] text-sm mt-1 mb-5"
           >
             No medical specialists match your search criteria. Try adjusting
             your query or reset filters.
@@ -412,22 +412,22 @@ export default function DoctorsPage() {
       {!loading && !error && filteredAndSortedDoctors.length > 0 && (
         <Stack
           direction={{ xs: "column", sm: "row" }}
-          className="items-center justify-between gap-4 pt-6 pb-8 border-t border-slate-100 dark:border-slate-800"
+          className="items-center justify-between gap-4 pt-6 pb-8 border-t border-[var(--border-color)]"
         >
           <Typography
             variant="body2"
-            className="text-slate-500 dark:text-slate-400 font-medium"
+            className="text-[var(--text-secondary)] font-medium"
           >
             Showing{" "}
-            <span className="font-bold text-slate-800 dark:text-slate-200">
+            <span className="font-bold text-[var(--text-primary)]">
               {startIndex}
             </span>{" "}
             to{" "}
-            <span className="font-bold text-slate-800 dark:text-slate-200">
+            <span className="font-bold text-[var(--text-primary)]">
               {endIndex}
             </span>{" "}
             of{" "}
-            <span className="font-bold text-slate-800 dark:text-slate-200">
+            <span className="font-bold text-[var(--text-primary)]">
               {filteredAndSortedDoctors.length}
             </span>{" "}
             specialists
