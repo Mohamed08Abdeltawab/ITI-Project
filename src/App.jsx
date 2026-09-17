@@ -38,14 +38,14 @@ export default function App() {
           contrastText: isDark ? "#0f172a" : "#ffffff",
         },
         background: {
-          default: "var(--bg-primary)",
-          paper: "var(--bg-secondary)",
+          default: isDark ? "#0b1120" : "#f8fafc",
+          paper: isDark ? "#1e293b" : "#ffffff",
         },
         text: {
-          primary: "var(--text-primary)",
-          secondary: "var(--text-secondary)",
+          primary: isDark ? "#f8fafc" : "#0f172a",
+          secondary: isDark ? "#94a3b8" : "#475569",
         },
-        divider: "var(--border-color)",
+        divider: isDark ? "#334155" : "#e2e8f0",
       },
       typography: {
         fontFamily:
@@ -62,8 +62,8 @@ export default function App() {
         MuiCssBaseline: {
           styleOverrides: {
             body: {
-              backgroundColor: "var(--bg-primary)",
-              color: "var(--text-primary)",
+              backgroundColor: isDark ? "#0b1120" : "#f8fafc",
+              color: isDark ? "#f8fafc" : "#0f172a",
               transition: "background-color 0.25s ease, color 0.25s ease",
             },
           },
@@ -102,8 +102,8 @@ export default function App() {
           styleOverrides: {
             paper: {
               backgroundImage: "none",
-              backgroundColor: "var(--bg-secondary)",
-              color: "var(--text-primary)",
+              backgroundColor: isDark ? "#1e293b" : "#ffffff",
+              color: isDark ? "#f8fafc" : "#0f172a",
             },
           },
         },
@@ -111,7 +111,7 @@ export default function App() {
           styleOverrides: {
             root: {
               "& fieldset": {
-                borderColor: "var(--border-color)",
+                borderColor: isDark ? "#334155" : "#e2e8f0",
               },
               "&:hover fieldset": {
                 borderColor: isDark ? "#475569" : "#cbd5e1",

@@ -241,9 +241,10 @@ export default function Navbar() {
           sx: {
             width: { xs: "82vw", sm: 340 },
             maxWidth: 360,
-            bgcolor: "var(--bg-secondary)",
-            color: "var(--text-primary)",
-            borderLeft: "1px solid var(--border-color)",
+            bgcolor: "background.paper",
+            color: "text.primary",
+            borderLeft: "1px solid",
+            borderColor: "divider",
             boxShadow: isDarkMode
               ? "-8px 0 32px rgba(0, 0, 0, 0.4)"
               : "-8px 0 32px rgba(15, 23, 42, 0.08)",

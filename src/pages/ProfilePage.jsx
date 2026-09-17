@@ -593,7 +593,7 @@ export default function ProfilePage() {
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "14px",
-                      bgcolor: "var(--bg-secondary)",
+                      bgcolor: "background.paper",
                       "&.Mui-focused fieldset": {
                         borderColor: isDarkMode ? "#14b8a6" : "#0d9488",
                       },
