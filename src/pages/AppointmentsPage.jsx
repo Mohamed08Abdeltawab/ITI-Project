@@ -258,23 +258,34 @@ export default function AppointmentsPage() {
       : DEFAULT_SLOTS;
 
   return (
-    <Box className="space-y-6 max-w-5xl mx-auto py-2 px-3 sm:px-4">
+    <Box sx={{ maxWidth: 1024, mx: "auto", py: 1, px: { xs: 1.5, sm: 2 }, display: "flex", flexDirection: "column", gap: 3 }}>
       {/* Top Header Banner */}
       <Stack
         direction={{ xs: "column", sm: "row" }}
-        className="items-start sm:items-center justify-between gap-4 pb-4 border-b border-[var(--border-color)]"
+        sx={(theme) => ({
+          alignItems: { xs: "flex-start", sm: "center" },
+          justifyContent: "space-between",
+          gap: 2,
+          pb: 2,
+          borderBottom: `1px solid ${theme.palette.divider}`,
+        })}
       >
         <Box>
           <Typography
             variant="h4"
             component="h1"
-            className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] tracking-tight"
+            sx={{
+              fontSize: { xs: "1.5rem", sm: "1.875rem" },
+              fontWeight: 800,
+              color: "text.primary",
+              letterSpacing: "-0.025em",
+            }}
           >
             My Appointments
           </Typography>
           <Typography
             variant="body2"
-            className="text-[var(--text-secondary)] mt-1"
+            sx={{ color: "text.secondary", mt: 0.5 }}
           >
             Manage upcoming consultations, reschedule your dates, or review past
             visit records.
@@ -285,7 +296,14 @@ export default function AppointmentsPage() {
           variant="contained"
           startIcon={<AddRoundedIcon />}
           onClick={() => navigate("/doctors")}
-          className="bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl px-4 py-2.5 shadow-sm capitalize transition-all"
+          sx={{
+            fontWeight: 700,
+            borderRadius: "12px",
+            px: 2,
+            py: 1.25,
+            boxShadow: 1,
+            textTransform: "none",
+          }}
         >
           Book New Appointment
         </Button>
@@ -294,9 +312,15 @@ export default function AppointmentsPage() {
       {/* Filter Tabs & Refresh Action */}
       <Stack
         direction="row"
-        className="items-center justify-between gap-3 overflow-x-auto pb-1"
+        sx={{
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 1.5,
+          overflowX: "auto",
+          pb: 0.5,
+        }}
       >
-        <Stack direction="row" spacing={1} className="shrink-0">
+        <Stack direction="row" spacing={1} sx={{ flexShrink: 0 }}>
           {STATUS_TABS.map((status) => {
             const isActive = statusFilter === status;
             const count = counts[status] ?? 0;
@@ -306,11 +330,38 @@ export default function AppointmentsPage() {
                 label={`${status} (${count})`}
                 clickable
                 onClick={() => setStatusFilter(status)}
-                className={`rounded-xl text-xs sm:text-sm font-semibold transition-all px-1.5 py-1 ${
-                  isActive
-                    ? "bg-teal-600 text-white shadow-xs font-bold"
-                    : "bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:bg-slate-50 dark:hover:bg-slate-700/60"
-                }`}
+                sx={(theme) => ({
+                  borderRadius: "12px",
+                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                  fontWeight: 600,
+                  transition: "all 0.2s",
+                  px: 0.5,
+                  py: 0.5,
+                  ...(isActive
+                    ? {
+                        bgcolor: theme.palette.primary.main,
+                        color: theme.palette.primary.contrastText,
+                        fontWeight: 700,
+                        "&:hover": {
+                          bgcolor: theme.palette.primary.dark,
+                        },
+                      }
+                    : {
+                        bgcolor:
+                          theme.palette.mode === "dark"
+                            ? "rgba(30, 41, 59, 0.7)"
+                            : "rgba(241, 245, 249, 0.8)",
+                        color: theme.palette.text.secondary,
+                        border: `1px solid ${theme.palette.divider}`,
+                        "&:hover": {
+                          bgcolor:
+                            theme.palette.mode === "dark"
+                              ? "rgba(51, 65, 85, 0.8)"
+                              : "rgba(226, 232, 240, 0.8)",
+                          color: theme.palette.text.primary,
+                        },
+                      }),
+                })}
               />
             );
           })}
@@ -321,11 +372,32 @@ export default function AppointmentsPage() {
             size="small"
             onClick={handleRefresh}
             disabled={loading}
-            className="rounded-xl border border-[var(--border-color)] text-[var(--text-secondary)] hover:bg-slate-100 dark:hover:bg-slate-800"
+            sx={(theme) => ({
+              borderRadius: "12px",
+              border: `1px solid ${theme.palette.divider}`,
+              color: "text.secondary",
+              "&:hover": {
+                bgcolor:
+                  theme.palette.mode === "dark"
+                    ? "rgba(51, 65, 85, 0.4)"
+                    : "rgba(241, 245, 249, 0.8)",
+              },
+            })}
           >
             <RefreshRoundedIcon
               fontSize="small"
-              className={loading ? "animate-spin text-teal-600" : ""}
+              sx={{
+                color: loading ? "primary.main" : "inherit",
+                ...(loading
+                  ? {
+                      animation: "spin 1s linear infinite",
+                      "@keyframes spin": {
+                        "0%": { transform: "rotate(0deg)" },
+                        "100%": { transform: "rotate(360deg)" },
+                      },
+                    }
+                  : {}),
+              }}
             />
           </IconButton>
         </Tooltip>
@@ -345,7 +417,7 @@ export default function AppointmentsPage() {
               Retry
             </Button>
           }
-          className="rounded-2xl border border-red-200 dark:border-red-900/50"
+          sx={{ borderRadius: "16px" }}
         >
           {error}
         </Alert>
@@ -358,35 +430,48 @@ export default function AppointmentsPage() {
             <Card
               key={idx}
               elevation={0}
-              className="border border-[var(--border-color)] bg-[var(--bg-secondary)] rounded-2xl p-6"
+              sx={(theme) => ({
+                border: `1px solid ${theme.palette.divider}`,
+                bgcolor: "background.paper",
+                borderRadius: "16px",
+                p: 3,
+              })}
             >
-              <CardContent className="p-0">
-                <Box className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <Stack direction="row" spacing={2.5} className="items-center">
+              <CardContent sx={{ p: 0, "&:last-child": { pb: 0 } }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: { xs: "column", sm: "row" },
+                    alignItems: { sm: "center" },
+                    justifyContent: "space-between",
+                    gap: 2,
+                  }}
+                >
+                  <Stack direction="row" spacing={2.5} sx={{ alignItems: "center" }}>
                     <Skeleton
                       variant="circular"
                       width={64}
                       height={64}
-                      className="shrink-0"
+                      sx={{ flexShrink: 0 }}
                     />
-                    <Box className="space-y-2 min-w-[200px]">
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1, minWidth: 200 }}>
                       <Skeleton variant="text" width="70%" height={26} />
                       <Skeleton variant="text" width="45%" height={18} />
                       <Skeleton variant="text" width="90%" height={18} />
                     </Box>
                   </Stack>
-                  <Stack direction="row" spacing={1.5} className="self-end">
+                  <Stack direction="row" spacing={1.5} sx={{ alignSelf: { xs: "flex-end", sm: "auto" } }}>
                     <Skeleton
                       variant="rectangular"
                       width={100}
                       height={36}
-                      className="rounded-xl"
+                      sx={{ borderRadius: "12px" }}
                     />
                     <Skeleton
                       variant="rectangular"
                       width={80}
                       height={36}
-                      className="rounded-xl"
+                      sx={{ borderRadius: "12px" }}
                     />
                   </Stack>
                 </Box>
@@ -400,21 +485,51 @@ export default function AppointmentsPage() {
       {!loading && !error && filteredAppointments.length === 0 && (
         <Card
           elevation={0}
-          className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl p-10 sm:p-14 text-center max-w-lg mx-auto my-8 shadow-xs"
+          sx={(theme) => ({
+            bgcolor: "background.paper",
+            border: `1px solid ${theme.palette.divider}`,
+            borderRadius: "24px",
+            p: { xs: 5, sm: 7 },
+            textAlign: "center",
+            maxWidth: 512,
+            mx: "auto",
+            my: 4,
+          })}
         >
-          <Box className="w-18 h-18 rounded-2xl bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 flex items-center justify-center mx-auto mb-4 border border-teal-100 dark:border-teal-900/60 shadow-inner">
+          <Box
+            sx={(theme) => ({
+              width: 72,
+              height: 72,
+              borderRadius: "16px",
+              bgcolor:
+                theme.palette.mode === "dark"
+                  ? "rgba(13, 148, 136, 0.2)"
+                  : "rgba(13, 148, 136, 0.1)",
+              color: "primary.main",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              mx: "auto",
+              mb: 2,
+              border: `1px solid ${
+                theme.palette.mode === "dark"
+                  ? "rgba(13, 148, 136, 0.3)"
+                  : "rgba(13, 148, 136, 0.2)"
+              }`,
+            })}
+          >
             <EventBusyRoundedIcon sx={{ fontSize: 38 }} />
           </Box>
           <Typography
             variant="h6"
-            className="font-extrabold text-[var(--text-primary)]"
+            sx={{ fontWeight: 800, color: "text.primary" }}
           >
             No {statusFilter !== "All" ? statusFilter.toLowerCase() : ""}{" "}
             appointments
           </Typography>
           <Typography
             variant="body2"
-            className="text-[var(--text-secondary)] text-sm mt-1.5 mb-6 leading-relaxed"
+            sx={{ color: "text.secondary", fontSize: "0.875rem", mt: 1, mb: 3, lineHeight: 1.6 }}
           >
             {statusFilter === "Upcoming"
               ? "You do not have any upcoming visits booked. Check our top verified specialists and schedule an appointment in minutes."
@@ -428,7 +543,14 @@ export default function AppointmentsPage() {
             variant="contained"
             onClick={() => navigate("/doctors")}
             startIcon={<MedicalServicesRoundedIcon />}
-            className="bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl px-6 py-2.5 shadow-sm capitalize"
+            sx={{
+              fontWeight: 700,
+              borderRadius: "12px",
+              px: 3,
+              py: 1.25,
+              boxShadow: 1,
+              textTransform: "none",
+            }}
           >
             Find a Doctor
           </Button>
@@ -456,17 +578,52 @@ export default function AppointmentsPage() {
               <Card
                 key={app.id}
                 elevation={0}
-                className="bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-teal-400/60 dark:hover:border-teal-500/60 rounded-2xl p-5 sm:p-6 transition-all duration-200 shadow-xs hover:shadow-md group"
+                sx={(theme) => ({
+                  bgcolor: "background.paper",
+                  border: `1px solid ${theme.palette.divider}`,
+                  borderRadius: "16px",
+                  p: { xs: 2.5, sm: 3 },
+                  transition: "all 0.2s",
+                  boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                  "&:hover": {
+                    borderColor: theme.palette.primary.main,
+                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                  },
+                })}
               >
-                <CardContent className="p-0">
-                  <Box className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+                <CardContent sx={{ p: 0, "&:last-child": { pb: 0 } }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: { xs: "column", lg: "row" },
+                      alignItems: { lg: "center" },
+                      justifyContent: "space-between",
+                      gap: 2.5,
+                    }}
+                  >
                     {/* Left: Doctor Profile & Appointment Metadata */}
-                    <Box className="flex items-start gap-4">
+                    <Box sx={{ display: "flex", alignItems: "flex-start", gap: 2 }}>
                       {/* Doctor Avatar */}
                       <Avatar
                         src={doctorAvatar}
                         alt={app.doctorName || "Doctor"}
-                        className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl border-2 border-teal-500/20 shadow-xs shrink-0 bg-teal-50 dark:bg-slate-700 text-teal-700 font-bold"
+                        sx={(theme) => ({
+                          width: { xs: 64, sm: 72 },
+                          height: { xs: 64, sm: 72 },
+                          borderRadius: "16px",
+                          border: `2px solid ${
+                            theme.palette.mode === "dark"
+                              ? "rgba(13, 148, 136, 0.4)"
+                              : "rgba(13, 148, 136, 0.2)"
+                          }`,
+                          flexShrink: 0,
+                          bgcolor:
+                            theme.palette.mode === "dark"
+                              ? "rgba(30, 41, 59, 0.8)"
+                              : "rgba(204, 251, 241, 0.5)",
+                          color: "primary.main",
+                          fontWeight: 700,
+                        })}
                       >
                         {app.doctorName
                           ? app.doctorName
@@ -478,14 +635,19 @@ export default function AppointmentsPage() {
                       </Avatar>
 
                       {/* Doctor & Patient Info */}
-                      <Box className="space-y-1.5 min-w-0">
+                      <Box sx={{ display: "flex", flexDirection: "column", gap: 0.75, minWidth: 0 }}>
                         <Stack
                           direction="row"
-                          className="items-center gap-2.5 flex-wrap"
+                          sx={{ alignItems: "center", gap: 1.25, flexWrap: "wrap" }}
                         >
                           <Typography
                             variant="h6"
-                            className="font-extrabold text-[var(--text-primary)] text-base sm:text-lg leading-tight"
+                            sx={{
+                              fontWeight: 800,
+                              color: "text.primary",
+                              fontSize: { xs: "1rem", sm: "1.125rem" },
+                              lineHeight: 1.2,
+                            }}
                           >
                             {app.doctorName || "Specialist Consultation"}
                           </Typography>
@@ -494,13 +656,50 @@ export default function AppointmentsPage() {
                           <Chip
                             label={app.status || "Upcoming"}
                             size="small"
-                            className={`font-bold text-xs rounded-lg px-0.5 ${
-                              isCancelled
-                                ? "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-900/60"
+                            sx={(theme) => ({
+                              fontWeight: 700,
+                              fontSize: "0.75rem",
+                              borderRadius: "8px",
+                              px: 0.25,
+                              ...(isCancelled
+                                ? {
+                                    bgcolor:
+                                      theme.palette.mode === "dark"
+                                        ? "rgba(239, 68, 68, 0.15)"
+                                        : "rgba(239, 68, 68, 0.1)",
+                                    color: theme.palette.error.main,
+                                    border: `1px solid ${
+                                      theme.palette.mode === "dark"
+                                        ? "rgba(239, 68, 68, 0.3)"
+                                        : "rgba(239, 68, 68, 0.2)"
+                                    }`,
+                                  }
                                 : isCompleted
-                                  ? "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60"
-                                  : "bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60"
-                            }`}
+                                ? {
+                                    bgcolor:
+                                      theme.palette.mode === "dark"
+                                        ? "rgba(59, 130, 246, 0.15)"
+                                        : "rgba(59, 130, 246, 0.1)",
+                                    color: theme.palette.info.main,
+                                    border: `1px solid ${
+                                      theme.palette.mode === "dark"
+                                        ? "rgba(59, 130, 246, 0.3)"
+                                        : "rgba(59, 130, 246, 0.2)"
+                                    }`,
+                                  }
+                                : {
+                                    bgcolor:
+                                      theme.palette.mode === "dark"
+                                        ? "rgba(13, 148, 136, 0.2)"
+                                        : "rgba(13, 148, 136, 0.1)",
+                                    color: theme.palette.primary.main,
+                                    border: `1px solid ${
+                                      theme.palette.mode === "dark"
+                                        ? "rgba(13, 148, 136, 0.3)"
+                                        : "rgba(13, 148, 136, 0.2)"
+                                    }`,
+                                  }),
+                            })}
                           />
 
                           {/* Consultation Type Badge */}
@@ -516,13 +715,26 @@ export default function AppointmentsPage() {
                             }
                             label={app.type || "In-Clinic"}
                             size="small"
-                            className="bg-slate-100 dark:bg-slate-700/80 text-slate-700 dark:text-slate-300 font-semibold text-xs rounded-lg"
+                            sx={(theme) => ({
+                              bgcolor:
+                                theme.palette.mode === "dark"
+                                  ? "rgba(51, 65, 85, 0.6)"
+                                  : "rgba(241, 245, 249, 0.9)",
+                              color: theme.palette.text.secondary,
+                              fontWeight: 600,
+                              fontSize: "0.75rem",
+                              borderRadius: "8px",
+                            })}
                           />
                         </Stack>
 
                         <Typography
                           variant="body2"
-                          className="text-teal-600 dark:text-teal-400 font-semibold text-xs sm:text-sm"
+                          sx={{
+                            color: "primary.main",
+                            fontWeight: 600,
+                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                          }}
                         >
                           {doctorSpecialty}
                         </Typography>
@@ -530,68 +742,60 @@ export default function AppointmentsPage() {
                         {/* Date & Time Slot Meta Badges */}
                         <Stack
                           direction="row"
-                          className="items-center gap-3 sm:gap-4 text-xs text-[var(--text-secondary)] pt-1 flex-wrap"
+                          sx={{
+                            alignItems: "center",
+                            gap: { xs: 1.5, sm: 2 },
+                            fontSize: "0.75rem",
+                            color: "text.secondary",
+                            pt: 0.5,
+                            flexWrap: "wrap",
+                          }}
                         >
-                          <Stack
-                            direction="row"
-                            className="items-center gap-1.5"
-                          >
+                          <Stack direction="row" sx={{ alignItems: "center", gap: 0.75 }}>
                             <CalendarMonthRoundedIcon
-                              sx={{ fontSize: 16, color: "#0d9488" }}
+                              sx={{ fontSize: 16, color: "primary.main" }}
                             />
-                            <span className="font-medium text-[var(--text-primary)]">
+                            <Box component="span" sx={{ fontWeight: 500, color: "text.primary" }}>
                               {app.date}
-                            </span>
+                            </Box>
                           </Stack>
 
-                          <Stack
-                            direction="row"
-                            className="items-center gap-1.5"
-                          >
+                          <Stack direction="row" sx={{ alignItems: "center", gap: 0.75 }}>
                             <AccessTimeRoundedIcon
-                              sx={{ fontSize: 16, color: "#0d9488" }}
+                              sx={{ fontSize: 16, color: "primary.main" }}
                             />
-                            <span className="font-medium text-[var(--text-primary)]">
+                            <Box component="span" sx={{ fontWeight: 500, color: "text.primary" }}>
                               {app.timeSlot}
-                            </span>
+                            </Box>
                           </Stack>
 
                           {app.patientName && (
-                            <Stack
-                              direction="row"
-                              className="items-center gap-1.5"
-                            >
+                            <Stack direction="row" sx={{ alignItems: "center", gap: 0.75 }}>
                               <PersonRoundedIcon
-                                sx={{ fontSize: 16, color: "#0d9488" }}
+                                sx={{ fontSize: 16, color: "primary.main" }}
                               />
-                              <span className="font-semibold text-[var(--text-primary)]">
+                              <Box component="span" sx={{ fontWeight: 600, color: "text.primary" }}>
                                 {app.patientName}
-                              </span>
+                              </Box>
                             </Stack>
                           )}
                         </Stack>
 
                         {/* Patient Contacts & Notes */}
                         {(app.phone || app.email || app.notes) && (
-                          <Box className="pt-2 text-xs text-[var(--text-secondary)] space-y-1">
+                          <Box sx={{ pt: 1, fontSize: "0.75rem", color: "text.secondary", display: "flex", flexDirection: "column", gap: 0.5 }}>
                             <Stack
                               direction="row"
-                              className="items-center gap-3 flex-wrap"
+                              sx={{ alignItems: "center", gap: 1.5, flexWrap: "wrap" }}
                             >
                               {app.phone && (
-                                <Stack
-                                  direction="row"
-                                  className="items-center gap-1"
-                                >
+                                <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                                   <PhoneOutlinedIcon sx={{ fontSize: 14 }} />
                                   <span>{app.phone}</span>
                                 </Stack>
                               )}
                               {app.email && (
-                                <Stack
-                                  direction="row"
-                                  className="items-center gap-1"
-                                >
+                                <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
                                   <EmailOutlinedIcon sx={{ fontSize: 14 }} />
                                   <span>{app.email}</span>
                                 </Stack>
@@ -599,20 +803,27 @@ export default function AppointmentsPage() {
                             </Stack>
 
                             {app.notes && (
-                              <Stack
-                                direction="row"
-                                className="items-start gap-1 pt-0.5"
-                              >
+                              <Stack direction="row" sx={{ alignItems: "flex-start", gap: 0.5, pt: 0.25 }}>
                                 <NotesRoundedIcon
                                   sx={{
                                     fontSize: 14,
                                     mt: 0.2,
-                                    color: "#94a3b8",
+                                    color: "text.secondary",
                                   }}
                                 />
-                                <span className="italic text-[var(--text-secondary)] line-clamp-2">
+                                <Box
+                                  component="span"
+                                  sx={{
+                                    fontStyle: "italic",
+                                    color: "text.secondary",
+                                    display: "-webkit-box",
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: "vertical",
+                                    overflow: "hidden",
+                                  }}
+                                >
                                   {app.notes}
-                                </span>
+                                </Box>
                               </Stack>
                             )}
                           </Box>
@@ -623,16 +834,38 @@ export default function AppointmentsPage() {
                     {/* Right: Actions for active appointments */}
                     {isUpcoming && (
                       <Stack
-                        direction={{ xs: "row", sm: "row" }}
+                        direction="row"
                         spacing={1.5}
-                        className="self-end lg:self-center shrink-0 pt-2 lg:pt-0"
+                        sx={{
+                          alignSelf: { xs: "flex-end", lg: "center" },
+                          flexShrink: 0,
+                          pt: { xs: 1, lg: 0 },
+                        }}
                       >
                         <Button
                           variant="outlined"
                           size="small"
                           startIcon={<EditCalendarRoundedIcon />}
                           onClick={() => handleOpenReschedule(app)}
-                          className="rounded-xl border border-[var(--border-color)] text-[var(--text-primary)] hover:bg-teal-50 dark:hover:bg-teal-950/40 hover:border-teal-300 hover:text-teal-700 dark:hover:text-teal-300 text-xs font-bold px-3.5 py-2 capitalize transition-all"
+                          sx={(theme) => ({
+                            borderRadius: "12px",
+                            borderColor: theme.palette.divider,
+                            color: "text.primary",
+                            fontSize: "0.75rem",
+                            fontWeight: 700,
+                            px: 1.75,
+                            py: 1,
+                            textTransform: "none",
+                            transition: "all 0.2s",
+                            "&:hover": {
+                              bgcolor:
+                                theme.palette.mode === "dark"
+                                  ? "rgba(13, 148, 136, 0.15)"
+                                  : "rgba(13, 148, 136, 0.08)",
+                              borderColor: theme.palette.primary.main,
+                              color: theme.palette.primary.main,
+                            },
+                          })}
                         >
                           Reschedule / Edit
                         </Button>
@@ -643,7 +876,14 @@ export default function AppointmentsPage() {
                           color="error"
                           startIcon={<CancelRoundedIcon />}
                           onClick={() => handleOpenCancel(app)}
-                          className="rounded-xl border-rose-200 dark:border-rose-900/60 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-xs font-bold px-3.5 py-2 capitalize transition-all"
+                          sx={{
+                            borderRadius: "12px",
+                            fontSize: "0.75rem",
+                            fontWeight: 700,
+                            px: 1.75,
+                            py: 1,
+                            textTransform: "none",
+                          }}
                         >
                           Cancel
                         </Button>
@@ -666,30 +906,39 @@ export default function AppointmentsPage() {
         maxWidth="sm"
         fullWidth
         PaperProps={{
-          sx: {
+          sx: (theme) => ({
             borderRadius: "24px",
             p: { xs: 1, sm: 1.5 },
             bgcolor: "background.paper",
+            border: `1px solid ${theme.palette.divider}`,
             boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.2)",
-          },
+          }),
         }}
       >
-        <DialogTitle className="font-extrabold text-[var(--text-primary)] pb-2 flex items-center justify-between">
+        <DialogTitle sx={{ fontWeight: 800, color: "text.primary", pb: 1, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span>Reschedule / Edit Appointment</span>
           <Chip
             label={selectedAppointment?.type || "In-Clinic"}
             size="small"
-            className="bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300 font-bold text-xs"
+            sx={(theme) => ({
+              bgcolor:
+                theme.palette.mode === "dark"
+                  ? "rgba(13, 148, 136, 0.2)"
+                  : "rgba(13, 148, 136, 0.1)",
+              color: "primary.main",
+              fontWeight: 700,
+              fontSize: "0.75rem",
+            })}
           />
         </DialogTitle>
 
         <form onSubmit={handleConfirmReschedule}>
-          <DialogContent className="space-y-4 pt-1">
-            <DialogContentText className="text-sm text-[var(--text-secondary)] mb-3">
+          <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
+            <DialogContentText sx={{ fontSize: "0.875rem", color: "text.secondary", mb: 1 }}>
               Modify consultation timing with{" "}
-              <span className="font-bold text-[var(--text-primary)]">
+              <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
                 {selectedAppointment?.doctorName}
-              </span>
+              </Box>
               . Changes will take effect immediately.
             </DialogContentText>
 
@@ -697,7 +946,15 @@ export default function AppointmentsPage() {
             <Box>
               <Typography
                 variant="caption"
-                className="block text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-1.5"
+                sx={{
+                  display: "block",
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  color: "text.secondary",
+                  mb: 1,
+                }}
               >
                 New Consultation Date *
               </Typography>
@@ -711,11 +968,15 @@ export default function AppointmentsPage() {
                   htmlInput: { min: today },
                 }}
                 required
-                sx={{
+                sx={(theme) => ({
                   "& .MuiOutlinedInput-root": {
                     borderRadius: "14px",
+                    bgcolor: "background.paper",
+                    "& fieldset": {
+                      borderColor: theme.palette.divider,
+                    },
                   },
-                }}
+                })}
               />
             </Box>
 
@@ -723,11 +984,19 @@ export default function AppointmentsPage() {
             <Box>
               <Typography
                 variant="caption"
-                className="block text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-2"
+                sx={{
+                  display: "block",
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  color: "text.secondary",
+                  mb: 1,
+                }}
               >
                 Select Consultation Time Slot *
               </Typography>
-              <Box className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(2, 1fr)", sm: "repeat(3, 1fr)" }, gap: 1 }}>
                 {availableSlots.map((slot) => {
                   const isSelected = editSlot === slot;
                   return (
@@ -737,11 +1006,30 @@ export default function AppointmentsPage() {
                       variant={isSelected ? "contained" : "outlined"}
                       size="small"
                       onClick={() => setEditSlot(slot)}
-                      className={`rounded-xl text-xs font-bold py-2 capitalize transition-all ${
-                        isSelected
-                          ? "bg-teal-600 text-white shadow-xs"
-                          : "border border-[var(--border-color)] text-[var(--text-secondary)] bg-[var(--bg-secondary)] hover:bg-slate-50 dark:hover:bg-slate-800"
-                      }`}
+                      sx={(theme) => ({
+                        borderRadius: "12px",
+                        fontSize: "0.75rem",
+                        fontWeight: 700,
+                        py: 1,
+                        textTransform: "none",
+                        transition: "all 0.2s",
+                        ...(isSelected
+                          ? {
+                              bgcolor: theme.palette.primary.main,
+                              color: theme.palette.primary.contrastText,
+                            }
+                          : {
+                              borderColor: theme.palette.divider,
+                              color: theme.palette.text.secondary,
+                              bgcolor: "background.paper",
+                              "&:hover": {
+                                bgcolor:
+                                  theme.palette.mode === "dark"
+                                    ? "rgba(51, 65, 85, 0.5)"
+                                    : "rgba(241, 245, 249, 0.8)",
+                              },
+                            }),
+                      })}
                     >
                       {slot}
                     </Button>
@@ -754,7 +1042,15 @@ export default function AppointmentsPage() {
             <Box>
               <Typography
                 variant="caption"
-                className="block text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-1.5"
+                sx={{
+                  display: "block",
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  color: "text.secondary",
+                  mb: 1,
+                }}
               >
                 Patient Notes & Instructions (Optional)
               </Typography>
@@ -766,21 +1062,25 @@ export default function AppointmentsPage() {
                 size="small"
                 value={editNotes}
                 onChange={(e) => setEditNotes(e.target.value)}
-                sx={{
+                sx={(theme) => ({
                   "& .MuiOutlinedInput-root": {
                     borderRadius: "14px",
+                    bgcolor: "background.paper",
+                    "& fieldset": {
+                      borderColor: theme.palette.divider,
+                    },
                   },
-                }}
+                })}
               />
             </Box>
           </DialogContent>
 
-          <DialogActions className="px-6 pb-4 pt-3 gap-2">
+          <DialogActions sx={{ px: 3, pb: 2, pt: 1.5, gap: 1 }}>
             <Button
               type="button"
               onClick={() => setRescheduleDialogOpen(false)}
               disabled={isUpdating}
-              className="text-[var(--text-secondary)] font-semibold rounded-xl capitalize"
+              sx={{ color: "text.secondary", fontWeight: 600, borderRadius: "12px", textTransform: "none" }}
             >
               Cancel
             </Button>
@@ -795,7 +1095,7 @@ export default function AppointmentsPage() {
                   <EditCalendarRoundedIcon />
                 )
               }
-              className="bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl px-5 py-2 shadow-xs capitalize"
+              sx={{ fontWeight: 700, borderRadius: "12px", px: 2.5, py: 1, boxShadow: 1, textTransform: "none" }}
             >
               {isUpdating ? "Saving Changes..." : "Save Changes"}
             </Button>
@@ -812,44 +1112,62 @@ export default function AppointmentsPage() {
         maxWidth="xs"
         fullWidth
         PaperProps={{
-          sx: {
+          sx: (theme) => ({
             borderRadius: "24px",
             p: 1.5,
             bgcolor: "background.paper",
+            border: `1px solid ${theme.palette.divider}`,
             boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.2)",
-          },
+          }),
         }}
       >
-        <DialogTitle className="font-extrabold text-[var(--text-primary)] pb-1 flex items-center gap-2">
-          <CancelRoundedIcon className="text-rose-600" />
+        <DialogTitle sx={{ fontWeight: 800, color: "text.primary", pb: 0.5, display: "flex", alignItems: "center", gap: 1 }}>
+          <CancelRoundedIcon sx={{ color: "error.main" }} />
           <span>Cancel Appointment?</span>
         </DialogTitle>
         <DialogContent>
-          <DialogContentText className="text-sm text-[var(--text-secondary)] leading-relaxed pt-1">
+          <DialogContentText sx={{ fontSize: "0.875rem", color: "text.secondary", lineHeight: 1.6, pt: 0.5 }}>
             Are you sure you want to cancel your appointment with{" "}
-            <span className="font-bold text-[var(--text-primary)]">
+            <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
               {appointmentToCancel?.doctorName}
-            </span>{" "}
+            </Box>{" "}
             scheduled on{" "}
-            <span className="font-bold text-teal-600 dark:text-teal-400">
+            <Box component="span" sx={{ fontWeight: 700, color: "primary.main" }}>
               {appointmentToCancel?.date}
-            </span>{" "}
+            </Box>{" "}
             at{" "}
-            <span className="font-bold text-teal-600 dark:text-teal-400">
+            <Box component="span" sx={{ fontWeight: 700, color: "primary.main" }}>
               {appointmentToCancel?.timeSlot}
-            </span>
+            </Box>
             ?
           </DialogContentText>
-          <Box className="mt-3 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/40 text-xs text-rose-700 dark:text-rose-300">
+          <Box
+            sx={(theme) => ({
+              mt: 1.5,
+              p: 1.5,
+              borderRadius: "12px",
+              bgcolor:
+                theme.palette.mode === "dark"
+                  ? "rgba(239, 68, 68, 0.15)"
+                  : "rgba(239, 68, 68, 0.08)",
+              border: `1px solid ${
+                theme.palette.mode === "dark"
+                  ? "rgba(239, 68, 68, 0.3)"
+                  : "rgba(239, 68, 68, 0.2)"
+              }`,
+              fontSize: "0.75rem",
+              color: theme.palette.error.main,
+            })}
+          >
             This action will permanently delete this booking from your active
             schedule.
           </Box>
         </DialogContent>
-        <DialogActions className="px-6 pb-3 pt-2 gap-2">
+        <DialogActions sx={{ px: 3, pb: 1.5, pt: 1, gap: 1 }}>
           <Button
             onClick={() => setCancelDialogOpen(false)}
             disabled={isCancelling}
-            className="text-[var(--text-secondary)] font-semibold rounded-xl capitalize"
+            sx={{ color: "text.secondary", fontWeight: 600, borderRadius: "12px", textTransform: "none" }}
           >
             Keep Visit
           </Button>
@@ -865,7 +1183,7 @@ export default function AppointmentsPage() {
                 <CancelRoundedIcon />
               )
             }
-            className="bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl px-4 py-2 shadow-xs capitalize"
+            sx={{ fontWeight: 700, borderRadius: "12px", px: 2, py: 1, boxShadow: 1, textTransform: "none" }}
           >
             {isCancelling ? "Cancelling..." : "Yes, Cancel Visit"}
           </Button>
@@ -885,14 +1203,11 @@ export default function AppointmentsPage() {
           severity={snackbar.severity}
           variant="filled"
           onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
-          className="rounded-xl font-semibold shadow-lg text-sm"
           sx={{
-            bgcolor:
-              snackbar.severity === "success"
-                ? "#0d9488"
-                : snackbar.severity === "error"
-                  ? "#dc2626"
-                  : "#334155",
+            borderRadius: "12px",
+            fontWeight: 600,
+            fontSize: "0.875rem",
+            boxShadow: 3,
           }}
         >
           {snackbar.message}

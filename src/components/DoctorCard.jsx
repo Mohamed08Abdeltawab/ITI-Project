@@ -46,34 +46,73 @@ export default function DoctorCard({ doctor, onToggleFavorite, isFav }) {
   return (
     <Card
       elevation={0}
-      className="bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-teal-300 dark:hover:border-teal-500/60 hover:shadow-lg transition-all duration-300 rounded-2xl flex flex-col justify-between h-full group"
+      sx={(theme) => ({
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        height: "100%",
+        borderRadius: 2,
+        bgcolor: theme.palette.background.paper,
+        border: `1px solid ${theme.palette.divider}`,
+        transition: "all 0.3s ease",
+        "&:hover": {
+          borderColor: theme.palette.primary.main,
+          boxShadow: theme.shadows[4],
+        },
+      })}
     >
-      <CardContent className="p-5 sm:p-6 flex flex-col justify-between h-full">
+      <CardContent
+        sx={{
+          p: { xs: 2.5, sm: 3 },
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          height: "100%",
+          "&:last-child": { pb: { xs: 2.5, sm: 3 } },
+        }}
+      >
         <Box>
           {/* Top Row: Avatar with online badge + Doctor Info + Favorite Button */}
-          <Stack direction="row" className="items-start justify-between gap-3">
-            <Stack direction="row" className="items-center gap-3.5 min-w-0">
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "flex-start",
+              justifyContent: "space-between",
+              gap: 1.5,
+            }}
+          >
+            <Stack
+              direction="row"
+              sx={{ alignItems: "center", gap: 1.75, minWidth: 0 }}
+            >
               {/* Avatar with active green indicator */}
               <Badge
                 overlap="circular"
                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                 variant="dot"
-                sx={{
+                sx={(theme) => ({
                   "& .MuiBadge-badge": {
-                    backgroundColor: "#10b981",
-                    color: "#10b981",
-                    boxShadow: "0 0 0 2px #ffffff",
+                    bgcolor: theme.palette.success.main,
+                    color: theme.palette.success.main,
+                    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
                     width: 12,
                     height: 12,
                     borderRadius: "50%",
                   },
-                }}
+                })}
               >
                 <Avatar
                   src={doctor.avatar}
                   alt={doctor.name}
                   variant="rounded"
-                  className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-700 object-cover shadow-xs"
+                  sx={(theme) => ({
+                    width: 56,
+                    height: 56,
+                    borderRadius: 3.5,
+                    bgcolor:
+                      theme.palette.mode === "dark" ? "grey.800" : "grey.100",
+                    boxShadow: 1,
+                  })}
                   imgProps={{
                     onError: (e) => {
                       e.target.onerror = null;
@@ -85,26 +124,54 @@ export default function DoctorCard({ doctor, onToggleFavorite, isFav }) {
               </Badge>
 
               {/* Name + Specialty + Experience */}
-              <Box className="min-w-0">
+              <Box sx={{ minWidth: 0 }}>
                 <Typography
                   variant="subtitle1"
-                  className="font-bold text-[var(--text-primary)] text-base leading-tight truncate"
+                  sx={(theme) => ({
+                    fontWeight: 700,
+                    color: theme.palette.text.primary,
+                    fontSize: "1rem",
+                    lineHeight: 1.25,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  })}
                 >
                   {doctor.name}
                 </Typography>
 
                 <Stack
                   direction="row"
-                  className="items-center gap-2 mt-1.5 flex-wrap"
+                  sx={{ alignItems: "center", gap: 1, mt: 0.75, flexWrap: "wrap" }}
                 >
                   <Chip
                     label={doctor.specialty}
                     size="small"
-                    className="bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300 border border-teal-200/60 dark:border-teal-800/60 font-semibold text-xs h-6 rounded-md"
+                    sx={(theme) => ({
+                      bgcolor:
+                        theme.palette.mode === "dark"
+                          ? "rgba(20, 184, 166, 0.15)"
+                          : "rgba(13, 148, 136, 0.08)",
+                      color: theme.palette.primary.main,
+                      border: `1px solid ${
+                        theme.palette.mode === "dark"
+                          ? "rgba(20, 184, 166, 0.3)"
+                          : "rgba(13, 148, 136, 0.2)"
+                      }`,
+                      fontWeight: 600,
+                      fontSize: "0.75rem",
+                      height: 24,
+                      borderRadius: 1.5,
+                    })}
                   />
                   <Typography
                     variant="caption"
-                    className="text-[var(--text-secondary)] font-medium text-xs whitespace-nowrap"
+                    sx={(theme) => ({
+                      color: theme.palette.text.secondary,
+                      fontWeight: 500,
+                      fontSize: "0.75rem",
+                      whiteSpace: "nowrap",
+                    })}
                   >
                     {doctor.experience || "10 yrs exp"}
                   </Typography>
@@ -121,11 +188,35 @@ export default function DoctorCard({ doctor, onToggleFavorite, isFav }) {
                 size="small"
                 onClick={handleFavoriteClick}
                 aria-label="Add to favorites"
-                className={`w-9 h-9 rounded-xl border transition-colors shrink-0 ${
-                  isFavorite
-                    ? "bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-900/60 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/40"
-                    : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
-                }`}
+                sx={(theme) => ({
+                  width: 36,
+                  height: 36,
+                  borderRadius: 3,
+                  border: `1px solid ${
+                    isFavorite ? theme.palette.error.light : theme.palette.divider
+                  }`,
+                  bgcolor: isFavorite
+                    ? theme.palette.mode === "dark"
+                      ? "rgba(239, 68, 68, 0.15)"
+                      : "rgba(239, 68, 68, 0.08)"
+                    : theme.palette.mode === "dark"
+                      ? "rgba(255, 255, 255, 0.05)"
+                      : "grey.50",
+                  color: isFavorite
+                    ? theme.palette.error.main
+                    : theme.palette.text.secondary,
+                  transition: "background-color 0.2s ease, border-color 0.2s ease",
+                  flexShrink: 0,
+                  "&:hover": {
+                    bgcolor: isFavorite
+                      ? theme.palette.mode === "dark"
+                        ? "rgba(239, 68, 68, 0.25)"
+                        : "rgba(239, 68, 68, 0.15)"
+                      : theme.palette.mode === "dark"
+                        ? "rgba(255, 255, 255, 0.1)"
+                        : "grey.100",
+                  },
+                })}
               >
                 {isFavorite ? (
                   <FavoriteRoundedIcon sx={{ fontSize: 18 }} />
@@ -137,17 +228,46 @@ export default function DoctorCard({ doctor, onToggleFavorite, isFav }) {
           </Stack>
 
           {/* Rating Pill */}
-          <Box className="inline-flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/70 border border-slate-100 dark:border-slate-700/70 rounded-lg px-2.5 py-1 mt-3 mb-2.5">
-            <StarRoundedIcon sx={{ fontSize: 17, color: "#f59e0b" }} />
+          <Box
+            sx={(theme) => ({
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 0.75,
+              bgcolor:
+                theme.palette.mode === "dark"
+                  ? "rgba(30, 41, 59, 0.7)"
+                  : "grey.50",
+              border: `1px solid ${theme.palette.divider}`,
+              borderRadius: 2,
+              px: 1.25,
+              py: 0.5,
+              mt: 1.5,
+              mb: 1.25,
+            })}
+          >
+            <StarRoundedIcon
+              sx={(theme) => ({
+                fontSize: 17,
+                color: theme.palette.warning.main,
+              })}
+            />
             <Typography
               variant="caption"
-              className="font-bold text-[var(--text-primary)] text-xs"
+              sx={(theme) => ({
+                fontWeight: 700,
+                color: theme.palette.text.primary,
+                fontSize: "0.75rem",
+              })}
             >
               {doctor.rating}
             </Typography>
             <Typography
               variant="caption"
-              className="text-[var(--text-muted)] text-xs font-normal"
+              sx={(theme) => ({
+                color: theme.palette.text.secondary,
+                fontSize: "0.75rem",
+                fontWeight: 400,
+              })}
             >
               ({doctor.reviewsCount || 124} reviews)
             </Typography>
@@ -156,20 +276,58 @@ export default function DoctorCard({ doctor, onToggleFavorite, isFav }) {
           {/* Bio Snippet */}
           <Typography
             variant="body2"
-            className="text-[var(--text-secondary)] text-xs sm:text-[13px] line-clamp-2 leading-relaxed mb-3.5"
+            sx={(theme) => ({
+              color: theme.palette.text.secondary,
+              fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+              lineHeight: 1.5,
+              mb: 1.75,
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            })}
           >
             {doctor.bio}
           </Typography>
 
           {/* Schedule / Hours */}
-          <Box className="inline-flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/70 border border-slate-100 dark:border-slate-700/70 text-[var(--text-secondary)] text-xs font-medium px-2.5 py-1.5 rounded-lg mb-4 w-full">
+          <Box
+            sx={(theme) => ({
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 0.75,
+              bgcolor:
+                theme.palette.mode === "dark"
+                  ? "rgba(30, 41, 59, 0.7)"
+                  : "grey.50",
+              border: `1px solid ${theme.palette.divider}`,
+              color: theme.palette.text.secondary,
+              fontSize: "0.75rem",
+              fontWeight: 500,
+              px: 1.25,
+              py: 0.75,
+              borderRadius: 2,
+              mb: 2,
+              width: "100%",
+            })}
+          >
             <CalendarMonthRoundedIcon
-              sx={{ fontSize: 15, color: "#0d9488" }}
-              className="shrink-0"
+              sx={(theme) => ({
+                fontSize: 15,
+                color: theme.palette.primary.main,
+                flexShrink: 0,
+              })}
             />
             <Typography
               variant="caption"
-              className="truncate text-[var(--text-secondary)] text-xs font-medium"
+              sx={(theme) => ({
+                color: theme.palette.text.secondary,
+                fontSize: "0.75rem",
+                fontWeight: 500,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              })}
             >
               {scheduleText}
             </Typography>
@@ -177,11 +335,37 @@ export default function DoctorCard({ doctor, onToggleFavorite, isFav }) {
         </Box>
 
         {/* Action Buttons */}
-        <Box className="grid grid-cols-2 gap-2.5 pt-3 border-t border-[var(--border-color)]">
+        <Box
+          sx={(theme) => ({
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 1.25,
+            pt: 1.5,
+            borderTop: `1px solid ${theme.palette.divider}`,
+          })}
+        >
           <Button
             variant="outlined"
             onClick={() => navigate(`/doctors/${doctor.id}`)}
-            className="w-full py-2 px-3 border border-[var(--border-color)] text-[var(--text-primary)] hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 text-xs sm:text-sm font-semibold rounded-xl transition-colors"
+            sx={(theme) => ({
+              width: "100%",
+              py: 1,
+              px: 1.5,
+              border: `1px solid ${theme.palette.divider}`,
+              color: theme.palette.text.primary,
+              borderRadius: 3,
+              fontWeight: 600,
+              fontSize: { xs: "0.75rem", sm: "0.875rem" },
+              textTransform: "none",
+              transition: "background-color 0.2s ease",
+              "&:hover": {
+                bgcolor:
+                  theme.palette.mode === "dark"
+                    ? "rgba(255, 255, 255, 0.05)"
+                    : "grey.50",
+                borderColor: theme.palette.divider,
+              },
+            })}
           >
             View Profile
           </Button>
@@ -190,7 +374,22 @@ export default function DoctorCard({ doctor, onToggleFavorite, isFav }) {
             variant="contained"
             onClick={() => navigate(`/book/${doctor.id}`)}
             endIcon={<ArrowForwardRoundedIcon sx={{ fontSize: 16 }} />}
-            className="w-full py-2 px-3 bg-teal-600 hover:bg-teal-700 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-xs transition-colors"
+            sx={(theme) => ({
+              width: "100%",
+              py: 1,
+              px: 1.5,
+              bgcolor: theme.palette.primary.main,
+              color: theme.palette.primary.contrastText,
+              borderRadius: 3,
+              fontWeight: 600,
+              fontSize: { xs: "0.75rem", sm: "0.875rem" },
+              textTransform: "none",
+              boxShadow: 1,
+              transition: "background-color 0.2s ease",
+              "&:hover": {
+                bgcolor: theme.palette.primary.dark,
+              },
+            })}
           >
             Book Now
           </Button>

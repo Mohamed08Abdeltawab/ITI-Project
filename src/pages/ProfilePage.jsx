@@ -136,56 +136,123 @@ export default function ProfilePage() {
 
   return (
     <Box
-      sx={{ display: "flex", flexDirection: "column", gap: 4 }}
-      className="flex flex-col gap-8 max-w-5xl mx-auto py-2"
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 4,
+        maxWidth: 1024,
+        mx: "auto",
+        py: 1,
+      }}
     >
       {/* Profile Header Card */}
       <Card
         elevation={0}
-        className="bg-gradient-to-r from-white via-white to-teal-50/50 dark:from-slate-800 dark:via-slate-850 dark:to-teal-950/30 border border-[var(--border-color)] rounded-3xl p-6 sm:p-8 shadow-xs"
+        sx={(theme) => ({
+          background:
+            theme.palette.mode === "dark"
+              ? "linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(13, 148, 136, 0.15) 100%)"
+              : "linear-gradient(135deg, #ffffff 0%, rgba(204, 251, 241, 0.4) 100%)",
+          border: `1px solid ${theme.palette.divider}`,
+          borderRadius: "24px",
+          p: { xs: 3, sm: 4 },
+          boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+        })}
       >
         <Stack
           direction={{ xs: "column", sm: "row" }}
-          className="items-start sm:items-center justify-between gap-6"
+          sx={{
+            alignItems: { xs: "flex-start", sm: "center" },
+            justifyContent: "space-between",
+            gap: 3,
+          }}
         >
-          <Stack direction="row" className="items-center gap-5">
+          <Stack direction="row" sx={{ alignItems: "center", gap: 2.5 }}>
             <Badge
               overlap="circular"
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               badgeContent={
-                <Box className="w-5 h-5 rounded-full bg-teal-600 text-white flex items-center justify-center border-2 border-white dark:border-slate-800">
+                <Box
+                  sx={(theme) => ({
+                    width: 20,
+                    height: 20,
+                    borderRadius: "50%",
+                    bgcolor: theme.palette.primary.main,
+                    color: theme.palette.primary.contrastText,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: `2px solid ${theme.palette.background.paper}`,
+                  })}
+                >
                   <CheckCircleRoundedIcon sx={{ fontSize: 13 }} />
                 </Box>
               }
             >
-              <Avatar className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-slate-900 dark:bg-teal-600 text-white font-bold text-2xl sm:text-3xl shadow-sm">
+              <Avatar
+                sx={(theme) => ({
+                  width: { xs: 80, sm: 96 },
+                  height: { xs: 80, sm: 96 },
+                  borderRadius: "24px",
+                  bgcolor:
+                    theme.palette.mode === "dark"
+                      ? "primary.main"
+                      : "text.primary",
+                  color: "#ffffff",
+                  fontWeight: 700,
+                  fontSize: { xs: "1.5rem", sm: "1.875rem" },
+                  boxShadow: 1,
+                })}
+              >
                 JD
               </Avatar>
             </Badge>
 
             <Box>
-              <Stack direction="row" className="items-center gap-2 mb-1">
+              <Stack direction="row" sx={{ alignItems: "center", gap: 1, mb: 0.5 }}>
                 <Typography
                   variant="h5"
-                  className="font-extrabold text-[var(--text-primary)] leading-tight"
+                  sx={{
+                    fontWeight: 800,
+                    color: "text.primary",
+                    lineHeight: 1.2,
+                  }}
                 >
                   {profile.fullName}
                 </Typography>
                 <Chip
                   label="Verified Patient"
                   size="small"
-                  className="bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60 font-bold text-xs"
+                  sx={(theme) => ({
+                    bgcolor:
+                      theme.palette.mode === "dark"
+                        ? "rgba(16, 185, 129, 0.15)"
+                        : "rgba(16, 185, 129, 0.1)",
+                    color: theme.palette.success.main,
+                    border: `1px solid ${
+                      theme.palette.mode === "dark"
+                        ? "rgba(16, 185, 129, 0.3)"
+                        : "rgba(16, 185, 129, 0.2)"
+                    }`,
+                    fontWeight: 700,
+                    fontSize: "0.75rem",
+                  })}
                 />
               </Stack>
               <Typography
                 variant="body2"
-                className="text-[var(--text-secondary)] text-sm"
+                sx={{ color: "text.secondary", fontSize: "0.875rem" }}
               >
                 Patient ID: #CP-884920 • Member since 2023
               </Typography>
               <Typography
                 variant="caption"
-                className="text-teal-700 dark:text-teal-400 font-semibold block mt-0.5"
+                sx={{
+                  color: "primary.main",
+                  fontWeight: 600,
+                  display: "block",
+                  mt: 0.25,
+                }}
               >
                 Primary Insurance: {profile.insuranceProvider}
               </Typography>
@@ -193,11 +260,23 @@ export default function ProfilePage() {
           </Stack>
 
           {/* Theme Switcher Quick Widget */}
-          <Box className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl p-3 sm:px-4 flex items-center gap-3 shadow-xs">
+          <Box
+            sx={(theme) => ({
+              bgcolor: "background.paper",
+              border: `1px solid ${theme.palette.divider}`,
+              borderRadius: "16px",
+              p: 1.5,
+              px: { sm: 2 },
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+            })}
+          >
             {isDarkMode ? (
-              <LightModeOutlinedIcon sx={{ fontSize: 20, color: "#f59e0b" }} />
+              <LightModeOutlinedIcon sx={{ fontSize: 20, color: "warning.main" }} />
             ) : (
-              <DarkModeOutlinedIcon sx={{ fontSize: 20, color: "#0d9488" }} />
+              <DarkModeOutlinedIcon sx={{ fontSize: 20, color: "primary.main" }} />
             )}
             <FormControlLabel
               control={
@@ -205,48 +284,49 @@ export default function ProfilePage() {
                   checked={isDarkMode}
                   onChange={handleThemeToggle}
                   color="primary"
-                  sx={{
-                    "& .MuiSwitch-switchBase.Mui-checked": {
-                      color: isDarkMode ? "#14b8a6" : "#0d9488",
-                    },
-                    "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                      backgroundColor: isDarkMode ? "#14b8a6" : "#0d9488",
-                    },
-                  }}
                 />
               }
               label={
                 <Typography
                   variant="caption"
-                  className="font-bold text-[var(--text-primary)]"
+                  sx={{ fontWeight: 700, color: "text.primary" }}
                 >
                   {isDarkMode ? "Dark Theme" : "Light Theme"}
                 </Typography>
               }
-              className="m-0"
+              sx={{ m: 0 }}
             />
           </Box>
         </Stack>
       </Card>
 
       {/* Grid: Profile Form + App Preferences & useRef Demonstration */}
-      <Box className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "repeat(12, 1fr)" }, gap: 3 }}>
         {/* Left Column: User Profile Form */}
-        <Box className="lg:col-span-7">
+        <Box sx={{ gridColumn: { lg: "span 7" } }}>
           <Card
             elevation={0}
-            className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl p-6 sm:p-8"
+            sx={(theme) => ({
+              bgcolor: "background.paper",
+              border: `1px solid ${theme.palette.divider}`,
+              borderRadius: "24px",
+              p: { xs: 3, sm: 4 },
+            })}
           >
-            <Stack direction="row" className="items-center gap-2 mb-6">
+            <Stack direction="row" sx={{ alignItems: "center", gap: 1, mb: 3 }}>
               <PersonRoundedIcon
                 sx={{
                   fontSize: 22,
-                  color: isDarkMode ? "#14b8a6" : "#0d9488",
+                  color: "primary.main",
                 }}
               />
               <Typography
                 variant="h6"
-                className="font-bold text-[var(--text-primary)] leading-tight"
+                sx={{
+                  fontWeight: 700,
+                  color: "text.primary",
+                  lineHeight: 1.2,
+                }}
               >
                 Personal Medical Information
               </Typography>
@@ -256,7 +336,6 @@ export default function ProfilePage() {
               component="form"
               onSubmit={handleSaveProfile}
               sx={{ display: "flex", flexDirection: "column", gap: 3 }}
-              className="flex flex-col gap-6"
             >
               <TextField
                 fullWidth
@@ -266,18 +345,18 @@ export default function ProfilePage() {
                 onChange={(e) =>
                   handleProfileChange("fullName", e.target.value)
                 }
-                sx={{
+                sx={(theme) => ({
                   "& .MuiOutlinedInput-root": {
                     borderRadius: "14px",
-                    bgcolor: isDarkMode ? "#1e293b" : "#ffffff",
-                    "&.Mui-focused fieldset": {
-                      borderColor: isDarkMode ? "#14b8a6" : "#0d9488",
+                    bgcolor: "background.paper",
+                    "& fieldset": {
+                      borderColor: theme.palette.divider,
                     },
                   },
-                }}
+                })}
               />
 
-              <Box className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+              <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" }, gap: { xs: 2, sm: 3 } }}>
                 <TextField
                   fullWidth
                   label="Email Address"
@@ -288,19 +367,19 @@ export default function ProfilePage() {
                   InputProps={{
                     startAdornment: (
                       <EmailOutlinedIcon
-                        sx={{ fontSize: 18, color: "#94a3b8", mr: 1 }}
+                        sx={{ fontSize: 18, color: "text.secondary", mr: 1 }}
                       />
                     ),
                   }}
-                  sx={{
+                  sx={(theme) => ({
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "14px",
-                      bgcolor: isDarkMode ? "#1e293b" : "#ffffff",
-                      "&.Mui-focused fieldset": {
-                        borderColor: isDarkMode ? "#14b8a6" : "#0d9488",
+                      bgcolor: "background.paper",
+                      "& fieldset": {
+                        borderColor: theme.palette.divider,
                       },
                     },
-                  }}
+                  })}
                 />
 
                 <TextField
@@ -312,23 +391,23 @@ export default function ProfilePage() {
                   InputProps={{
                     startAdornment: (
                       <PhoneOutlinedIcon
-                        sx={{ fontSize: 18, color: "#94a3b8", mr: 1 }}
+                        sx={{ fontSize: 18, color: "text.secondary", mr: 1 }}
                       />
                     ),
                   }}
-                  sx={{
+                  sx={(theme) => ({
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "14px",
-                      bgcolor: isDarkMode ? "#1e293b" : "#ffffff",
-                      "&.Mui-focused fieldset": {
-                        borderColor: isDarkMode ? "#14b8a6" : "#0d9488",
+                      bgcolor: "background.paper",
+                      "& fieldset": {
+                        borderColor: theme.palette.divider,
                       },
                     },
-                  }}
+                  })}
                 />
               </Box>
 
-              <Box className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+              <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" }, gap: { xs: 2, sm: 3 } }}>
                 <TextField
                   fullWidth
                   select
@@ -341,19 +420,19 @@ export default function ProfilePage() {
                   InputProps={{
                     startAdornment: (
                       <BloodtypeRoundedIcon
-                        sx={{ fontSize: 18, color: "#ef4444", mr: 1 }}
+                        sx={{ fontSize: 18, color: "error.main", mr: 1 }}
                       />
                     ),
                   }}
-                  sx={{
+                  sx={(theme) => ({
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "14px",
-                      bgcolor: isDarkMode ? "#1e293b" : "#ffffff",
-                      "&.Mui-focused fieldset": {
-                        borderColor: isDarkMode ? "#14b8a6" : "#0d9488",
+                      bgcolor: "background.paper",
+                      "& fieldset": {
+                        borderColor: theme.palette.divider,
                       },
                     },
-                  }}
+                  })}
                 >
                   {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(
                     (type) => (
@@ -372,15 +451,15 @@ export default function ProfilePage() {
                   onChange={(e) =>
                     handleProfileChange("insuranceProvider", e.target.value)
                   }
-                  sx={{
+                  sx={(theme) => ({
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "14px",
-                      bgcolor: isDarkMode ? "#1e293b" : "#ffffff",
-                      "&.Mui-focused fieldset": {
-                        borderColor: isDarkMode ? "#14b8a6" : "#0d9488",
+                      bgcolor: "background.paper",
+                      "& fieldset": {
+                        borderColor: theme.palette.divider,
                       },
                     },
-                  }}
+                  })}
                 />
               </Box>
 
@@ -395,27 +474,34 @@ export default function ProfilePage() {
                 InputProps={{
                   startAdornment: (
                     <ContactEmergencyRoundedIcon
-                      sx={{ fontSize: 18, color: "#94a3b8", mr: 1 }}
+                      sx={{ fontSize: 18, color: "text.secondary", mr: 1 }}
                     />
                   ),
                 }}
-                sx={{
+                sx={(theme) => ({
                   "& .MuiOutlinedInput-root": {
                     borderRadius: "14px",
-                    bgcolor: isDarkMode ? "#1e293b" : "#ffffff",
-                    "&.Mui-focused fieldset": {
-                      borderColor: isDarkMode ? "#14b8a6" : "#0d9488",
+                    bgcolor: "background.paper",
+                    "& fieldset": {
+                      borderColor: theme.palette.divider,
                     },
                   },
-                }}
+                })}
               />
 
-              <Box className="pt-2">
+              <Box sx={{ pt: 1 }}>
                 <Button
                   type="submit"
                   variant="contained"
                   startIcon={<SaveRoundedIcon />}
-                  className="bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl px-6 py-2.5 shadow-xs"
+                  sx={{
+                    fontWeight: 700,
+                    borderRadius: "12px",
+                    px: 3,
+                    py: 1.25,
+                    boxShadow: 1,
+                    textTransform: "none",
+                  }}
                 >
                   Save Profile Changes
                 </Button>
@@ -425,30 +511,64 @@ export default function ProfilePage() {
         </Box>
 
         {/* Right Column: App Preferences & useRef Uncontrolled Input Demo */}
-        <Box className="lg:col-span-5 flex flex-col gap-6">
+        <Box sx={{ gridColumn: { lg: "span 5" }, display: "flex", flexDirection: "column", gap: 3 }}>
           {/* App Preferences Section */}
           <Card
             elevation={0}
-            className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl p-7 sm:p-8 shadow-xs min-h-[300px] flex flex-col justify-between"
+            sx={(theme) => ({
+              bgcolor: "background.paper",
+              border: `1px solid ${theme.palette.divider}`,
+              borderRadius: "24px",
+              p: { xs: 3.5, sm: 4 },
+              boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+              minHeight: 300,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+            })}
           >
             <Stack
               direction="row"
-              className="items-center justify-between gap-3 mb-4 sm:mb-5"
+              sx={{
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 1.5,
+                mb: { xs: 2, sm: 2.5 },
+              }}
             >
-              <Stack direction="row" className="items-center gap-2.5">
-                <Box className="w-9 h-9 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center">
+              <Stack direction="row" sx={{ alignItems: "center", gap: 1.25 }}>
+                <Box
+                  sx={(theme) => ({
+                    width: 36,
+                    height: 36,
+                    borderRadius: "12px",
+                    bgcolor:
+                      theme.palette.mode === "dark"
+                        ? "rgba(13, 148, 136, 0.2)"
+                        : "rgba(13, 148, 136, 0.1)",
+                    color: "primary.main",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  })}
+                >
                   <TuneRoundedIcon sx={{ fontSize: 20 }} />
                 </Box>
                 <Box>
                   <Typography
                     variant="h6"
-                    className="font-bold text-[var(--text-primary)] leading-tight text-base sm:text-lg"
+                    sx={{
+                      fontWeight: 700,
+                      color: "text.primary",
+                      lineHeight: 1.2,
+                      fontSize: { xs: "1rem", sm: "1.125rem" },
+                    }}
                   >
                     App Preferences
                   </Typography>
                   <Typography
                     variant="caption"
-                    className="text-[var(--text-secondary)] text-xs"
+                    sx={{ color: "text.secondary", fontSize: "0.75rem" }}
                   >
                     Theme &amp; visual appearance
                   </Typography>
@@ -463,41 +583,74 @@ export default function ProfilePage() {
                     <LightModeOutlinedIcon
                       sx={{
                         fontSize: "16px !important",
-                        color: "#f59e0b !important",
+                        color: "warning.main !important",
                       }}
                     />
                   ) : (
                     <DarkModeOutlinedIcon
                       sx={{
                         fontSize: "16px !important",
-                        color: "#0d9488 !important",
+                        color: "primary.main !important",
                       }}
                     />
                   )
                 }
-                className={`font-bold text-xs ${
-                  isDarkMode
-                    ? "bg-slate-700 text-teal-300 border border-slate-600"
-                    : "bg-teal-50 text-teal-700 border border-teal-200"
-                }`}
+                sx={(theme) => ({
+                  fontWeight: 700,
+                  fontSize: "0.75rem",
+                  bgcolor:
+                    theme.palette.mode === "dark"
+                      ? "rgba(51, 65, 85, 0.6)"
+                      : "rgba(13, 148, 136, 0.08)",
+                  color:
+                    theme.palette.mode === "dark"
+                      ? "primary.light"
+                      : "primary.main",
+                  border: `1px solid ${theme.palette.divider}`,
+                })}
               />
             </Stack>
 
-            <Box className="p-5 sm:p-6 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-[var(--border-color)] my-auto">
+            <Box
+              sx={(theme) => ({
+                p: { xs: 2.5, sm: 3 },
+                borderRadius: "16px",
+                bgcolor:
+                  theme.palette.mode === "dark"
+                    ? "rgba(15, 23, 42, 0.6)"
+                    : "rgba(248, 250, 252, 0.8)",
+                border: `1px solid ${theme.palette.divider}`,
+                my: "auto",
+              })}
+            >
               <Stack
                 direction="row"
-                className="items-center justify-between gap-4"
+                sx={{
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 2,
+                }}
               >
-                <Box className="min-w-0">
+                <Box sx={{ minWidth: 0 }}>
                   <Typography
                     variant="subtitle2"
-                    className="font-bold text-[var(--text-primary)] text-sm"
+                    sx={{
+                      fontWeight: 700,
+                      color: "text.primary",
+                      fontSize: "0.875rem",
+                    }}
                   >
                     {isDarkMode ? "Dark Theme Enabled" : "Light Theme Enabled"}
                   </Typography>
                   <Typography
                     variant="caption"
-                    className="text-[var(--text-secondary)] text-xs leading-relaxed block mt-0.5"
+                    sx={{
+                      color: "text.secondary",
+                      fontSize: "0.75rem",
+                      lineHeight: 1.6,
+                      display: "block",
+                      mt: 0.25,
+                    }}
                   >
                     {isDarkMode
                       ? "Dark palette (#0b1120 default, #1e293b paper) with brand teal accent."
@@ -511,26 +664,23 @@ export default function ProfilePage() {
                       checked={isDarkMode}
                       onChange={handleThemeToggle}
                       color="primary"
-                      sx={{
-                        "& .MuiSwitch-switchBase.Mui-checked": {
-                          color: "#14b8a6",
-                        },
-                        "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
-                          {
-                            backgroundColor: "#14b8a6",
-                          },
-                      }}
                     />
                   }
                   label=""
-                  className="m-0"
+                  sx={{ m: 0 }}
                 />
               </Stack>
             </Box>
 
             <Typography
               variant="caption"
-              className="text-slate-400 dark:text-slate-500 text-xs block mt-4 px-1"
+              sx={{
+                color: "text.secondary",
+                fontSize: "0.75rem",
+                display: "block",
+                mt: 2,
+                px: 0.5,
+              }}
             >
               ✓ Synchronized across Material UI v5, Tailwind CSS, and saved in
               localStorage.
@@ -540,19 +690,35 @@ export default function ProfilePage() {
           {/* Emergency Medical Memo Card */}
           <Card
             elevation={0}
-            className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl p-6 sm:p-8 flex flex-col justify-between h-full bg-gradient-to-b from-white to-teal-50/20 dark:from-slate-800 dark:to-teal-950/20"
+            sx={(theme) => ({
+              background:
+                theme.palette.mode === "dark"
+                  ? "linear-gradient(180deg, rgba(30, 41, 59, 0.9) 0%, rgba(13, 148, 136, 0.08) 100%)"
+                  : "linear-gradient(180deg, #ffffff 0%, rgba(204, 251, 241, 0.15) 100%)",
+              border: `1px solid ${theme.palette.divider}`,
+              borderRadius: "24px",
+              p: { xs: 3, sm: 4 },
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              height: "100%",
+            })}
           >
             <Box>
-              <Stack direction="row" className="items-center gap-2 mb-2">
+              <Stack direction="row" sx={{ alignItems: "center", gap: 1, mb: 1 }}>
                 <NoteAltRoundedIcon
                   sx={{
                     fontSize: 22,
-                    color: isDarkMode ? "#14b8a6" : "#0d9488",
+                    color: "primary.main",
                   }}
                 />
                 <Typography
                   variant="h6"
-                  className="font-bold text-[var(--text-primary)] leading-tight"
+                  sx={{
+                    fontWeight: 700,
+                    color: "text.primary",
+                    lineHeight: 1.2,
+                  }}
                 >
                   Emergency Medical Memo
                 </Typography>
@@ -560,24 +726,50 @@ export default function ProfilePage() {
 
               <Typography
                 variant="body2"
-                className="text-[var(--text-secondary)] text-xs sm:text-sm mb-4"
+                sx={{
+                  color: "text.secondary",
+                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                  mb: 2,
+                }}
               >
                 Demonstration of an{" "}
-                <span className="font-bold text-teal-700 dark:text-teal-400">
+                <Box component="span" sx={{ fontWeight: 700, color: "primary.main" }}>
                   uncontrolled input
-                </span>{" "}
+                </Box>{" "}
                 using React&apos;s{" "}
-                <code className="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded text-slate-800 dark:text-slate-200 text-xs font-mono">
+                <Box
+                  component="code"
+                  sx={(theme) => ({
+                    bgcolor:
+                      theme.palette.mode === "dark"
+                        ? "rgba(51, 65, 85, 0.8)"
+                        : "rgba(241, 245, 249, 1)",
+                    px: 0.75,
+                    py: 0.25,
+                    borderRadius: "4px",
+                    color: "text.primary",
+                    fontSize: "0.75rem",
+                    fontFamily: "monospace",
+                  })}
+                >
                   useRef
-                </code>{" "}
+                </Box>{" "}
                 hook.
               </Typography>
 
               {/* Uncontrolled Input Element */}
-              <Box className="mb-4">
+              <Box sx={{ mb: 2 }}>
                 <Typography
                   variant="caption"
-                  className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5"
+                  sx={{
+                    display: "block",
+                    fontSize: "0.75rem",
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    color: "text.secondary",
+                    mb: 0.75,
+                  }}
                 >
                   Uncontrolled Note (Allergies / Instructions)
                 </Typography>
@@ -590,15 +782,15 @@ export default function ProfilePage() {
                   placeholder="Type an urgent note for first responders..."
                   variant="outlined"
                   size="small"
-                  sx={{
+                  sx={(theme) => ({
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "14px",
                       bgcolor: "background.paper",
-                      "&.Mui-focused fieldset": {
-                        borderColor: isDarkMode ? "#14b8a6" : "#0d9488",
+                      "& fieldset": {
+                        borderColor: theme.palette.divider,
                       },
                     },
-                  }}
+                  })}
                 />
               </Box>
 
@@ -606,14 +798,30 @@ export default function ProfilePage() {
               <Stack
                 direction="row"
                 spacing={1}
-                className="flex-wrap gap-2 mb-4"
+                sx={{ flexWrap: "wrap", gap: 1, mb: 2 }}
               >
                 <Button
                   variant="outlined"
                   size="small"
                   startIcon={<VisibilityRoundedIcon />}
                   onClick={handleReadRef}
-                  className="rounded-xl border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300 hover:bg-teal-50 dark:hover:bg-teal-950/40 text-xs font-bold"
+                  sx={(theme) => ({
+                    borderRadius: "12px",
+                    borderColor:
+                      theme.palette.mode === "dark"
+                        ? "rgba(13, 148, 136, 0.4)"
+                        : "rgba(13, 148, 136, 0.3)",
+                    color: "primary.main",
+                    fontSize: "0.75rem",
+                    fontWeight: 700,
+                    textTransform: "none",
+                    "&:hover": {
+                      bgcolor:
+                        theme.palette.mode === "dark"
+                          ? "rgba(13, 148, 136, 0.15)"
+                          : "rgba(13, 148, 136, 0.08)",
+                    },
+                  })}
                 >
                   Read via Ref
                 </Button>
@@ -623,7 +831,20 @@ export default function ProfilePage() {
                   size="small"
                   startIcon={<EditRoundedIcon />}
                   onClick={handleFocusRef}
-                  className="rounded-xl border border-[var(--border-color)] text-[var(--text-secondary)] hover:bg-slate-50 dark:hover:bg-slate-700/50 text-xs font-semibold"
+                  sx={(theme) => ({
+                    borderRadius: "12px",
+                    borderColor: theme.palette.divider,
+                    color: "text.secondary",
+                    fontSize: "0.75rem",
+                    fontWeight: 600,
+                    textTransform: "none",
+                    "&:hover": {
+                      bgcolor:
+                        theme.palette.mode === "dark"
+                          ? "rgba(51, 65, 85, 0.5)"
+                          : "rgba(241, 245, 249, 0.8)",
+                    },
+                  })}
                 >
                   Focus via Ref
                 </Button>
@@ -631,9 +852,15 @@ export default function ProfilePage() {
                 <Button
                   variant="outlined"
                   size="small"
+                  color="error"
                   startIcon={<ClearAllRoundedIcon />}
                   onClick={handleClearRef}
-                  className="rounded-xl border-red-200 dark:border-red-900/60 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 text-xs font-semibold"
+                  sx={{
+                    borderRadius: "12px",
+                    fontSize: "0.75rem",
+                    fontWeight: 600,
+                    textTransform: "none",
+                  }}
                 >
                   Clear via Ref
                 </Button>
@@ -643,34 +870,47 @@ export default function ProfilePage() {
               {refOutputMessage && (
                 <Alert
                   severity="info"
-                  className="rounded-xl text-xs font-medium border border-teal-150 dark:border-teal-900 bg-teal-50/80 dark:bg-teal-950/50 text-teal-900 dark:text-teal-200"
+                  sx={{
+                    borderRadius: "12px",
+                    fontSize: "0.75rem",
+                    fontWeight: 500,
+                  }}
                 >
                   {refOutputMessage}
                 </Alert>
               )}
             </Box>
 
-            <Box className="mt-4 pt-3 border-t border-[var(--border-color)] text-xs text-slate-400 dark:text-slate-500">
+            <Box
+              sx={(theme) => ({
+                mt: 2,
+                pt: 1.5,
+                borderTop: `1px solid ${theme.palette.divider}`,
+                fontSize: "0.75rem",
+                color: "text.secondary",
+              })}
+            >
               ⚡ Directly interacts with DOM via{" "}
-              <code className="text-[var(--text-secondary)] font-mono">
+              <Box component="code" sx={{ color: "text.primary", fontFamily: "monospace" }}>
                 medicalMemoRef.current
-              </code>
+              </Box>
             </Box>
           </Card>
         </Box>
       </Box>
 
       {/* Favorite Doctors Section */}
-      <Box
-        sx={{ display: "flex", flexDirection: "column", gap: 2 }}
-        className="flex flex-col gap-4 pt-2"
-      >
-        <Stack direction="row" className="items-center justify-between">
-          <Stack direction="row" className="items-center gap-2">
-            <FavoriteRoundedIcon sx={{ fontSize: 22, color: "#ef4444" }} />
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
+        <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between" }}>
+          <Stack direction="row" sx={{ alignItems: "center", gap: 1 }}>
+            <FavoriteRoundedIcon sx={{ fontSize: 22, color: "error.main" }} />
             <Typography
               variant="h6"
-              className="font-bold text-[var(--text-primary)] tracking-tight"
+              sx={{
+                fontWeight: 700,
+                color: "text.primary",
+                letterSpacing: "-0.025em",
+              }}
             >
               Favorite Doctors ({favoriteDoctors.length})
             </Typography>
@@ -679,27 +919,33 @@ export default function ProfilePage() {
           <Button
             size="small"
             onClick={() => navigate("/doctors")}
-            className="text-teal-600 dark:text-teal-400 font-bold text-xs hover:underline"
+            sx={{
+              color: "primary.main",
+              fontWeight: 700,
+              fontSize: "0.75rem",
+              textTransform: "none",
+              "&:hover": { textDecoration: "underline" },
+            }}
           >
             Explore More Specialists →
           </Button>
         </Stack>
 
         {loadingDoctors && (
-          <Box className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" }, gap: 3 }}>
             {[1, 2].map((i) => (
               <Skeleton
                 key={i}
                 variant="rectangular"
                 height={260}
-                className="rounded-2xl"
+                sx={{ borderRadius: "16px" }}
               />
             ))}
           </Box>
         )}
 
         {!loadingDoctors && favoriteDoctors.length > 0 && (
-          <Box className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" }, gap: 3 }}>
             {favoriteDoctors.map((doc) => (
               <DoctorCard
                 key={doc.id}
@@ -728,8 +974,7 @@ export default function ProfilePage() {
         <Alert
           severity="success"
           variant="filled"
-          className="rounded-xl font-semibold text-sm shadow-md text-white"
-          sx={{ bgcolor: isDarkMode ? "#14b8a6" : "#0d9488" }}
+          sx={{ borderRadius: "12px", fontWeight: 600, fontSize: "0.875rem", boxShadow: 3 }}
         >
           {snackbarMessage}
         </Alert>

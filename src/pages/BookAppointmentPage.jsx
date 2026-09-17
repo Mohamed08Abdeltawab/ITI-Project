@@ -172,16 +172,24 @@ export default function BookAppointmentPage() {
   const doctorSelectId = useId();
 
   return (
-    <Box className="min-h-screen py-4 sm:py-6 px-2 sm:px-4 flex flex-col items-center">
+    <Box sx={{ minHeight: "100vh", py: { xs: 2, sm: 3 }, px: { xs: 1, sm: 2 }, display: "flex", flexDirection: "column", alignItems: "center" }}>
       {/* Top Header / Back Navigation */}
       <Stack
         direction="row"
-        className="w-full max-w-2xl mb-5 items-center justify-between"
+        sx={{ width: "100%", maxWidth: 672, mb: 2.5, alignItems: "center", justifyContent: "space-between" }}
       >
         <Button
           startIcon={<ArrowBackRoundedIcon />}
           onClick={() => navigate("/doctors")}
-          className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-semibold text-sm rounded-xl py-2 px-3"
+          sx={{
+            color: "text.secondary",
+            "&:hover": { color: "text.primary" },
+            fontWeight: 600,
+            fontSize: "0.875rem",
+            borderRadius: "12px",
+            py: 1,
+            px: 1.5,
+          }}
         >
           Back to Doctors
         </Button>
@@ -189,27 +197,53 @@ export default function BookAppointmentPage() {
         <Chip
           label="Step 2 of 2: Appointment Details"
           size="small"
-          className="bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300 font-bold border border-teal-200/70 dark:border-teal-800/70 text-xs"
+          sx={(theme) => ({
+            bgcolor:
+              theme.palette.mode === "dark"
+                ? "rgba(13, 148, 136, 0.2)"
+                : "rgba(13, 148, 136, 0.08)",
+            color: theme.palette.primary.main,
+            fontWeight: 700,
+            border: `1px solid ${
+              theme.palette.mode === "dark"
+                ? "rgba(13, 148, 136, 0.3)"
+                : "rgba(13, 148, 136, 0.2)"
+            }`,
+            fontSize: "0.75rem",
+          })}
         />
       </Stack>
 
       {/* Main Form Card */}
       <Card
         elevation={0}
-        className="w-full max-w-2xl bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl shadow-sm p-6 sm:p-8 md:p-10"
+        sx={(theme) => ({
+          width: "100%",
+          maxWidth: 672,
+          bgcolor: "background.paper",
+          border: `1px solid ${theme.palette.divider}`,
+          borderRadius: "24px",
+          boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.05)",
+          p: { xs: 3, sm: 4, md: 5 },
+        })}
       >
         {/* Title Header */}
-        <Box className="mb-6">
+        <Box sx={{ mb: 3 }}>
           <Typography
             variant="h4"
             component="h1"
-            className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] tracking-tight"
+            sx={{
+              fontSize: { xs: "1.5rem", sm: "1.875rem" },
+              fontWeight: 800,
+              color: "text.primary",
+              letterSpacing: "-0.025em",
+            }}
           >
             Book an Appointment
           </Typography>
           <Typography
             variant="body2"
-            className="text-[var(--text-secondary)] mt-1"
+            sx={{ color: "text.secondary", mt: 0.5 }}
           >
             Complete the form below to secure your consultation slot with
             CarePoint.
@@ -217,32 +251,54 @@ export default function BookAppointmentPage() {
         </Box>
 
         {fetchError && (
-          <Alert severity="error" className="mb-6 rounded-2xl">
+          <Alert severity="error" sx={{ mb: 3, borderRadius: "16px" }}>
             {fetchError}
           </Alert>
         )}
 
         {/* Doctor Summary Section / Doctor Selector */}
         {loadingDoctor ? (
-          <Box className="flex items-center justify-center p-8 bg-slate-50 dark:bg-slate-850 rounded-2xl border border-[var(--border-color)] mb-6">
-            <CircularProgress size={26} className="text-teal-600" />
+          <Box
+            sx={(theme) => ({
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              p: 4,
+              bgcolor:
+                theme.palette.mode === "dark"
+                  ? "rgba(30, 41, 59, 0.5)"
+                  : "rgba(241, 245, 249, 0.6)",
+              borderRadius: "16px",
+              border: `1px solid ${theme.palette.divider}`,
+              mb: 3,
+            })}
+          >
+            <CircularProgress size={26} color="primary" />
             <Typography
               variant="body2"
-              className="ml-3 text-[var(--text-secondary)] font-medium"
+              sx={{ ml: 1.5, color: "text.secondary", fontWeight: 500 }}
             >
               Loading doctor information...
             </Typography>
           </Box>
         ) : (
-          <Box className="mb-8">
+          <Box sx={{ mb: 4 }}>
             {/* If no doctorId was in URL, allow picking doctor */}
             {!doctorId && doctorsList.length > 0 && (
-              <Box className="mb-4">
+              <Box sx={{ mb: 2 }}>
                 <Typography
                   variant="caption"
                   component="label"
                   htmlFor={doctorSelectId}
-                  className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2"
+                  sx={{
+                    display: "block",
+                    fontSize: "0.75rem",
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    color: "text.secondary",
+                    mb: 1,
+                  }}
                 >
                   Select Doctor *
                 </Typography>
@@ -253,12 +309,15 @@ export default function BookAppointmentPage() {
                   size="small"
                   value={selectedDoctor?.id ? String(selectedDoctor.id) : ""}
                   onChange={handleDoctorChange}
-                  sx={{
+                  sx={(theme) => ({
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "14px",
                       bgcolor: "background.paper",
+                      "& fieldset": {
+                        borderColor: theme.palette.divider,
+                      },
                     },
-                  }}
+                  })}
                 >
                   {doctorsList.map((doc) => (
                     <MenuItem key={doc.id} value={String(doc.id)}>
@@ -271,35 +330,56 @@ export default function BookAppointmentPage() {
 
             {/* Doctor Compact Summary Card */}
             {selectedDoctor && (
-              <Box className="bg-gradient-to-br from-teal-50/50 via-slate-50/60 to-white dark:from-slate-800 dark:via-slate-850 dark:to-teal-950/30 border border-teal-100/80 dark:border-slate-700 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <Stack direction="row" className="items-center gap-3.5">
+              <Box
+                sx={(theme) => ({
+                  background:
+                    theme.palette.mode === "dark"
+                      ? "linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(13, 148, 136, 0.1) 100%)"
+                      : "linear-gradient(135deg, rgba(204, 251, 241, 0.3) 0%, rgba(248, 250, 252, 0.6) 100%)",
+                  border: `1px solid ${theme.palette.divider}`,
+                  borderRadius: "16px",
+                  p: { xs: 2, sm: 2.5 },
+                  display: "flex",
+                  flexDirection: { xs: "column", sm: "row" },
+                  alignItems: { xs: "flex-start", sm: "center" },
+                  justifyContent: "space-between",
+                  gap: 2,
+                })}
+              >
+                <Stack direction="row" sx={{ alignItems: "center", gap: 1.75 }}>
                   <Badge
                     overlap="circular"
                     anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                     variant="dot"
-                    sx={{
+                    sx={(theme) => ({
                       "& .MuiBadge-badge": {
-                        backgroundColor: "#10b981",
-                        color: "#10b981",
-                        boxShadow: "0 0 0 2px #ffffff",
+                        backgroundColor: theme.palette.success.main,
+                        color: theme.palette.success.main,
+                        boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
                         width: 10,
                         height: 10,
                       },
-                    }}
+                    })}
                   >
                     <Avatar
                       src={selectedDoctor.avatar}
                       alt={selectedDoctor.name}
                       variant="rounded"
-                      className="w-14 h-14 rounded-2xl object-cover bg-slate-100 dark:bg-slate-700"
+                      sx={(theme) => ({
+                        width: 56,
+                        height: 56,
+                        borderRadius: "16px",
+                        objectFit: "cover",
+                        bgcolor: theme.palette.mode === "dark" ? "slate.700" : "grey.100",
+                      })}
                     />
                   </Badge>
 
                   <Box>
-                    <Stack direction="row" className="items-center gap-2">
+                    <Stack direction="row" sx={{ alignItems: "center", gap: 1 }}>
                       <Typography
                         variant="subtitle1"
-                        className="font-bold text-[var(--text-primary)] leading-tight"
+                        sx={{ fontWeight: 700, color: "text.primary", lineHeight: 1.2 }}
                       >
                         {selectedDoctor.name}
                       </Typography>
@@ -307,7 +387,13 @@ export default function BookAppointmentPage() {
                         <Button
                           size="small"
                           onClick={() => navigate("/book")}
-                          className="text-xs text-teal-600 dark:text-teal-400 p-0 min-w-0 font-semibold"
+                          sx={{
+                            fontSize: "0.75rem",
+                            color: "primary.main",
+                            p: 0,
+                            minWidth: 0,
+                            fontWeight: 600,
+                          }}
                         >
                           (Change)
                         </Button>
@@ -316,25 +402,40 @@ export default function BookAppointmentPage() {
 
                     <Stack
                       direction="row"
-                      className="items-center gap-2 mt-1 flex-wrap"
+                      sx={{ alignItems: "center", gap: 1, mt: 0.5, flexWrap: "wrap" }}
                     >
                       <Chip
                         label={selectedDoctor.specialty}
                         size="small"
-                        className="bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300 border border-teal-200/60 dark:border-teal-800/60 font-semibold text-xs h-6 rounded-md"
+                        sx={(theme) => ({
+                          bgcolor:
+                            theme.palette.mode === "dark"
+                              ? "rgba(13, 148, 136, 0.2)"
+                              : "rgba(13, 148, 136, 0.08)",
+                          color: theme.palette.primary.main,
+                          border: `1px solid ${
+                            theme.palette.mode === "dark"
+                              ? "rgba(13, 148, 136, 0.3)"
+                              : "rgba(13, 148, 136, 0.2)"
+                          }`,
+                          fontWeight: 600,
+                          fontSize: "0.75rem",
+                          height: 24,
+                          borderRadius: "6px",
+                        })}
                       />
                       <Typography
                         variant="caption"
-                        className="text-slate-500 dark:text-slate-400 font-medium text-xs"
+                        sx={{ color: "text.secondary", fontWeight: 500, fontSize: "0.75rem" }}
                       >
                         {selectedDoctor.experience || "10 yrs exp"}
                       </Typography>
                       <Stack
                         direction="row"
-                        className="items-center gap-0.5 text-xs text-amber-500 font-semibold"
+                        sx={{ alignItems: "center", gap: 0.25, fontSize: "0.75rem", color: "warning.main", fontWeight: 600 }}
                       >
                         <StarRoundedIcon sx={{ fontSize: 16 }} />
-                        <Typography variant="caption" className="font-bold">
+                        <Typography variant="caption" sx={{ fontWeight: 700 }}>
                           {selectedDoctor.rating || 4.9}
                         </Typography>
                       </Stack>
@@ -342,21 +443,49 @@ export default function BookAppointmentPage() {
                   </Box>
                 </Stack>
 
-                <Box className="sm:text-right bg-white/90 dark:bg-slate-800/90 border border-slate-150 dark:border-slate-700 px-3.5 py-2 rounded-xl shrink-0 w-full sm:w-auto">
+                <Box
+                  sx={(theme) => ({
+                    textAlign: { sm: "right" },
+                    bgcolor:
+                      theme.palette.mode === "dark"
+                        ? "rgba(30, 41, 59, 0.8)"
+                        : "rgba(255, 255, 255, 0.9)",
+                    border: `1px solid ${theme.palette.divider}`,
+                    px: 1.75,
+                    py: 1,
+                    borderRadius: "12px",
+                    flexShrink: 0,
+                    width: { xs: "100%", sm: "auto" },
+                  })}
+                >
                   <Typography
                     variant="caption"
-                    className="block text-[11px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider"
+                    sx={{
+                      display: "block",
+                      fontSize: "11px",
+                      fontWeight: 700,
+                      color: "text.secondary",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                    }}
                   >
                     Consultation Fee
                   </Typography>
                   <Typography
                     variant="subtitle1"
-                    className="font-extrabold text-teal-600 dark:text-teal-400 leading-tight"
+                    sx={{
+                      fontWeight: 800,
+                      color: "primary.main",
+                      lineHeight: 1.2,
+                    }}
                   >
                     {selectedDoctor.fee || "$120"}
-                    <span className="text-xs font-normal text-slate-500 dark:text-slate-400 ml-1">
+                    <Box
+                      component="span"
+                      sx={{ fontSize: "0.75rem", fontWeight: 400, color: "text.secondary", ml: 0.5 }}
+                    >
                       / visit
-                    </span>
+                    </Box>
                   </Typography>
                 </Box>
               </Box>
@@ -367,20 +496,26 @@ export default function BookAppointmentPage() {
         {/* Booking Form */}
         <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
           {submitError && (
-            <Alert severity="error" className="mb-4 rounded-2xl">
+            <Alert severity="error" sx={{ mb: 2, borderRadius: "16px" }}>
               {submitError}
             </Alert>
           )}
 
           {/* Patient Details */}
-          <Box className="mb-6">
-            <Stack direction="row" className="items-center gap-2 mb-3">
+          <Box sx={{ mb: 3 }}>
+            <Stack direction="row" sx={{ alignItems: "center", gap: 1, mb: 1.5 }}>
               <PersonOutlineRoundedIcon
-                sx={{ fontSize: 18, color: "#0d9488" }}
+                sx={{ fontSize: 18, color: "primary.main" }}
               />
               <Typography
                 variant="subtitle2"
-                className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]"
+                sx={{
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  color: "text.primary",
+                }}
               >
                 Patient Information
               </Typography>
@@ -402,15 +537,18 @@ export default function BookAppointmentPage() {
                 })}
                 error={Boolean(errors.patientName)}
                 helperText={errors.patientName?.message}
-                sx={{
+                sx={(theme) => ({
                   "& .MuiOutlinedInput-root": {
                     borderRadius: "14px",
                     bgcolor: "background.paper",
+                    "& fieldset": {
+                      borderColor: theme.palette.divider,
+                    },
                   },
-                }}
+                })}
               />
 
-              <Box className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" }, gap: 2 }}>
                 <TextField
                   fullWidth
                   label="Email Address"
@@ -422,7 +560,7 @@ export default function BookAppointmentPage() {
                     input: {
                       startAdornment: (
                         <EmailOutlinedIcon
-                          sx={{ fontSize: 18, color: "#94a3b8", mr: 1 }}
+                          sx={{ fontSize: 18, color: "text.secondary", mr: 1 }}
                         />
                       ),
                     },
@@ -436,12 +574,15 @@ export default function BookAppointmentPage() {
                   })}
                   error={Boolean(errors.email)}
                   helperText={errors.email?.message}
-                  sx={{
+                  sx={(theme) => ({
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "14px",
                       bgcolor: "background.paper",
+                      "& fieldset": {
+                        borderColor: theme.palette.divider,
+                      },
                     },
-                  }}
+                  })}
                 />
 
                 <TextField
@@ -455,7 +596,7 @@ export default function BookAppointmentPage() {
                     input: {
                       startAdornment: (
                         <PhoneOutlinedIcon
-                          sx={{ fontSize: 18, color: "#94a3b8", mr: 1 }}
+                          sx={{ fontSize: 18, color: "text.secondary", mr: 1 }}
                         />
                       ),
                     },
@@ -469,22 +610,33 @@ export default function BookAppointmentPage() {
                   })}
                   error={Boolean(errors.phone)}
                   helperText={errors.phone?.message}
-                  sx={{
+                  sx={(theme) => ({
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "14px",
                       bgcolor: "background.paper",
+                      "& fieldset": {
+                        borderColor: theme.palette.divider,
+                      },
                     },
-                  }}
+                  })}
                 />
               </Box>
             </Stack>
           </Box>
 
           {/* Consultation Type Selector */}
-          <Box className="mb-6">
+          <Box sx={{ mb: 3 }}>
             <Typography
               variant="caption"
-              className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2.5"
+              sx={{
+                display: "block",
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                color: "text.secondary",
+                mb: 1.25,
+              }}
             >
               Consultation Mode *
             </Typography>
@@ -492,37 +644,74 @@ export default function BookAppointmentPage() {
               name="type"
               control={control}
               render={({ field }) => (
-                <Box className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" }, gap: 1.5 }}>
                   {/* Option 1: In-Clinic */}
                   <Card
                     elevation={0}
                     onClick={() => field.onChange("In-Clinic")}
-                    className={`cursor-pointer border rounded-2xl p-4 transition-all flex items-start justify-between ${
-                      field.value === "In-Clinic"
-                        ? "border-teal-600 dark:border-teal-500 bg-teal-50/60 dark:bg-teal-950/40 shadow-xs"
-                        : "border-[var(--border-color)] bg-[var(--bg-secondary)] hover:bg-slate-50 dark:hover:bg-slate-700/60"
-                    }`}
-                  >
-                    <Stack direction="row" className="items-start gap-3">
-                      <Box
-                        className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                    sx={(theme) => ({
+                      cursor: "pointer",
+                      borderRadius: "16px",
+                      p: 2,
+                      transition: "all 0.2s",
+                      display: "flex",
+                      alignItems: "flex-start",
+                      justifyContent: "space-between",
+                      border: `1px solid ${
+                        field.value === "In-Clinic"
+                          ? theme.palette.primary.main
+                          : theme.palette.divider
+                      }`,
+                      bgcolor:
+                        field.value === "In-Clinic"
+                          ? theme.palette.mode === "dark"
+                            ? "rgba(13, 148, 136, 0.15)"
+                            : "rgba(13, 148, 136, 0.06)"
+                          : "background.paper",
+                      "&:hover": {
+                        bgcolor:
                           field.value === "In-Clinic"
-                            ? "bg-teal-600 text-white"
-                            : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
-                        }`}
+                            ? undefined
+                            : theme.palette.mode === "dark"
+                            ? "rgba(51, 65, 85, 0.4)"
+                            : "rgba(241, 245, 249, 0.7)",
+                      },
+                    })}
+                  >
+                    <Stack direction="row" sx={{ alignItems: "flex-start", gap: 1.5 }}>
+                      <Box
+                        sx={(theme) => ({
+                          width: 36,
+                          height: 36,
+                          borderRadius: "12px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                          bgcolor:
+                            field.value === "In-Clinic"
+                              ? theme.palette.primary.main
+                              : theme.palette.mode === "dark"
+                              ? "rgba(51, 65, 85, 0.6)"
+                              : "rgba(241, 245, 249, 1)",
+                          color:
+                            field.value === "In-Clinic"
+                              ? theme.palette.primary.contrastText
+                              : "text.secondary",
+                        })}
                       >
                         <LocalHospitalRoundedIcon sx={{ fontSize: 20 }} />
                       </Box>
                       <Box>
                         <Typography
                           variant="subtitle2"
-                          className="font-bold text-[var(--text-primary)] leading-tight"
+                          sx={{ fontWeight: 700, color: "text.primary", lineHeight: 1.2 }}
                         >
                           In-Clinic Visit
                         </Typography>
                         <Typography
                           variant="caption"
-                          className="text-slate-500 dark:text-slate-400 block mt-0.5 text-xs"
+                          sx={{ color: "text.secondary", display: "block", mt: 0.25, fontSize: "0.75rem" }}
                         >
                           Direct consultation at medical center
                         </Typography>
@@ -530,7 +719,7 @@ export default function BookAppointmentPage() {
                     </Stack>
                     {field.value === "In-Clinic" && (
                       <CheckCircleRoundedIcon
-                        sx={{ fontSize: 20, color: "#0d9488" }}
+                        sx={{ fontSize: 20, color: "primary.main" }}
                       />
                     )}
                   </Card>
@@ -539,32 +728,69 @@ export default function BookAppointmentPage() {
                   <Card
                     elevation={0}
                     onClick={() => field.onChange("Video Consultation")}
-                    className={`cursor-pointer border rounded-2xl p-4 transition-all flex items-start justify-between ${
-                      field.value === "Video Consultation"
-                        ? "border-teal-600 dark:border-teal-500 bg-teal-50/60 dark:bg-teal-950/40 shadow-xs"
-                        : "border-[var(--border-color)] bg-[var(--bg-secondary)] hover:bg-slate-50 dark:hover:bg-slate-700/60"
-                    }`}
-                  >
-                    <Stack direction="row" className="items-start gap-3">
-                      <Box
-                        className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                    sx={(theme) => ({
+                      cursor: "pointer",
+                      borderRadius: "16px",
+                      p: 2,
+                      transition: "all 0.2s",
+                      display: "flex",
+                      alignItems: "flex-start",
+                      justifyContent: "space-between",
+                      border: `1px solid ${
+                        field.value === "Video Consultation"
+                          ? theme.palette.primary.main
+                          : theme.palette.divider
+                      }`,
+                      bgcolor:
+                        field.value === "Video Consultation"
+                          ? theme.palette.mode === "dark"
+                            ? "rgba(13, 148, 136, 0.15)"
+                            : "rgba(13, 148, 136, 0.06)"
+                          : "background.paper",
+                      "&:hover": {
+                        bgcolor:
                           field.value === "Video Consultation"
-                            ? "bg-teal-600 text-white"
-                            : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
-                        }`}
+                            ? undefined
+                            : theme.palette.mode === "dark"
+                            ? "rgba(51, 65, 85, 0.4)"
+                            : "rgba(241, 245, 249, 0.7)",
+                      },
+                    })}
+                  >
+                    <Stack direction="row" sx={{ alignItems: "flex-start", gap: 1.5 }}>
+                      <Box
+                        sx={(theme) => ({
+                          width: 36,
+                          height: 36,
+                          borderRadius: "12px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                          bgcolor:
+                            field.value === "Video Consultation"
+                              ? theme.palette.primary.main
+                              : theme.palette.mode === "dark"
+                              ? "rgba(51, 65, 85, 0.6)"
+                              : "rgba(241, 245, 249, 1)",
+                          color:
+                            field.value === "Video Consultation"
+                              ? theme.palette.primary.contrastText
+                              : "text.secondary",
+                        })}
                       >
                         <VideocamRoundedIcon sx={{ fontSize: 20 }} />
                       </Box>
                       <Box>
                         <Typography
                           variant="subtitle2"
-                          className="font-bold text-[var(--text-primary)] leading-tight"
+                          sx={{ fontWeight: 700, color: "text.primary", lineHeight: 1.2 }}
                         >
                           Video Call
                         </Typography>
                         <Typography
                           variant="caption"
-                          className="text-slate-500 dark:text-slate-400 block mt-0.5 text-xs"
+                          sx={{ color: "text.secondary", display: "block", mt: 0.25, fontSize: "0.75rem" }}
                         >
                           Secure online telehealth consultation
                         </Typography>
@@ -572,7 +798,7 @@ export default function BookAppointmentPage() {
                     </Stack>
                     {field.value === "Video Consultation" && (
                       <CheckCircleRoundedIcon
-                        sx={{ fontSize: 20, color: "#0d9488" }}
+                        sx={{ fontSize: 20, color: "primary.main" }}
                       />
                     )}
                   </Card>
@@ -582,14 +808,20 @@ export default function BookAppointmentPage() {
           </Box>
 
           {/* Date & Time Slot Section */}
-          <Box className="mb-6 space-y-4">
-            <Stack direction="row" className="items-center gap-2 mb-1">
+          <Box sx={{ mb: 3, display: "flex", flexDirection: "column", gap: 2 }}>
+            <Stack direction="row" sx={{ alignItems: "center", gap: 1 }}>
               <CalendarMonthRoundedIcon
-                sx={{ fontSize: 18, color: "#0d9488" }}
+                sx={{ fontSize: 18, color: "primary.main" }}
               />
               <Typography
                 variant="subtitle2"
-                className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]"
+                sx={{
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  color: "text.primary",
+                }}
               >
                 Date &amp; Schedule
               </Typography>
@@ -609,12 +841,15 @@ export default function BookAppointmentPage() {
               })}
               error={Boolean(errors.date)}
               helperText={errors.date?.message}
-              sx={{
+              sx={(theme) => ({
                 "& .MuiOutlinedInput-root": {
                   borderRadius: "14px",
                   bgcolor: "background.paper",
+                  "& fieldset": {
+                    borderColor: theme.palette.divider,
+                  },
                 },
-              }}
+              })}
             />
 
             {/* Selectable Time Slots */}
@@ -627,28 +862,37 @@ export default function BookAppointmentPage() {
                   <Box>
                     <Stack
                       direction="row"
-                      className="items-center justify-between mb-2"
+                      sx={{ alignItems: "center", justifyContent: "space-between", mb: 1 }}
                     >
                       <Typography
                         variant="caption"
-                        className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] flex items-center gap-1.5"
+                        sx={{
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
+                          color: "text.secondary",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 0.75,
+                        }}
                       >
                         <AccessTimeRoundedIcon
-                          sx={{ fontSize: 15, color: "#0d9488" }}
+                          sx={{ fontSize: 15, color: "primary.main" }}
                         />
                         Select Time Slot *
                       </Typography>
                       {field.value && (
                         <Typography
                           variant="caption"
-                          className="text-xs text-teal-700 dark:text-teal-300 font-bold"
+                          sx={{ fontSize: "0.75rem", color: "primary.main", fontWeight: 700 }}
                         >
                           Selected: {field.value}
                         </Typography>
                       )}
                     </Stack>
 
-                    <Box className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-2.5">
+                    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(2, 1fr)", sm: "repeat(3, 1fr)" }, gap: { xs: 1, sm: 1.25 } }}>
                       {availableSlots.map((slot) => {
                         const isSelected = field.value === slot;
                         return (
@@ -660,15 +904,38 @@ export default function BookAppointmentPage() {
                               <AccessTimeRoundedIcon
                                 sx={{
                                   fontSize: 15,
-                                  color: isSelected ? "#ffffff" : "#94a3b8",
+                                  color: isSelected ? "inherit" : "text.secondary",
                                 }}
                               />
                             }
-                            className={`py-2 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
-                              isSelected
-                                ? "bg-teal-600 text-white shadow-xs"
-                                : "border border-[var(--border-color)] text-[var(--text-primary)] bg-[var(--bg-secondary)] hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-teal-300"
-                            }`}
+                            sx={(theme) => ({
+                              py: 1,
+                              px: 1.5,
+                              borderRadius: "12px",
+                              fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                              fontWeight: 600,
+                              transition: "all 0.2s",
+                              ...(isSelected
+                                ? {
+                                    bgcolor: theme.palette.primary.main,
+                                    color: theme.palette.primary.contrastText,
+                                    "&:hover": {
+                                      bgcolor: theme.palette.primary.dark,
+                                    },
+                                  }
+                                : {
+                                    borderColor: theme.palette.divider,
+                                    color: theme.palette.text.primary,
+                                    bgcolor: "background.paper",
+                                    "&:hover": {
+                                      bgcolor:
+                                        theme.palette.mode === "dark"
+                                          ? "rgba(51, 65, 85, 0.5)"
+                                          : "rgba(241, 245, 249, 0.8)",
+                                      borderColor: theme.palette.primary.main,
+                                    },
+                                  }),
+                            })}
                           >
                             {slot}
                           </Button>
@@ -679,7 +946,7 @@ export default function BookAppointmentPage() {
                 )}
               />
               {errors.timeSlot && (
-                <FormHelperText className="text-red-600 text-xs mt-1.5">
+                <FormHelperText sx={{ color: "error.main", fontSize: "0.75rem", mt: 0.75 }}>
                   {errors.timeSlot.message}
                 </FormHelperText>
               )}
@@ -687,12 +954,18 @@ export default function BookAppointmentPage() {
           </Box>
 
           {/* Notes Section */}
-          <Box className="mb-8">
-            <Stack direction="row" className="items-center gap-2 mb-2">
-              <NotesRoundedIcon sx={{ fontSize: 18, color: "#0d9488" }} />
+          <Box sx={{ mb: 4 }}>
+            <Stack direction="row" sx={{ alignItems: "center", gap: 1, mb: 1 }}>
+              <NotesRoundedIcon sx={{ fontSize: 18, color: "primary.main" }} />
               <Typography
                 variant="caption"
-                className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+                sx={{
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  color: "text.secondary",
+                }}
               >
                 Symptoms / Medical Notes (Optional)
               </Typography>
@@ -705,12 +978,15 @@ export default function BookAppointmentPage() {
               variant="outlined"
               size="small"
               {...register("notes")}
-              sx={{
+              sx={(theme) => ({
                 "& .MuiOutlinedInput-root": {
                   borderRadius: "14px",
                   bgcolor: "background.paper",
+                  "& fieldset": {
+                    borderColor: theme.palette.divider,
+                  },
                 },
-              }}
+              })}
             />
           </Box>
 
@@ -718,13 +994,30 @@ export default function BookAppointmentPage() {
           <Stack
             direction={{ xs: "column", sm: "row" }}
             spacing={2}
-            className="pt-4 border-t border-[var(--border-color)]"
+            sx={(theme) => ({
+              pt: 2,
+              borderTop: `1px solid ${theme.palette.divider}`,
+            })}
           >
             <Button
               variant="outlined"
               onClick={() => navigate("/doctors")}
               disabled={isSubmitting}
-              className="w-full sm:w-1/3 py-3 rounded-xl font-semibold border border-[var(--border-color)] text-[var(--text-secondary)] hover:bg-slate-50 dark:hover:bg-slate-800"
+              sx={(theme) => ({
+                width: { xs: "100%", sm: "33.33%" },
+                py: 1.5,
+                borderRadius: "12px",
+                fontWeight: 600,
+                borderColor: theme.palette.divider,
+                color: "text.secondary",
+                "&:hover": {
+                  bgcolor:
+                    theme.palette.mode === "dark"
+                      ? "rgba(51, 65, 85, 0.4)"
+                      : "rgba(241, 245, 249, 0.8)",
+                  borderColor: theme.palette.divider,
+                },
+              })}
             >
               Cancel / Back
             </Button>
@@ -735,12 +1028,18 @@ export default function BookAppointmentPage() {
               disabled={isSubmitting || loadingDoctor || !selectedDoctor}
               startIcon={
                 isSubmitting ? (
-                  <CircularProgress size={18} sx={{ color: "#ffffff" }} />
+                  <CircularProgress size={18} sx={{ color: "primary.contrastText" }} />
                 ) : (
                   <CheckCircleRoundedIcon sx={{ fontSize: 18 }} />
                 )
               }
-              className="w-full sm:w-2/3 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-xs transition-all disabled:opacity-60"
+              sx={{
+                width: { xs: "100%", sm: "66.66%" },
+                py: 1.5,
+                fontWeight: 700,
+                borderRadius: "12px",
+                boxShadow: 1,
+              }}
             >
               {isSubmitting
                 ? "Confirming Booking..."
@@ -760,8 +1059,7 @@ export default function BookAppointmentPage() {
         <Alert
           severity="success"
           variant="filled"
-          className="rounded-xl font-semibold text-sm shadow-lg"
-          sx={{ bgcolor: "#0d9488" }}
+          sx={{ borderRadius: "12px", fontWeight: 600, fontSize: "0.875rem", boxShadow: 3 }}
         >
           Appointment confirmed! Redirecting to your appointments...
         </Alert>

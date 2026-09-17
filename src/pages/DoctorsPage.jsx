@@ -134,33 +134,75 @@ export default function DoctorsPage() {
   );
 
   return (
-    <Box className="space-y-6">
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       {/* Hero Header Banner */}
-      <Box className="bg-gradient-to-r from-white via-white to-teal-50/60 dark:from-slate-800 dark:via-slate-800 dark:to-teal-950/40 border border-slate-200/90 dark:border-slate-700/80 rounded-3xl p-6 sm:p-10 relative overflow-hidden shadow-xs transition-colors">
-        <Box className="max-w-3xl">
+      <Box
+        sx={(theme) => ({
+          background:
+            theme.palette.mode === "dark"
+              ? "linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(13, 148, 136, 0.15) 100%)"
+              : "linear-gradient(135deg, #ffffff 0%, rgba(204, 251, 241, 0.5) 100%)",
+          border: `1px solid ${theme.palette.divider}`,
+          borderRadius: "24px",
+          p: { xs: 3, sm: 5 },
+          position: "relative",
+          overflow: "hidden",
+          boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+          transition: "background-color 0.2s, border-color 0.2s",
+        })}
+      >
+        <Box sx={{ maxWidth: 768 }}>
           <Chip
             icon={
               <ShieldRoundedIcon
-                sx={{ fontSize: 16, "&&": { color: "#0d9488" } }}
+                sx={{ fontSize: 16, "&&": { color: "primary.main" } }}
               />
             }
             label="CAREPOINT SPECIALIST NETWORK"
             size="small"
-            className="bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300 border border-teal-200/70 dark:border-teal-800/70 font-bold tracking-wider uppercase text-xs mb-4"
+            sx={(theme) => ({
+              bgcolor:
+                theme.palette.mode === "dark"
+                  ? "rgba(13, 148, 136, 0.2)"
+                  : "rgba(13, 148, 136, 0.08)",
+              color: theme.palette.primary.main,
+              border: `1px solid ${
+                theme.palette.mode === "dark"
+                  ? "rgba(13, 148, 136, 0.3)"
+                  : "rgba(13, 148, 136, 0.2)"
+              }`,
+              fontWeight: 700,
+              letterSpacing: "0.05em",
+              textTransform: "uppercase",
+              fontSize: "0.75rem",
+              mb: 2,
+            })}
           />
 
           <Typography
             variant="h3"
             component="h1"
-            className="text-2xl sm:text-4xl font-extrabold text-[var(--text-primary)] tracking-tight leading-tight"
+            sx={{
+              fontSize: { xs: "1.5rem", sm: "2.25rem" },
+              fontWeight: 800,
+              color: "text.primary",
+              letterSpacing: "-0.025em",
+              lineHeight: 1.2,
+            }}
           >
             Find Trusted Doctors &amp; Book
-            <br className="hidden sm:inline" /> Appointments
+            <Box component="br" sx={{ display: { xs: "none", sm: "inline" } }} /> Appointments
           </Typography>
 
           <Typography
             variant="body1"
-            className="mt-3 text-[var(--text-secondary)] text-sm sm:text-base leading-relaxed max-w-xl"
+            sx={{
+              mt: 1.5,
+              color: "text.secondary",
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+              lineHeight: 1.6,
+              maxWidth: 576,
+            }}
           >
             Connect with verified medical specialists, review credentials and
             real-time availability, and book your consultation instantly.
@@ -182,21 +224,39 @@ export default function DoctorsPage() {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchRoundedIcon sx={{ color: "#94a3b8", fontSize: 22 }} />
+                <SearchRoundedIcon sx={{ color: "text.secondary", fontSize: 22 }} />
               </InputAdornment>
             ),
           }}
-          sx={{
+          sx={(theme) => ({
             "& .MuiOutlinedInput-root": {
               borderRadius: "16px",
               bgcolor: "background.paper",
+              "& fieldset": {
+                borderColor: theme.palette.divider,
+              },
+              "&:hover fieldset": {
+                borderColor: theme.palette.primary.main,
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: theme.palette.primary.main,
+              },
             },
-          }}
+          })}
         />
       </Box>
 
       {/* Specialty Filter Pills */}
-      <Box className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar flex-wrap">
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+          overflowX: "auto",
+          pb: 0.5,
+          flexWrap: "wrap",
+        }}
+      >
         {specialties.map((spec) => {
           const isActive = selectedSpecialty === spec;
           return (
@@ -208,17 +268,36 @@ export default function DoctorsPage() {
                 setSelectedSpecialty(spec);
                 setCurrentPage(1);
               }}
-              className={`rounded-xl text-sm font-semibold transition-all py-1.5 px-1 ${
-                isActive
-                  ? "bg-teal-600 text-white shadow-xs"
-                  : "bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:bg-slate-50 dark:hover:bg-slate-700/60"
-              }`}
-              sx={{
+              sx={(theme) => ({
                 height: 38,
-                "&.MuiChip-root": {
-                  borderRadius: "12px",
-                },
-              }}
+                borderRadius: "12px",
+                fontWeight: 600,
+                fontSize: "0.875rem",
+                transition: "all 0.2s",
+                ...(isActive
+                  ? {
+                      bgcolor: theme.palette.primary.main,
+                      color: theme.palette.primary.contrastText,
+                      "&:hover": {
+                        bgcolor: theme.palette.primary.dark,
+                      },
+                    }
+                  : {
+                      bgcolor:
+                        theme.palette.mode === "dark"
+                          ? "rgba(30, 41, 59, 0.7)"
+                          : "rgba(241, 245, 249, 0.8)",
+                      color: theme.palette.text.secondary,
+                      border: `1px solid ${theme.palette.divider}`,
+                      "&:hover": {
+                        bgcolor:
+                          theme.palette.mode === "dark"
+                            ? "rgba(51, 65, 85, 0.8)"
+                            : "rgba(226, 232, 240, 0.8)",
+                        color: theme.palette.text.primary,
+                      },
+                    }),
+              })}
             />
           );
         })}
@@ -227,42 +306,64 @@ export default function DoctorsPage() {
       {/* Meta Bar: Count + Verified Chip + Sort Dropdown */}
       <Stack
         direction={{ xs: "column", sm: "row" }}
-        className="items-start sm:items-center justify-between gap-3 pt-2"
+        sx={{
+          alignItems: { xs: "flex-start", sm: "center" },
+          justifyContent: "space-between",
+          gap: 1.5,
+          pt: 1,
+        }}
       >
-        <Stack direction="row" className="items-center gap-2 text-sm">
+        <Stack direction="row" sx={{ alignItems: "center", gap: 1, fontSize: "0.875rem" }}>
           <Typography
             variant="body2"
-            className="font-semibold text-[var(--text-primary)]"
+            sx={{ fontWeight: 600, color: "text.primary" }}
           >
             Showing {filteredAndSortedDoctors.length} doctors available
           </Typography>
           <Typography
             variant="body2"
-            className="text-slate-300 dark:text-slate-600"
+            sx={{ color: "text.secondary" }}
           >
             •
           </Typography>
           <Chip
             icon={
               <VerifiedUserRoundedIcon
-                sx={{ fontSize: 15, "&&": { color: "#10b981" } }}
+                sx={{ fontSize: 15, "&&": { color: "success.main" } }}
               />
             }
             label="Verified Practitioners"
             size="small"
-            className="bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60 font-semibold text-xs"
+            sx={(theme) => ({
+              bgcolor:
+                theme.palette.mode === "dark"
+                  ? "rgba(16, 185, 129, 0.15)"
+                  : "rgba(16, 185, 129, 0.1)",
+              color: theme.palette.success.main,
+              border: `1px solid ${
+                theme.palette.mode === "dark"
+                  ? "rgba(16, 185, 129, 0.3)"
+                  : "rgba(16, 185, 129, 0.2)"
+              }`,
+              fontWeight: 600,
+              fontSize: "0.75rem",
+            })}
           />
         </Stack>
 
         {/* Sort Select */}
         <Stack
           direction="row"
-          className="items-center gap-2 self-end sm:self-auto"
+          sx={{
+            alignItems: "center",
+            gap: 1,
+            alignSelf: { xs: "flex-end", sm: "auto" },
+          }}
         >
-          <FilterListRoundedIcon sx={{ fontSize: 18, color: "#64748b" }} />
+          <FilterListRoundedIcon sx={{ fontSize: 18, color: "text.secondary" }} />
           <Typography
             variant="caption"
-            className="text-slate-500 dark:text-slate-400 font-medium"
+            sx={{ color: "text.secondary", fontWeight: 500 }}
           >
             Sort by:
           </Typography>
@@ -270,11 +371,17 @@ export default function DoctorsPage() {
             <Select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-[var(--bg-secondary)] rounded-xl text-sm font-semibold text-[var(--text-primary)]"
-              sx={{
+              sx={(theme) => ({
                 borderRadius: "12px",
                 height: 38,
-              }}
+                bgcolor: "background.paper",
+                color: "text.primary",
+                fontWeight: 600,
+                fontSize: "0.875rem",
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: theme.palette.divider,
+                },
+              })}
             >
               <MenuItem value="Top Rated">Top Rated</MenuItem>
               <MenuItem value="Most Experienced">Most Experienced</MenuItem>
@@ -298,7 +405,7 @@ export default function DoctorsPage() {
               Retry
             </Button>
           }
-          className="rounded-2xl border border-red-200"
+          sx={{ borderRadius: "16px" }}
         >
           {error}
         </Alert>
@@ -306,22 +413,45 @@ export default function DoctorsPage() {
 
       {/* Loading Skeletons */}
       {loading && (
-        <Box className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "1fr",
+              md: "repeat(2, 1fr)",
+              lg: "repeat(3, 1fr)",
+            },
+            gap: 3,
+          }}
+        >
           {[1, 2, 3, 4, 5, 6].map((idx) => (
             <Card
               key={idx}
               elevation={0}
-              className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl p-5"
+              sx={(theme) => ({
+                bgcolor: "background.paper",
+                border: `1px solid ${theme.palette.divider}`,
+                borderRadius: "16px",
+                p: 2.5,
+              })}
             >
-              <CardContent className="p-0 space-y-4">
-                <Stack direction="row" className="items-center gap-3.5">
+              <CardContent
+                sx={{
+                  p: 0,
+                  "&:last-child": { pb: 0 },
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 2,
+                }}
+              >
+                <Stack direction="row" sx={{ alignItems: "center", gap: 1.75 }}>
                   <Skeleton
                     variant="rounded"
                     width={56}
                     height={56}
-                    className="rounded-2xl"
+                    sx={{ borderRadius: "16px" }}
                   />
-                  <Box className="flex-1 space-y-2">
+                  <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 1 }}>
                     <Skeleton variant="text" width="65%" height={24} />
                     <Skeleton variant="text" width="40%" height={18} />
                   </Box>
@@ -330,32 +460,32 @@ export default function DoctorsPage() {
                   variant="rounded"
                   width={90}
                   height={26}
-                  className="rounded-lg"
+                  sx={{ borderRadius: "8px" }}
                 />
                 <Skeleton
                   variant="rectangular"
                   width="100%"
                   height={40}
-                  className="rounded-lg"
+                  sx={{ borderRadius: "8px" }}
                 />
                 <Skeleton
                   variant="rounded"
                   width="80%"
                   height={24}
-                  className="rounded-lg"
+                  sx={{ borderRadius: "8px" }}
                 />
-                <Stack direction="row" spacing={2} className="pt-2">
+                <Stack direction="row" spacing={2} sx={{ pt: 1 }}>
                   <Skeleton
                     variant="rounded"
                     width="50%"
                     height={38}
-                    className="rounded-xl"
+                    sx={{ borderRadius: "12px" }}
                   />
                   <Skeleton
                     variant="rounded"
                     width="50%"
                     height={38}
-                    className="rounded-xl"
+                    sx={{ borderRadius: "12px" }}
                   />
                 </Stack>
               </CardContent>
@@ -368,20 +498,45 @@ export default function DoctorsPage() {
       {!loading && !error && filteredAndSortedDoctors.length === 0 && (
         <Card
           elevation={0}
-          className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl p-10 text-center max-w-md mx-auto my-8"
+          sx={(theme) => ({
+            bgcolor: "background.paper",
+            border: `1px solid ${theme.palette.divider}`,
+            borderRadius: "24px",
+            p: 5,
+            textAlign: "center",
+            maxWidth: 448,
+            mx: "auto",
+            my: 4,
+          })}
         >
-          <Box className="w-14 h-14 rounded-2xl bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 flex items-center justify-center mx-auto mb-4">
+          <Box
+            sx={(theme) => ({
+              width: 56,
+              height: 56,
+              borderRadius: "16px",
+              bgcolor:
+                theme.palette.mode === "dark"
+                  ? "rgba(13, 148, 136, 0.2)"
+                  : "rgba(13, 148, 136, 0.1)",
+              color: "primary.main",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              mx: "auto",
+              mb: 2,
+            })}
+          >
             <SearchOffRoundedIcon sx={{ fontSize: 30 }} />
           </Box>
           <Typography
             variant="h6"
-            className="font-bold text-[var(--text-primary)]"
+            sx={{ fontWeight: 700, color: "text.primary" }}
           >
             No doctors found
           </Typography>
           <Typography
             variant="body2"
-            className="text-[var(--text-secondary)] text-sm mt-1 mb-5"
+            sx={{ color: "text.secondary", fontSize: "0.875rem", mt: 0.5, mb: 2.5 }}
           >
             No medical specialists match your search criteria. Try adjusting
             your query or reset filters.
@@ -392,7 +547,11 @@ export default function DoctorsPage() {
               setSearchTerm("");
               setSelectedSpecialty("All Specialties");
             }}
-            className="bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl px-5"
+            sx={{
+              fontWeight: 600,
+              borderRadius: "12px",
+              px: 2.5,
+            }}
           >
             Clear Filters
           </Button>
@@ -401,7 +560,17 @@ export default function DoctorsPage() {
 
       {/* Responsive Doctors Grid */}
       {!loading && !error && paginatedDoctors.length > 0 && (
-        <Box className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "1fr",
+              md: "repeat(2, 1fr)",
+              lg: "repeat(3, 1fr)",
+            },
+            gap: 3,
+          }}
+        >
           {paginatedDoctors.map((doctor) => (
             <DoctorCard key={doctor.id} doctor={doctor} />
           ))}
@@ -412,24 +581,31 @@ export default function DoctorsPage() {
       {!loading && !error && filteredAndSortedDoctors.length > 0 && (
         <Stack
           direction={{ xs: "column", sm: "row" }}
-          className="items-center justify-between gap-4 pt-6 pb-8 border-t border-[var(--border-color)]"
+          sx={(theme) => ({
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 2,
+            pt: 3,
+            pb: 4,
+            borderTop: `1px solid ${theme.palette.divider}`,
+          })}
         >
           <Typography
             variant="body2"
-            className="text-[var(--text-secondary)] font-medium"
+            sx={{ color: "text.secondary", fontWeight: 500 }}
           >
             Showing{" "}
-            <span className="font-bold text-[var(--text-primary)]">
+            <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
               {startIndex}
-            </span>{" "}
+            </Box>{" "}
             to{" "}
-            <span className="font-bold text-[var(--text-primary)]">
+            <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
               {endIndex}
-            </span>{" "}
+            </Box>{" "}
             of{" "}
-            <span className="font-bold text-[var(--text-primary)]">
+            <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
               {filteredAndSortedDoctors.length}
-            </span>{" "}
+            </Box>{" "}
             specialists
           </Typography>
 
@@ -439,20 +615,20 @@ export default function DoctorsPage() {
             onChange={(_, page) => setCurrentPage(page)}
             color="primary"
             shape="rounded"
-            sx={{
+            sx={(theme) => ({
               "& .MuiPaginationItem-root": {
                 borderRadius: "10px",
                 fontWeight: 600,
                 fontSize: "0.85rem",
               },
               "& .MuiPaginationItem-root.Mui-selected": {
-                backgroundColor: "#0d9488",
-                color: "#ffffff",
+                backgroundColor: theme.palette.primary.main,
+                color: theme.palette.primary.contrastText,
                 "&:hover": {
-                  backgroundColor: "#0f766e",
+                  backgroundColor: theme.palette.primary.dark,
                 },
               },
-            }}
+            })}
           />
         </Stack>
       )}

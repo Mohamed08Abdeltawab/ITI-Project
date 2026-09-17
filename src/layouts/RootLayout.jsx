@@ -6,51 +6,102 @@ import Navbar from "../components/Navbar";
 
 export default function RootLayout() {
   return (
-    <Box className="min-h-screen flex flex-col bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans antialiased transition-colors duration-200">
+    <Box
+      className="font-sans antialiased"
+      sx={(theme) => ({
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        bgcolor: theme.palette.background.default,
+        color: theme.palette.text.primary,
+        transition: "background-color 0.25s ease, color 0.25s ease",
+      })}
+    >
       <Navbar />
 
       <Box
         component="main"
-        className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8"
+        sx={{
+          flex: 1,
+          maxWidth: 1280,
+          width: "100%",
+          mx: "auto",
+          px: { xs: 2, sm: 3, lg: 4 },
+          py: { xs: 3, sm: 4 },
+        }}
       >
         <Outlet />
       </Box>
 
       <Box
         component="footer"
-        className="py-8 border-t border-[var(--border-color)] bg-white/70 dark:bg-[#0b1120]/70 backdrop-blur-sm mt-auto transition-colors duration-200"
+        sx={(theme) => ({
+          py: 4,
+          mt: "auto",
+          borderTop: `1px solid ${theme.palette.divider}`,
+          bgcolor:
+            theme.palette.mode === "dark"
+              ? "rgba(11, 17, 32, 0.7)"
+              : "rgba(255, 255, 255, 0.7)",
+          backdropFilter: "blur(4px)",
+          transition: "background-color 0.25s ease, border-color 0.25s ease",
+        })}
       >
-        <Box className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 2, sm: 3, lg: 4 } }}>
           <Stack
             direction={{ xs: "column", sm: "row" }}
-            className="items-center justify-between gap-4"
+            sx={{
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 2,
+            }}
           >
-            <Stack direction="row" className="items-center gap-2">
-              <Box className="w-7 h-7 rounded-lg bg-teal-600 flex items-center justify-center text-white shadow-xs">
+            <Stack direction="row" sx={{ alignItems: "center", gap: 1 }}>
+              <Box
+                sx={(theme) => ({
+                  width: 28,
+                  height: 28,
+                  borderRadius: 2,
+                  bgcolor: theme.palette.primary.main,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: theme.palette.primary.contrastText,
+                  boxShadow: 1,
+                })}
+              >
                 <LocalHospitalRoundedIcon sx={{ fontSize: 16 }} />
               </Box>
               <Typography
                 variant="body2"
-                className="font-bold text-[var(--text-primary)] tracking-tight"
+                sx={(theme) => ({
+                  fontWeight: 700,
+                  color: theme.palette.text.primary,
+                  letterSpacing: "-0.01em",
+                })}
               >
                 Care
-                <span className="text-teal-600 dark:text-teal-400">
+                <span className="text-[var(--primary-color)]">
                   Point
                 </span>{" "}
                 Healthcare
               </Typography>
             </Stack>
 
-            <Stack
-              direction="row"
-              className="items-center gap-1.5 text-xs text-[var(--text-secondary)]"
-            >
+            <Stack direction="row" sx={{ alignItems: "center", gap: 0.75 }}>
               <VerifiedUserRoundedIcon
-                sx={{ fontSize: 16, color: "#0d9488" }}
+                sx={(theme) => ({
+                  fontSize: 16,
+                  color: theme.palette.primary.main,
+                })}
               />
               <Typography
                 variant="caption"
-                className="text-[var(--text-secondary)] font-medium"
+                sx={(theme) => ({
+                  color: theme.palette.text.secondary,
+                  fontWeight: 500,
+                  fontSize: "0.75rem",
+                })}
               >
                 Verified Medical Provider Network • HIPAA Compliant
               </Typography>
@@ -58,7 +109,12 @@ export default function RootLayout() {
 
             <Typography
               variant="caption"
-              className="text-xs text-slate-400 dark:text-slate-500 font-normal text-center sm:text-right"
+              sx={(theme) => ({
+                color: theme.palette.text.secondary,
+                fontWeight: 400,
+                textAlign: { xs: "center", sm: "right" },
+                fontSize: "0.75rem",
+              })}
             >
               © {new Date().getFullYear()} CarePoint. All rights reserved.
             </Typography>

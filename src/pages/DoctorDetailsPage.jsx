@@ -54,38 +54,44 @@ export default function DoctorDetailsPage() {
 
   if (loading) {
     return (
-      <Box className="space-y-6 max-w-5xl mx-auto py-4">
+      <Box sx={{ maxWidth: 1024, mx: "auto", py: 2, display: "flex", flexDirection: "column", gap: 3 }}>
         <Skeleton
           variant="rounded"
           width={140}
           height={36}
-          className="rounded-xl"
+          sx={{ borderRadius: "12px" }}
         />
         <Card
           elevation={0}
-          className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl overflow-hidden shadow-xs"
+          sx={(theme) => ({
+            bgcolor: "background.paper",
+            border: `1px solid ${theme.palette.divider}`,
+            borderRadius: "24px",
+            overflow: "hidden",
+            boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+          })}
         >
-          <Box className="grid grid-cols-1 md:grid-cols-12">
-            <Box className="md:col-span-5 min-h-[340px] md:min-h-[480px]">
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(12, 1fr)" } }}>
+            <Box sx={{ gridColumn: { md: "span 5" }, minHeight: { xs: 340, md: 480 } }}>
               <Skeleton
                 variant="rectangular"
                 width="100%"
                 height="100%"
-                className="w-full h-full min-h-[340px]"
+                sx={{ minHeight: 340 }}
               />
             </Box>
-            <Box className="md:col-span-7 p-6 sm:p-8 md:p-10 space-y-4">
+            <Box sx={{ gridColumn: { md: "span 7" }, p: { xs: 3, sm: 4, md: 5 }, display: "flex", flexDirection: "column", gap: 2 }}>
               <Skeleton variant="text" width="60%" height={40} />
               <Skeleton variant="text" width="30%" height={24} />
               <Skeleton
                 variant="rectangular"
                 height={90}
-                className="rounded-xl"
+                sx={{ borderRadius: "12px" }}
               />
               <Skeleton
                 variant="rectangular"
                 height={50}
-                className="rounded-xl"
+                sx={{ borderRadius: "12px" }}
               />
             </Box>
           </Box>
@@ -96,15 +102,15 @@ export default function DoctorDetailsPage() {
 
   if (error || !doctor) {
     return (
-      <Box className="py-8 max-w-xl mx-auto text-center space-y-4">
-        <Alert severity="error" className="rounded-2xl text-left">
+      <Box sx={{ py: 4, maxWidth: 576, mx: "auto", textAlign: "center", display: "flex", flexDirection: "column", gap: 2 }}>
+        <Alert severity="error" sx={{ borderRadius: "16px", textAlign: "left" }}>
           {error || "Doctor profile not found"}
         </Alert>
         <Button
           variant="outlined"
           startIcon={<ArrowBackRoundedIcon />}
           onClick={() => navigate("/doctors")}
-          className="rounded-xl font-semibold border-slate-200 text-slate-700"
+          sx={{ borderRadius: "12px", fontWeight: 600 }}
         >
           Back to Doctors List
         </Button>
@@ -113,13 +119,21 @@ export default function DoctorDetailsPage() {
   }
 
   return (
-    <Box className="space-y-6 max-w-5xl mx-auto py-2">
+    <Box sx={{ maxWidth: 1024, mx: "auto", py: 1, display: "flex", flexDirection: "column", gap: 3 }}>
       {/* Navigation Breadcrumb / Back Button */}
-      <Stack direction="row" className="items-center justify-between">
+      <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between" }}>
         <Button
           startIcon={<ArrowBackRoundedIcon />}
           onClick={() => navigate("/doctors")}
-          className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-semibold text-sm rounded-xl py-2 px-3"
+          sx={{
+            color: "text.secondary",
+            "&:hover": { color: "text.primary" },
+            fontWeight: 600,
+            fontSize: "0.875rem",
+            borderRadius: "12px",
+            py: 1,
+            px: 1.5,
+          }}
         >
           Back to Specialists
         </Button>
@@ -127,23 +141,52 @@ export default function DoctorDetailsPage() {
         <Chip
           icon={
             <VerifiedRoundedIcon
-              sx={{ fontSize: 16, "&&": { color: "#0d9488" } }}
+              sx={{ fontSize: 16, "&&": { color: "primary.main" } }}
             />
           }
           label="Verified Specialist"
           size="small"
-          className="bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300 font-bold border border-teal-200/70 dark:border-teal-800/70 text-xs"
+          sx={(theme) => ({
+            bgcolor:
+              theme.palette.mode === "dark"
+                ? "rgba(13, 148, 136, 0.2)"
+                : "rgba(13, 148, 136, 0.08)",
+            color: theme.palette.primary.main,
+            fontWeight: 700,
+            border: `1px solid ${
+              theme.palette.mode === "dark"
+                ? "rgba(13, 148, 136, 0.3)"
+                : "rgba(13, 148, 136, 0.2)"
+            }`,
+            fontSize: "0.75rem",
+          })}
         />
       </Stack>
 
       {/* Doctor Profile Main Card */}
       <Card
         elevation={0}
-        className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl overflow-hidden shadow-xs"
+        sx={(theme) => ({
+          bgcolor: "background.paper",
+          border: `1px solid ${theme.palette.divider}`,
+          borderRadius: "24px",
+          overflow: "hidden",
+          boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+        })}
       >
-        <Box className="grid grid-cols-1 md:grid-cols-12">
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(12, 1fr)" } }}>
           {/* Doctor Portrait Column */}
-          <Box className="md:col-span-5 relative bg-slate-100 dark:bg-slate-900 min-h-[340px] md:min-h-full border-b md:border-b-0 md:border-r border-[var(--border-color)] overflow-hidden">
+          <Box
+            sx={(theme) => ({
+              gridColumn: { md: "span 5" },
+              position: "relative",
+              bgcolor: theme.palette.mode === "dark" ? "slate.900" : "grey.100",
+              minHeight: { xs: 340, md: "100%" },
+              borderBottom: { xs: `1px solid ${theme.palette.divider}`, md: 0 },
+              borderRight: { md: `1px solid ${theme.palette.divider}` },
+              overflow: "hidden",
+            })}
+          >
             <CardMedia
               component="img"
               image={doctor.avatar}
@@ -164,55 +207,90 @@ export default function DoctorDetailsPage() {
               }}
             />
             <Box
-              sx={{
+              sx={(theme) => ({
                 position: "absolute",
                 bottom: 16,
                 right: 16,
-                bgcolor: "#10b981",
-                color: "#ffffff",
+                bgcolor: theme.palette.success.main,
+                color: theme.palette.success.contrastText,
                 p: 1,
                 borderRadius: "50%",
                 boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                border: "2px solid #ffffff",
+                border: `2px solid ${theme.palette.background.paper}`,
                 zIndex: 2,
-              }}
+              })}
             >
               <VerifiedRoundedIcon sx={{ fontSize: 22 }} />
             </Box>
           </Box>
 
           {/* Doctor Details Column */}
-          <Box className="md:col-span-7 p-6 sm:p-8 md:p-10 flex flex-col justify-between">
+          <Box
+            sx={{
+              gridColumn: { md: "span 7" },
+              p: { xs: 3, sm: 4, md: 5 },
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+            }}
+          >
             <Box>
               {/* Header Badges */}
               <Stack
                 direction="row"
-                className="items-center gap-2 mb-3 flex-wrap"
+                sx={{ items: "center", gap: 1, mb: 2, flexWrap: "wrap" }}
               >
                 <Chip
                   label={doctor.specialty}
-                  className="bg-teal-600 text-white font-bold text-xs h-7 rounded-lg shadow-xs"
+                  color="primary"
+                  sx={{ fontWeight: 700, fontSize: "0.75rem", height: 28, borderRadius: "8px" }}
                 />
                 <Chip
                   icon={
                     <StarRoundedIcon
-                      sx={{ "&&": { color: "#f59e0b" }, fontSize: 18 }}
+                      sx={{ "&&": { color: "warning.main" }, fontSize: 18 }}
                     />
                   }
                   label={`${doctor.rating} Rating (${doctor.reviewsCount || 124} reviews)`}
-                  className="bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60 font-semibold text-xs h-7 rounded-lg"
+                  sx={(theme) => ({
+                    bgcolor:
+                      theme.palette.mode === "dark"
+                        ? "rgba(245, 158, 11, 0.15)"
+                        : "rgba(245, 158, 11, 0.1)",
+                    color: theme.palette.warning.main,
+                    border: `1px solid ${
+                      theme.palette.mode === "dark"
+                        ? "rgba(245, 158, 11, 0.3)"
+                        : "rgba(245, 158, 11, 0.2)"
+                    }`,
+                    fontWeight: 600,
+                    fontSize: "0.75rem",
+                    height: 28,
+                    borderRadius: "8px",
+                  })}
                 />
                 <Chip
                   icon={
                     <WorkHistoryRoundedIcon
-                      sx={{ fontSize: 16, color: "#64748b" }}
+                      sx={{ fontSize: 16, color: "text.secondary" }}
                     />
                   }
                   label={doctor.experience || "10 yrs experience"}
-                  className="bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600 font-medium text-xs h-7 rounded-lg"
+                  sx={(theme) => ({
+                    bgcolor:
+                      theme.palette.mode === "dark"
+                        ? "rgba(51, 65, 85, 0.5)"
+                        : "rgba(241, 245, 249, 0.8)",
+                    color: theme.palette.text.secondary,
+                    border: `1px solid ${theme.palette.divider}`,
+                    fontWeight: 500,
+                    fontSize: "0.75rem",
+                    height: 28,
+                    borderRadius: "8px",
+                  })}
                 />
               </Stack>
 
@@ -220,14 +298,25 @@ export default function DoctorDetailsPage() {
               <Typography
                 variant="h4"
                 component="h1"
-                className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] tracking-tight"
+                sx={{
+                  fontSize: { xs: "1.5rem", sm: "1.875rem" },
+                  fontWeight: 800,
+                  color: "text.primary",
+                  letterSpacing: "-0.025em",
+                }}
               >
                 {doctor.name}
               </Typography>
 
               <Typography
                 variant="body2"
-                className="text-teal-700 dark:text-teal-400 font-semibold text-sm mt-0.5 mb-4"
+                sx={{
+                  color: "primary.main",
+                  fontWeight: 600,
+                  fontSize: "0.875rem",
+                  mt: 0.5,
+                  mb: 2,
+                }}
               >
                 Consultant • {doctor.specialty} Specialist
               </Typography>
@@ -235,50 +324,77 @@ export default function DoctorDetailsPage() {
               {/* Bio description */}
               <Typography
                 variant="body1"
-                className="text-[var(--text-secondary)] text-sm sm:text-base leading-relaxed mb-6"
+                sx={{
+                  color: "text.secondary",
+                  fontSize: { xs: "0.875rem", sm: "1rem" },
+                  lineHeight: 1.6,
+                  mb: 3,
+                }}
               >
                 {doctor.bio}
               </Typography>
 
-              <Divider className="my-6 border-[var(--border-color)]" />
+              <Divider sx={{ my: 3 }} />
 
               {/* Working Schedule & Days */}
-              <Box className="mb-6 space-y-3">
-                <Stack direction="row" className="items-center gap-2">
+              <Box sx={{ mb: 3, display: "flex", flexDirection: "column", gap: 1.5 }}>
+                <Stack direction="row" sx={{ alignItems: "center", gap: 1 }}>
                   <CalendarMonthRoundedIcon
-                    sx={{ fontSize: 18, color: "#0d9488" }}
+                    sx={{ fontSize: 18, color: "primary.main" }}
                   />
                   <Typography
                     variant="subtitle2"
-                    className="font-bold text-[var(--text-primary)] text-sm uppercase tracking-wider"
+                    sx={{
+                      fontWeight: 700,
+                      color: "text.primary",
+                      fontSize: "0.875rem",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                    }}
                   >
                     Available Working Days
                   </Typography>
                 </Stack>
 
-                <Stack direction="row" spacing={1} className="flex-wrap gap-2">
+                <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
                   {Array.isArray(doctor.workingDays) &&
                     doctor.workingDays.map((day) => (
                       <Chip
                         key={day}
                         label={day}
                         size="medium"
-                        className="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl px-2 text-xs"
+                        sx={(theme) => ({
+                          bgcolor:
+                            theme.palette.mode === "dark"
+                              ? "rgba(51, 65, 85, 0.5)"
+                              : "rgba(241, 245, 249, 0.8)",
+                          color: theme.palette.text.primary,
+                          fontWeight: 700,
+                          borderRadius: "12px",
+                          px: 1,
+                          fontSize: "0.75rem",
+                        })}
                       />
                     ))}
                 </Stack>
               </Box>
 
               {/* Available Time Slots */}
-              <Box className="mb-8 space-y-3">
-                <Stack direction="row" className="items-center justify-between">
-                  <Stack direction="row" className="items-center gap-2">
+              <Box sx={{ mb: 4, display: "flex", flexDirection: "column", gap: 1.5 }}>
+                <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between" }}>
+                  <Stack direction="row" sx={{ alignItems: "center", gap: 1 }}>
                     <AccessTimeRoundedIcon
-                      sx={{ fontSize: 18, color: "#0d9488" }}
+                      sx={{ fontSize: 18, color: "primary.main" }}
                     />
                     <Typography
                       variant="subtitle2"
-                      className="font-bold text-[var(--text-primary)] text-sm uppercase tracking-wider"
+                      sx={{
+                        fontWeight: 700,
+                        color: "text.primary",
+                        fontSize: "0.875rem",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.05em",
+                      }}
                     >
                       Available Consultation Slots
                     </Typography>
@@ -286,14 +402,14 @@ export default function DoctorDetailsPage() {
                   {selectedSlot && (
                     <Typography
                       variant="caption"
-                      className="text-teal-700 dark:text-teal-400 font-bold text-xs"
+                      sx={{ color: "primary.main", fontWeight: 700, fontSize: "0.75rem" }}
                     >
                       Selected: {selectedSlot}
                     </Typography>
                   )}
                 </Stack>
 
-                <Stack direction="row" className="flex-wrap gap-2">
+                <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
                   {Array.isArray(doctor.slots) &&
                     doctor.slots.map((slot) => {
                       const isSelected = selectedSlot === slot;
@@ -303,11 +419,40 @@ export default function DoctorDetailsPage() {
                           label={slot}
                           clickable
                           onClick={() => setSelectedSlot(slot)}
-                          className={`rounded-xl font-semibold text-xs py-1.5 px-1 transition-all ${
-                            isSelected
-                              ? "bg-teal-600 text-white shadow-xs"
-                              : "bg-teal-50/70 dark:bg-teal-950/40 border border-teal-200/80 dark:border-teal-800/70 text-teal-800 dark:text-teal-300 hover:bg-teal-100 dark:hover:bg-teal-900/50"
-                          }`}
+                          sx={(theme) => ({
+                            borderRadius: "12px",
+                            fontWeight: 600,
+                            fontSize: "0.75rem",
+                            py: 0.75,
+                            px: 0.5,
+                            transition: "all 0.2s",
+                            ...(isSelected
+                              ? {
+                                  bgcolor: theme.palette.primary.main,
+                                  color: theme.palette.primary.contrastText,
+                                  "&:hover": {
+                                    bgcolor: theme.palette.primary.dark,
+                                  },
+                                }
+                              : {
+                                  bgcolor:
+                                    theme.palette.mode === "dark"
+                                      ? "rgba(13, 148, 136, 0.15)"
+                                      : "rgba(13, 148, 136, 0.08)",
+                                  border: `1px solid ${
+                                    theme.palette.mode === "dark"
+                                      ? "rgba(13, 148, 136, 0.3)"
+                                      : "rgba(13, 148, 136, 0.2)"
+                                  }`,
+                                  color: theme.palette.primary.main,
+                                  "&:hover": {
+                                    bgcolor:
+                                      theme.palette.mode === "dark"
+                                        ? "rgba(13, 148, 136, 0.25)"
+                                        : "rgba(13, 148, 136, 0.15)",
+                                  },
+                                }),
+                          })}
                         />
                       );
                     })}
@@ -316,22 +461,55 @@ export default function DoctorDetailsPage() {
             </Box>
 
             {/* Bottom Action CTA Banner */}
-            <Box className="bg-slate-50 dark:bg-slate-900/60 border border-[var(--border-color)] rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-auto">
+            <Box
+              sx={(theme) => ({
+                bgcolor:
+                  theme.palette.mode === "dark"
+                    ? "rgba(15, 23, 42, 0.6)"
+                    : "rgba(248, 250, 252, 0.8)",
+                border: `1px solid ${theme.palette.divider}`,
+                borderRadius: "16px",
+                p: 2,
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 2,
+                mt: "auto",
+              })}
+            >
               <Box>
                 <Typography
                   variant="caption"
-                  className="text-[var(--text-secondary)] font-medium block text-xs"
+                  sx={{
+                    color: "text.secondary",
+                    fontWeight: 500,
+                    display: "block",
+                    fontSize: "0.75rem",
+                  }}
                 >
                   Standard Consultation Fee
                 </Typography>
                 <Typography
                   variant="h6"
-                  className="font-extrabold text-teal-600 dark:text-teal-400 leading-none"
+                  sx={{
+                    fontWeight: 800,
+                    color: "primary.main",
+                    lineHeight: 1,
+                  }}
                 >
                   {doctor.fee || "$120"}
-                  <span className="text-xs text-slate-500 dark:text-slate-400 font-normal ml-1">
+                  <Box
+                    component="span"
+                    sx={{
+                      fontSize: "0.75rem",
+                      color: "text.secondary",
+                      fontWeight: 400,
+                      ml: 0.5,
+                    }}
+                  >
                     / comprehensive visit
-                  </span>
+                  </Box>
                 </Typography>
               </Box>
 
@@ -340,7 +518,14 @@ export default function DoctorDetailsPage() {
                 size="large"
                 startIcon={<EventAvailableRoundedIcon />}
                 onClick={() => navigate(`/book/${doctor.id}`)}
-                className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl px-6 py-2.5 shadow-sm"
+                sx={{
+                  width: { xs: "100%", sm: "auto" },
+                  fontWeight: 700,
+                  borderRadius: "12px",
+                  px: 3,
+                  py: 1.25,
+                  boxShadow: 1,
+                }}
               >
                 Book Appointment With {doctor.name.split(" ")[1] || "Doctor"}
               </Button>

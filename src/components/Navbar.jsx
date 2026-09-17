@@ -29,7 +29,7 @@ import LocalHospitalRoundedIcon from "@mui/icons-material/LocalHospitalRounded";
 import { useThemeStore } from "../stores/useThemeStore";
 
 export default function Navbar() {
-  const [mobileOpen, setMobileOpen] = useState(false); //state for mobile
+  const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -71,62 +71,111 @@ export default function Navbar() {
   };
 
   const handleNavClick = (path) => {
-    navigate(path); //go to path
-    setMobileOpen(false); //then close this list
+    navigate(path);
+    setMobileOpen(false);
   };
 
   return (
     <Box
       component="header"
-      className="sticky top-0 z-50 bg-white/95 dark:bg-[#0b1120]/95 backdrop-blur-md border-b border-[var(--border-color)] transition-colors duration-200"
+      sx={(theme) => ({
+        position: "sticky",
+        top: 0,
+        zIndex: 50,
+        bgcolor:
+          theme.palette.mode === "dark"
+            ? "rgba(11, 17, 32, 0.95)"
+            : "rgba(255, 255, 255, 0.95)",
+        backdropFilter: "blur(12px)",
+        borderBottom: `1px solid ${theme.palette.divider}`,
+        transition: "background-color 0.2s ease, border-color 0.2s ease",
+      })}
     >
-      <Box className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+      <Box
+        sx={{
+          maxWidth: 1280,
+          mx: "auto",
+          px: { xs: 2, sm: 3, lg: 4 },
+          height: 72,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
         {/* Brand Logo */}
         <NavLink
           to="/"
-          className="flex items-center gap-2.5 text-decoration-none group"
+          className="flex items-center gap-2.5 no-underline group"
           onClick={() => setMobileOpen(false)}
         >
-          <Box className="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-sm shadow-teal-500/20 transition-transform group-hover:scale-105">
+          <Box
+            sx={(theme) => ({
+              width: 40,
+              height: 40,
+              borderRadius: 3,
+              bgcolor: theme.palette.primary.main,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: theme.palette.primary.contrastText,
+              boxShadow: "0 1px 2px rgba(13, 148, 136, 0.2)",
+              transition: "transform 0.2s ease",
+              ".group:hover &": {
+                transform: "scale(1.05)",
+              },
+            })}
+          >
             <LocalHospitalRoundedIcon sx={{ fontSize: 22 }} />
           </Box>
           <Typography
             variant="h6"
-            className="font-extrabold tracking-tight text-[var(--text-primary)]"
+            sx={(theme) => ({
+              fontWeight: 800,
+              letterSpacing: "-0.02em",
+              color: theme.palette.text.primary,
+            })}
           >
-            Care<span className="text-teal-600 dark:text-teal-400">Point</span>
+            Care
+            <span className="text-[var(--primary-color)]">Point</span>
           </Typography>
         </NavLink>
 
         {/* Desktop Navigation Links (md and above) */}
         <Box
           component="nav"
-          className="hidden md:flex items-center gap-2 lg:gap-3"
+          sx={{
+            display: { xs: "none", md: "flex" },
+            alignItems: "center",
+            gap: { md: 1, lg: 1.5 },
+          }}
         >
           {navLinks.map((item) => {
-            //map in your navLinks object and show them
             const Icon = item.icon;
             return (
-              //create naveLink
               <NavLink
                 key={item.label}
                 to={item.path}
                 className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
-                  item.isActive //if active give them a style as seleceted if not give static style
-                    ? "bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 font-bold"
-                    : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/60"
+                  item.isActive
+                    ? "bg-[var(--primary-light)] text-[var(--primary-color)] font-bold"
+                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)]"
                 }`}
               >
                 <Icon sx={{ fontSize: 18 }} />
                 <span>{item.label}</span>
-                {item.badgeCount !== undefined && ( //show badge count beside label
+                {item.badgeCount !== undefined && (
                   <Chip
                     label={item.badgeCount}
                     size="small"
-                    className="bg-teal-600 text-white font-bold h-5 min-w-[20px] text-xs"
-                    sx={{
+                    sx={(theme) => ({
+                      bgcolor: theme.palette.primary.main,
+                      color: theme.palette.primary.contrastText,
+                      fontWeight: 700,
+                      height: 20,
+                      minWidth: 20,
+                      fontSize: "0.75rem",
                       "& .MuiChip-label": { px: 0.75 },
-                    }}
+                    })}
                   />
                 )}
               </NavLink>
@@ -135,7 +184,13 @@ export default function Navbar() {
         </Box>
 
         {/* Desktop Side Actions (md and above) */}
-        <Box className="hidden md:flex items-center gap-3">
+        <Box
+          sx={{
+            display: { xs: "none", md: "flex" },
+            alignItems: "center",
+            gap: 1.5,
+          }}
+        >
           <Tooltip
             title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
             arrow
@@ -144,14 +199,22 @@ export default function Navbar() {
               onClick={toggleTheme}
               size="small"
               aria-label="Toggle dark mode"
-              className="w-9 h-9 rounded-xl border border-[var(--border-color)] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
-              sx={{
+              sx={(theme) => ({
+                width: 36,
+                height: 36,
+                borderRadius: 3,
+                border: `1px solid ${theme.palette.divider}`,
+                color: theme.palette.text.secondary,
                 transition:
                   "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease",
                 "&:hover": {
                   transform: "rotate(15deg) scale(1.05)",
+                  bgcolor:
+                    theme.palette.mode === "dark"
+                      ? "rgba(255, 255, 255, 0.05)"
+                      : "grey.50",
                 },
-              }}
+              })}
             >
               <Box
                 component="span"
@@ -164,11 +227,17 @@ export default function Navbar() {
               >
                 {isDarkMode ? (
                   <LightModeOutlinedIcon
-                    sx={{ fontSize: 19, color: "#f59e0b" }}
+                    sx={(theme) => ({
+                      fontSize: 19,
+                      color: theme.palette.warning.main,
+                    })}
                   />
                 ) : (
                   <DarkModeOutlinedIcon
-                    sx={{ fontSize: 19, color: "#0d9488" }}
+                    sx={(theme) => ({
+                      fontSize: 19,
+                      color: theme.palette.primary.main,
+                    })}
                   />
                 )}
               </Box>
@@ -178,7 +247,7 @@ export default function Navbar() {
           <Divider
             orientation="vertical"
             flexItem
-            className="h-5 my-auto border-[var(--border-color)]"
+            sx={{ height: 20, my: "auto" }}
           />
 
           <Tooltip title="User Profile" arrow>
@@ -186,7 +255,18 @@ export default function Navbar() {
               onClick={() => navigate("/profile")}
               size="small"
               aria-label="User Profile"
-              className="w-9 h-9 rounded-xl bg-slate-900 dark:bg-slate-800 text-white hover:bg-slate-800 dark:hover:bg-slate-700 transition-colors shadow-xs"
+              sx={(theme) => ({
+                width: 36,
+                height: 36,
+                borderRadius: 3,
+                bgcolor: theme.palette.secondary.main,
+                color: theme.palette.secondary.contrastText,
+                boxShadow: 1,
+                transition: "background-color 0.2s ease",
+                "&:hover": {
+                  bgcolor: theme.palette.secondary.dark,
+                },
+              })}
             >
               <PersonRoundedIcon sx={{ fontSize: 20 }} />
             </IconButton>
@@ -194,12 +274,31 @@ export default function Navbar() {
         </Box>
 
         {/* Mobile Action Controls (xs to sm) */}
-        <Box className="flex md:hidden items-center gap-1.5">
+        <Box
+          sx={{
+            display: { xs: "flex", md: "none" },
+            alignItems: "center",
+            gap: 0.75,
+          }}
+        >
           <IconButton
             onClick={toggleTheme}
             size="small"
             aria-label="Toggle dark mode"
-            className="w-9 h-9 rounded-xl border border-[var(--border-color)] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
+            sx={(theme) => ({
+              width: 36,
+              height: 36,
+              borderRadius: 3,
+              border: `1px solid ${theme.palette.divider}`,
+              color: theme.palette.text.secondary,
+              transition: "transform 0.3s ease",
+              "&:hover": {
+                bgcolor:
+                  theme.palette.mode === "dark"
+                    ? "rgba(255, 255, 255, 0.05)"
+                    : "grey.50",
+              },
+            })}
           >
             <Box
               component="span"
@@ -212,10 +311,18 @@ export default function Navbar() {
             >
               {isDarkMode ? (
                 <LightModeOutlinedIcon
-                  sx={{ fontSize: 19, color: "#f59e0b" }}
+                  sx={(theme) => ({
+                    fontSize: 19,
+                    color: theme.palette.warning.main,
+                  })}
                 />
               ) : (
-                <DarkModeOutlinedIcon sx={{ fontSize: 19, color: "#0d9488" }} />
+                <DarkModeOutlinedIcon
+                  sx={(theme) => ({
+                    fontSize: 19,
+                    color: theme.palette.primary.main,
+                  })}
+                />
               )}
             </Box>
           </IconButton>
@@ -224,7 +331,19 @@ export default function Navbar() {
             onClick={handleDrawerToggle}
             size="small"
             aria-label="Open navigation menu"
-            className="w-9 h-9 rounded-xl border border-[var(--border-color)] text-[var(--text-primary)] hover:bg-slate-50 dark:hover:bg-slate-800"
+            sx={(theme) => ({
+              width: 36,
+              height: 36,
+              borderRadius: 3,
+              border: `1px solid ${theme.palette.divider}`,
+              color: theme.palette.text.primary,
+              "&:hover": {
+                bgcolor:
+                  theme.palette.mode === "dark"
+                    ? "rgba(255, 255, 255, 0.05)"
+                    : "grey.50",
+              },
+            })}
           >
             <MenuRoundedIcon sx={{ fontSize: 22 }} />
           </IconButton>
@@ -238,39 +357,64 @@ export default function Navbar() {
         onClose={handleDrawerToggle}
         ModalProps={{ keepMounted: true }}
         PaperProps={{
-          sx: {
+          sx: (theme) => ({
             width: { xs: "82vw", sm: 340 },
             maxWidth: 360,
-            bgcolor: "background.paper",
-            color: "text.primary",
-            borderLeft: "1px solid",
-            borderColor: "divider",
-            boxShadow: isDarkMode
-              ? "-8px 0 32px rgba(0, 0, 0, 0.4)"
-              : "-8px 0 32px rgba(15, 23, 42, 0.08)",
+            bgcolor: theme.palette.background.paper,
+            color: theme.palette.text.primary,
+            borderLeft: `1px solid ${theme.palette.divider}`,
+            boxShadow:
+              theme.palette.mode === "dark"
+                ? "-8px 0 32px rgba(0, 0, 0, 0.4)"
+                : "-8px 0 32px rgba(15, 23, 42, 0.08)",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
-          },
+          }),
         }}
       >
-        <Box className="flex flex-col flex-grow">
+        <Box sx={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
           {/* Drawer Header */}
-          <Box className="flex items-center justify-between px-5 py-4 border-b border-[var(--border-color)]">
+          <Box
+            sx={(theme) => ({
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              px: 2.5,
+              py: 2,
+              borderBottom: `1px solid ${theme.palette.divider}`,
+            })}
+          >
             <NavLink
               to="/"
-              className="flex items-center gap-2.5 text-decoration-none"
+              className="flex items-center gap-2.5 no-underline"
               onClick={() => setMobileOpen(false)}
             >
-              <Box className="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-xs">
+              <Box
+                sx={(theme) => ({
+                  width: 32,
+                  height: 32,
+                  borderRadius: 2.5,
+                  bgcolor: theme.palette.primary.main,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: theme.palette.primary.contrastText,
+                  boxShadow: 1,
+                })}
+              >
                 <LocalHospitalRoundedIcon sx={{ fontSize: 18 }} />
               </Box>
               <Typography
                 variant="subtitle1"
-                className="font-bold tracking-tight text-[var(--text-primary)]"
+                sx={(theme) => ({
+                  fontWeight: 700,
+                  letterSpacing: "-0.01em",
+                  color: theme.palette.text.primary,
+                })}
               >
                 Care
-                <span className="text-teal-600 dark:text-teal-400">Point</span>
+                <span className="text-[var(--primary-color)]">Point</span>
               </Typography>
             </NavLink>
 
@@ -278,40 +422,84 @@ export default function Navbar() {
               onClick={handleDrawerToggle}
               size="small"
               aria-label="Close navigation menu"
-              className="text-slate-500 dark:text-slate-400 border border-[var(--border-color)] rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800"
+              sx={(theme) => ({
+                color: theme.palette.text.secondary,
+                border: `1px solid ${theme.palette.divider}`,
+                borderRadius: 3,
+                "&:hover": {
+                  bgcolor:
+                    theme.palette.mode === "dark"
+                      ? "rgba(255, 255, 255, 0.05)"
+                      : "grey.50",
+                },
+              })}
             >
               <CloseRoundedIcon sx={{ fontSize: 20 }} />
             </IconButton>
           </Box>
 
           {/* Drawer Navigation List */}
-          <Box className="px-3 py-4">
+          <Box sx={{ px: 1.5, py: 2 }}>
             <Typography
               variant="caption"
-              className="px-3 mb-2 block font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500 text-xs"
+              sx={(theme) => ({
+                px: 1.5,
+                mb: 1,
+                display: "block",
+                fontWeight: 700,
+                letterSpacing: "0.05em",
+                textTransform: "uppercase",
+                color: theme.palette.text.secondary,
+                fontSize: "0.75rem",
+              })}
             >
               Navigation Menu
             </Typography>
 
-            <List disablePadding className="flex flex-col gap-1">
+            <List
+              disablePadding
+              sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}
+            >
               {navLinks.map((item) => {
                 const IconComponent = item.icon;
                 return (
                   <ListItem key={item.label} disablePadding>
                     <ListItemButton
                       onClick={() => handleNavClick(item.path)}
-                      className={`rounded-xl py-2.5 px-3.5 transition-all ${
-                        item.isActive
-                          ? "bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 font-bold"
-                          : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
-                      }`}
+                      sx={(theme) => ({
+                        borderRadius: 3,
+                        py: 1.25,
+                        px: 1.75,
+                        transition: "all 0.2s ease",
+                        bgcolor: item.isActive
+                          ? theme.palette.mode === "dark"
+                            ? "rgba(20, 184, 166, 0.15)"
+                            : "rgba(13, 148, 136, 0.08)"
+                          : "transparent",
+                        color: item.isActive
+                          ? theme.palette.primary.main
+                          : theme.palette.text.secondary,
+                        "&:hover": {
+                          bgcolor: item.isActive
+                            ? theme.palette.mode === "dark"
+                              ? "rgba(20, 184, 166, 0.25)"
+                              : "rgba(13, 148, 136, 0.15)"
+                            : theme.palette.mode === "dark"
+                              ? "rgba(255, 255, 255, 0.05)"
+                              : "grey.50",
+                          color: item.isActive
+                            ? theme.palette.primary.main
+                            : theme.palette.text.primary,
+                        },
+                      })}
                     >
                       <ListItemIcon
-                        className={`min-w-9 ${
-                          item.isActive
-                            ? "text-teal-600 dark:text-teal-400"
-                            : "text-slate-500 dark:text-slate-400"
-                        }`}
+                        sx={(theme) => ({
+                          minWidth: 36,
+                          color: item.isActive
+                            ? theme.palette.primary.main
+                            : theme.palette.text.secondary,
+                        })}
                       >
                         <IconComponent sx={{ fontSize: 22 }} />
                       </ListItemIcon>
@@ -326,7 +514,13 @@ export default function Navbar() {
                         <Chip
                           label={item.badgeCount}
                           size="small"
-                          className="bg-teal-600 text-white font-bold h-5 min-w-[20px]"
+                          sx={(theme) => ({
+                            bgcolor: theme.palette.primary.main,
+                            color: theme.palette.primary.contrastText,
+                            fontWeight: 700,
+                            height: 20,
+                            minWidth: 20,
+                          })}
                         />
                       )}
                     </ListItemButton>
@@ -338,22 +532,73 @@ export default function Navbar() {
         </Box>
 
         {/* Drawer Footer Actions */}
-        <Box className="p-4 bg-slate-50/70 dark:bg-slate-900/60 border-t border-[var(--border-color)]">
+        <Box
+          sx={(theme) => ({
+            p: 2,
+            bgcolor:
+              theme.palette.mode === "dark"
+                ? "rgba(15, 23, 42, 0.6)"
+                : "rgba(248, 250, 252, 0.7)",
+            borderTop: `1px solid ${theme.palette.divider}`,
+          })}
+        >
           {/* User Account Snippet */}
-          <Box className="flex items-center gap-3 p-3 mb-3 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-color)] shadow-xs">
-            <Box className="w-10 h-10 rounded-xl bg-slate-900 dark:bg-teal-600 text-white flex items-center justify-center font-bold text-sm">
+          <Box
+            sx={(theme) => ({
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              p: 1.5,
+              mb: 1.5,
+              borderRadius: 4,
+              bgcolor: theme.palette.background.paper,
+              border: `1px solid ${theme.palette.divider}`,
+              boxShadow: 1,
+            })}
+          >
+            <Box
+              sx={(theme) => ({
+                width: 40,
+                height: 40,
+                borderRadius: 3,
+                bgcolor:
+                  theme.palette.mode === "dark"
+                    ? theme.palette.primary.main
+                    : theme.palette.secondary.main,
+                color: theme.palette.primary.contrastText,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: 700,
+                fontSize: "0.875rem",
+              })}
+            >
               JD
             </Box>
-            <Box className="min-w-0 flex-1">
+            <Box sx={{ minWidth: 0, flex: 1 }}>
               <Typography
                 variant="body2"
-                className="font-bold text-[var(--text-primary)] leading-tight truncate"
+                sx={(theme) => ({
+                  fontWeight: 700,
+                  color: theme.palette.text.primary,
+                  lineHeight: 1.25,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                })}
               >
                 John Doe
               </Typography>
               <Typography
                 variant="caption"
-                className="text-[var(--text-secondary)] block text-xs truncate"
+                sx={(theme) => ({
+                  color: theme.palette.text.secondary,
+                  display: "block",
+                  fontSize: "0.75rem",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                })}
               >
                 Patient Account
               </Typography>
@@ -364,16 +609,33 @@ export default function Navbar() {
           <Stack spacing={0.5}>
             <ListItemButton
               onClick={toggleTheme}
-              className="rounded-xl py-2 px-3 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              sx={(theme) => ({
+                borderRadius: 3,
+                py: 1,
+                px: 1.5,
+                color: theme.palette.text.primary,
+                "&:hover": {
+                  bgcolor:
+                    theme.palette.mode === "dark"
+                      ? "rgba(255, 255, 255, 0.05)"
+                      : "grey.100",
+                },
+              })}
             >
-              <ListItemIcon className="min-w-8 text-slate-500 dark:text-slate-400">
+              <ListItemIcon sx={{ minWidth: 32 }}>
                 {isDarkMode ? (
                   <LightModeOutlinedIcon
-                    sx={{ fontSize: 20, color: "#f59e0b" }}
+                    sx={(theme) => ({
+                      fontSize: 20,
+                      color: theme.palette.warning.main,
+                    })}
                   />
                 ) : (
                   <DarkModeOutlinedIcon
-                    sx={{ fontSize: 20, color: "#0d9488" }}
+                    sx={(theme) => ({
+                      fontSize: 20,
+                      color: theme.palette.primary.main,
+                    })}
                   />
                 )}
               </ListItemIcon>
@@ -387,19 +649,39 @@ export default function Navbar() {
               <Chip
                 label={isDarkMode ? "ON" : "OFF"}
                 size="small"
-                className={`font-bold text-xs h-5 ${
-                  isDarkMode
-                    ? "bg-teal-900/50 text-teal-300"
-                    : "bg-teal-50 text-teal-600"
-                }`}
+                sx={(theme) => ({
+                  fontWeight: 700,
+                  fontSize: "0.75rem",
+                  height: 20,
+                  bgcolor: isDarkMode
+                    ? "rgba(20, 184, 166, 0.2)"
+                    : "rgba(13, 148, 136, 0.1)",
+                  color: theme.palette.primary.main,
+                })}
               />
             </ListItemButton>
 
             <ListItemButton
               onClick={() => handleNavClick("/profile")}
-              className="rounded-xl py-2 px-3 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+              sx={(theme) => ({
+                borderRadius: 3,
+                py: 1,
+                px: 1.5,
+                color: theme.palette.text.primary,
+                "&:hover": {
+                  bgcolor:
+                    theme.palette.mode === "dark"
+                      ? "rgba(255, 255, 255, 0.05)"
+                      : "grey.100",
+                },
+              })}
             >
-              <ListItemIcon className="min-w-8 text-slate-500 dark:text-slate-400">
+              <ListItemIcon
+                sx={(theme) => ({
+                  minWidth: 32,
+                  color: theme.palette.text.secondary,
+                })}
+              >
                 <SettingsRoundedIcon sx={{ fontSize: 20 }} />
               </ListItemIcon>
               <ListItemText
@@ -413,9 +695,25 @@ export default function Navbar() {
 
             <ListItemButton
               onClick={() => setMobileOpen(false)}
-              className="rounded-xl py-2 px-3 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
+              sx={(theme) => ({
+                borderRadius: 3,
+                py: 1,
+                px: 1.5,
+                color: theme.palette.error.main,
+                "&:hover": {
+                  bgcolor:
+                    theme.palette.mode === "dark"
+                      ? "rgba(239, 68, 68, 0.15)"
+                      : "rgba(239, 68, 68, 0.08)",
+                },
+              })}
             >
-              <ListItemIcon className="min-w-8 text-red-600">
+              <ListItemIcon
+                sx={(theme) => ({
+                  minWidth: 32,
+                  color: theme.palette.error.main,
+                })}
+              >
                 <LogoutRoundedIcon sx={{ fontSize: 20 }} />
               </ListItemIcon>
               <ListItemText
