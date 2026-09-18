@@ -30,6 +30,7 @@ import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import NotesRoundedIcon from "@mui/icons-material/NotesRounded";
 import { getDoctorById, getDoctors, createAppointment } from "../services/api";
+import { useAppointmentsStore } from "../stores/useAppointmentsStore";
 
 const DEFAULT_SLOTS = [
   "09:00 AM",
@@ -155,7 +156,8 @@ export default function BookAppointmentPage() {
     setSubmitError(null);
     try {
       const payload = generateAppointmentPayload(formData, selectedDoctor);
-      await createAppointment(payload);
+      const res = await createAppointment(payload);
+      useAppointmentsStore.getState().addAppointment(res?.data || payload);
       setSnackbarOpen(true);
 
       setTimeout(() => {
@@ -172,11 +174,26 @@ export default function BookAppointmentPage() {
   const doctorSelectId = useId();
 
   return (
-    <Box sx={{ minHeight: "100vh", py: { xs: 2, sm: 3 }, px: { xs: 1, sm: 2 }, display: "flex", flexDirection: "column", alignItems: "center" }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        py: { xs: 2, sm: 3 },
+        px: { xs: 1, sm: 2 },
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
       {/* Top Header / Back Navigation */}
       <Stack
         direction="row"
-        sx={{ width: "100%", maxWidth: 672, mb: 2.5, alignItems: "center", justifyContent: "space-between" }}
+        sx={{
+          width: "100%",
+          maxWidth: 672,
+          mb: 2.5,
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
       >
         <Button
           startIcon={<ArrowBackRoundedIcon />}
@@ -241,10 +258,7 @@ export default function BookAppointmentPage() {
           >
             Book an Appointment
           </Typography>
-          <Typography
-            variant="body2"
-            sx={{ color: "text.secondary", mt: 0.5 }}
-          >
+          <Typography variant="body2" sx={{ color: "text.secondary", mt: 0.5 }}>
             Complete the form below to secure your consultation slot with
             CarePoint.
           </Typography>
@@ -370,16 +384,26 @@ export default function BookAppointmentPage() {
                         height: 56,
                         borderRadius: "16px",
                         objectFit: "cover",
-                        bgcolor: theme.palette.mode === "dark" ? "slate.700" : "grey.100",
+                        bgcolor:
+                          theme.palette.mode === "dark"
+                            ? "slate.700"
+                            : "grey.100",
                       })}
                     />
                   </Badge>
 
                   <Box>
-                    <Stack direction="row" sx={{ alignItems: "center", gap: 1 }}>
+                    <Stack
+                      direction="row"
+                      sx={{ alignItems: "center", gap: 1 }}
+                    >
                       <Typography
                         variant="subtitle1"
-                        sx={{ fontWeight: 700, color: "text.primary", lineHeight: 1.2 }}
+                        sx={{
+                          fontWeight: 700,
+                          color: "text.primary",
+                          lineHeight: 1.2,
+                        }}
                       >
                         {selectedDoctor.name}
                       </Typography>
@@ -402,7 +426,12 @@ export default function BookAppointmentPage() {
 
                     <Stack
                       direction="row"
-                      sx={{ alignItems: "center", gap: 1, mt: 0.5, flexWrap: "wrap" }}
+                      sx={{
+                        alignItems: "center",
+                        gap: 1,
+                        mt: 0.5,
+                        flexWrap: "wrap",
+                      }}
                     >
                       <Chip
                         label={selectedDoctor.specialty}
@@ -426,13 +455,23 @@ export default function BookAppointmentPage() {
                       />
                       <Typography
                         variant="caption"
-                        sx={{ color: "text.secondary", fontWeight: 500, fontSize: "0.75rem" }}
+                        sx={{
+                          color: "text.secondary",
+                          fontWeight: 500,
+                          fontSize: "0.75rem",
+                        }}
                       >
                         {selectedDoctor.experience || "10 yrs exp"}
                       </Typography>
                       <Stack
                         direction="row"
-                        sx={{ alignItems: "center", gap: 0.25, fontSize: "0.75rem", color: "warning.main", fontWeight: 600 }}
+                        sx={{
+                          alignItems: "center",
+                          gap: 0.25,
+                          fontSize: "0.75rem",
+                          color: "warning.main",
+                          fontWeight: 600,
+                        }}
                       >
                         <StarRoundedIcon sx={{ fontSize: 16 }} />
                         <Typography variant="caption" sx={{ fontWeight: 700 }}>
@@ -482,7 +521,12 @@ export default function BookAppointmentPage() {
                     {selectedDoctor.fee || "$120"}
                     <Box
                       component="span"
-                      sx={{ fontSize: "0.75rem", fontWeight: 400, color: "text.secondary", ml: 0.5 }}
+                      sx={{
+                        fontSize: "0.75rem",
+                        fontWeight: 400,
+                        color: "text.secondary",
+                        ml: 0.5,
+                      }}
                     >
                       / visit
                     </Box>
@@ -503,7 +547,10 @@ export default function BookAppointmentPage() {
 
           {/* Patient Details */}
           <Box sx={{ mb: 3 }}>
-            <Stack direction="row" sx={{ alignItems: "center", gap: 1, mb: 1.5 }}>
+            <Stack
+              direction="row"
+              sx={{ alignItems: "center", gap: 1, mb: 1.5 }}
+            >
               <PersonOutlineRoundedIcon
                 sx={{ fontSize: 18, color: "primary.main" }}
               />
@@ -548,7 +595,13 @@ export default function BookAppointmentPage() {
                 })}
               />
 
-              <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" }, gap: 2 }}>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" },
+                  gap: 2,
+                }}
+              >
                 <TextField
                   fullWidth
                   label="Email Address"
@@ -644,7 +697,13 @@ export default function BookAppointmentPage() {
               name="type"
               control={control}
               render={({ field }) => (
-                <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" }, gap: 1.5 }}>
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" },
+                    gap: 1.5,
+                  }}
+                >
                   {/* Option 1: In-Clinic */}
                   <Card
                     elevation={0}
@@ -673,12 +732,15 @@ export default function BookAppointmentPage() {
                           field.value === "In-Clinic"
                             ? undefined
                             : theme.palette.mode === "dark"
-                            ? "rgba(51, 65, 85, 0.4)"
-                            : "rgba(241, 245, 249, 0.7)",
+                              ? "rgba(51, 65, 85, 0.4)"
+                              : "rgba(241, 245, 249, 0.7)",
                       },
                     })}
                   >
-                    <Stack direction="row" sx={{ alignItems: "flex-start", gap: 1.5 }}>
+                    <Stack
+                      direction="row"
+                      sx={{ alignItems: "flex-start", gap: 1.5 }}
+                    >
                       <Box
                         sx={(theme) => ({
                           width: 36,
@@ -692,8 +754,8 @@ export default function BookAppointmentPage() {
                             field.value === "In-Clinic"
                               ? theme.palette.primary.main
                               : theme.palette.mode === "dark"
-                              ? "rgba(51, 65, 85, 0.6)"
-                              : "rgba(241, 245, 249, 1)",
+                                ? "rgba(51, 65, 85, 0.6)"
+                                : "rgba(241, 245, 249, 1)",
                           color:
                             field.value === "In-Clinic"
                               ? theme.palette.primary.contrastText
@@ -705,13 +767,22 @@ export default function BookAppointmentPage() {
                       <Box>
                         <Typography
                           variant="subtitle2"
-                          sx={{ fontWeight: 700, color: "text.primary", lineHeight: 1.2 }}
+                          sx={{
+                            fontWeight: 700,
+                            color: "text.primary",
+                            lineHeight: 1.2,
+                          }}
                         >
                           In-Clinic Visit
                         </Typography>
                         <Typography
                           variant="caption"
-                          sx={{ color: "text.secondary", display: "block", mt: 0.25, fontSize: "0.75rem" }}
+                          sx={{
+                            color: "text.secondary",
+                            display: "block",
+                            mt: 0.25,
+                            fontSize: "0.75rem",
+                          }}
                         >
                           Direct consultation at medical center
                         </Typography>
@@ -752,12 +823,15 @@ export default function BookAppointmentPage() {
                           field.value === "Video Consultation"
                             ? undefined
                             : theme.palette.mode === "dark"
-                            ? "rgba(51, 65, 85, 0.4)"
-                            : "rgba(241, 245, 249, 0.7)",
+                              ? "rgba(51, 65, 85, 0.4)"
+                              : "rgba(241, 245, 249, 0.7)",
                       },
                     })}
                   >
-                    <Stack direction="row" sx={{ alignItems: "flex-start", gap: 1.5 }}>
+                    <Stack
+                      direction="row"
+                      sx={{ alignItems: "flex-start", gap: 1.5 }}
+                    >
                       <Box
                         sx={(theme) => ({
                           width: 36,
@@ -771,8 +845,8 @@ export default function BookAppointmentPage() {
                             field.value === "Video Consultation"
                               ? theme.palette.primary.main
                               : theme.palette.mode === "dark"
-                              ? "rgba(51, 65, 85, 0.6)"
-                              : "rgba(241, 245, 249, 1)",
+                                ? "rgba(51, 65, 85, 0.6)"
+                                : "rgba(241, 245, 249, 1)",
                           color:
                             field.value === "Video Consultation"
                               ? theme.palette.primary.contrastText
@@ -784,13 +858,22 @@ export default function BookAppointmentPage() {
                       <Box>
                         <Typography
                           variant="subtitle2"
-                          sx={{ fontWeight: 700, color: "text.primary", lineHeight: 1.2 }}
+                          sx={{
+                            fontWeight: 700,
+                            color: "text.primary",
+                            lineHeight: 1.2,
+                          }}
                         >
                           Video Call
                         </Typography>
                         <Typography
                           variant="caption"
-                          sx={{ color: "text.secondary", display: "block", mt: 0.25, fontSize: "0.75rem" }}
+                          sx={{
+                            color: "text.secondary",
+                            display: "block",
+                            mt: 0.25,
+                            fontSize: "0.75rem",
+                          }}
                         >
                           Secure online telehealth consultation
                         </Typography>
@@ -862,7 +945,11 @@ export default function BookAppointmentPage() {
                   <Box>
                     <Stack
                       direction="row"
-                      sx={{ alignItems: "center", justifyContent: "space-between", mb: 1 }}
+                      sx={{
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        mb: 1,
+                      }}
                     >
                       <Typography
                         variant="caption"
@@ -885,14 +972,27 @@ export default function BookAppointmentPage() {
                       {field.value && (
                         <Typography
                           variant="caption"
-                          sx={{ fontSize: "0.75rem", color: "primary.main", fontWeight: 700 }}
+                          sx={{
+                            fontSize: "0.75rem",
+                            color: "primary.main",
+                            fontWeight: 700,
+                          }}
                         >
                           Selected: {field.value}
                         </Typography>
                       )}
                     </Stack>
 
-                    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(2, 1fr)", sm: "repeat(3, 1fr)" }, gap: { xs: 1, sm: 1.25 } }}>
+                    <Box
+                      sx={{
+                        display: "grid",
+                        gridTemplateColumns: {
+                          xs: "repeat(2, 1fr)",
+                          sm: "repeat(3, 1fr)",
+                        },
+                        gap: { xs: 1, sm: 1.25 },
+                      }}
+                    >
                       {availableSlots.map((slot) => {
                         const isSelected = field.value === slot;
                         return (
@@ -904,7 +1004,9 @@ export default function BookAppointmentPage() {
                               <AccessTimeRoundedIcon
                                 sx={{
                                   fontSize: 15,
-                                  color: isSelected ? "inherit" : "text.secondary",
+                                  color: isSelected
+                                    ? "inherit"
+                                    : "text.secondary",
                                 }}
                               />
                             }
@@ -946,7 +1048,9 @@ export default function BookAppointmentPage() {
                 )}
               />
               {errors.timeSlot && (
-                <FormHelperText sx={{ color: "error.main", fontSize: "0.75rem", mt: 0.75 }}>
+                <FormHelperText
+                  sx={{ color: "error.main", fontSize: "0.75rem", mt: 0.75 }}
+                >
                   {errors.timeSlot.message}
                 </FormHelperText>
               )}
@@ -1028,7 +1132,10 @@ export default function BookAppointmentPage() {
               disabled={isSubmitting || loadingDoctor || !selectedDoctor}
               startIcon={
                 isSubmitting ? (
-                  <CircularProgress size={18} sx={{ color: "primary.contrastText" }} />
+                  <CircularProgress
+                    size={18}
+                    sx={{ color: "primary.contrastText" }}
+                  />
                 ) : (
                   <CheckCircleRoundedIcon sx={{ fontSize: 18 }} />
                 )
@@ -1059,7 +1166,12 @@ export default function BookAppointmentPage() {
         <Alert
           severity="success"
           variant="filled"
-          sx={{ borderRadius: "12px", fontWeight: 600, fontSize: "0.875rem", boxShadow: 3 }}
+          sx={{
+            borderRadius: "12px",
+            fontWeight: 600,
+            fontSize: "0.875rem",
+            boxShadow: 3,
+          }}
         >
           Appointment confirmed! Redirecting to your appointments...
         </Alert>

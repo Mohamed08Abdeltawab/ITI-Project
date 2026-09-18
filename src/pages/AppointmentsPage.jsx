@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router";
 import {
   Box,
@@ -36,13 +36,15 @@ import EventBusyRoundedIcon from "@mui/icons-material/EventBusyRounded";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import MedicalServicesRoundedIcon from "@mui/icons-material/MedicalServicesRounded";
 import NotesRoundedIcon from "@mui/icons-material/NotesRounded";
+import DeleteSweepRoundedIcon from "@mui/icons-material/DeleteSweepRounded";
 
+import { getDoctors, updateAppointment } from "../services/api";
 import {
-  getAppointments,
-  getDoctors,
-  updateAppointment,
-  deleteAppointment,
-} from "../services/api";
+  useAppointmentsStore,
+  isPendingOrUpcoming,
+  isCancelled,
+  isCompleted,
+} from "../stores/useAppointmentsStore";
 
 const DEFAULT_SLOTS = [
   "09:00 AM",
@@ -59,8 +61,18 @@ const STATUS_TABS = ["Upcoming", "Completed", "Cancelled", "All"];
 export default function AppointmentsPage() {
   const navigate = useNavigate();
 
-  // Data state
-  const [appointments, setAppointments] = useState([]);
+  // Zustand appointments store
+  const appointments = useAppointmentsStore((state) => state.appointments);
+  const fetchStoreAppointments = useAppointmentsStore(
+    (state) => state.fetchAppointments,
+  );
+  const updateAppointmentInStore = useAppointmentsStore(
+    (state) => state.updateAppointmentInStore,
+  );
+  const clearCancelledAppointmentsInStore = useAppointmentsStore(
+    (state) => state.clearCancelledAppointments,
+  );
+
   const [doctorsMap, setDoctorsMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -81,6 +93,9 @@ export default function AppointmentsPage() {
   const [appointmentToCancel, setAppointmentToCancel] = useState(null);
   const [isCancelling, setIsCancelling] = useState(false);
 
+  // Clear Cancelled Action state
+  const [isClearingCancelled, setIsClearingCancelled] = useState(false);
+
   // Toast / Feedback Snackbar state
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -91,14 +106,14 @@ export default function AppointmentsPage() {
   const today = new Date().toISOString().split("T")[0];
 
   // Fetch appointments and doctors list to enrich appointments with avatars & specialties
-  const fetchAppointments = useCallback(() => {
+  useEffect(() => {
     let isMounted = true;
-    Promise.all([getAppointments(), getDoctors().catch(() => ({ data: [] }))])
-      .then(([appointmentsRes, doctorsRes]) => {
+    Promise.all([
+      fetchStoreAppointments(),
+      getDoctors().catch(() => ({ data: [] })),
+    ])
+      .then(([, doctorsRes]) => {
         if (!isMounted) return;
-        const appData = Array.isArray(appointmentsRes.data)
-          ? appointmentsRes.data
-          : [];
         const docData = Array.isArray(doctorsRes.data) ? doctorsRes.data : [];
 
         const docMap = {};
@@ -108,7 +123,6 @@ export default function AppointmentsPage() {
           }
         });
 
-        setAppointments(appData);
         setDoctorsMap(docMap);
         setError(null);
       })
@@ -128,31 +142,67 @@ export default function AppointmentsPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
-
-  useEffect(() => {
-    return fetchAppointments();
-  }, [fetchAppointments]);
+  }, [fetchStoreAppointments]);
 
   const handleRefresh = () => {
     setLoading(true);
-    fetchAppointments();
+    Promise.all([
+      fetchStoreAppointments(),
+      getDoctors().catch(() => ({ data: [] })),
+    ])
+      .then(([, doctorsRes]) => {
+        const docData = Array.isArray(doctorsRes.data) ? doctorsRes.data : [];
+
+        const docMap = {};
+        docData.forEach((doc) => {
+          if (doc && doc.id) {
+            docMap[String(doc.id)] = doc;
+          }
+        });
+
+        setDoctorsMap(docMap);
+        setError(null);
+      })
+      .catch((err) => {
+        console.error("Error fetching appointments:", err);
+        setError(
+          err.response?.data?.message ||
+            err.message ||
+            "Failed to load appointments. Please ensure json-server is running on port 5000.",
+        );
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
-  // Tab counts
+  // Tab counts dynamically calculated from appointments
   const counts = useMemo(() => {
     return {
-      Upcoming: appointments.filter((a) => a.status === "Upcoming").length,
-      Completed: appointments.filter((a) => a.status === "Completed").length,
-      Cancelled: appointments.filter((a) => a.status === "Cancelled").length,
+      Upcoming: appointments.filter((a) => isPendingOrUpcoming(a.status))
+        .length,
+      Completed: appointments.filter((a) => isCompleted(a.status)).length,
+      Cancelled: appointments.filter((a) => isCancelled(a.status)).length,
       All: appointments.length,
     };
   }, [appointments]);
 
-  // Filtered appointments by selected status tab
+  // Filtered appointments by selected status tab (case-insensitive)
   const filteredAppointments = useMemo(() => {
     if (statusFilter === "All") return appointments;
-    return appointments.filter((a) => a.status === statusFilter);
+    if (statusFilter === "Upcoming") {
+      return appointments.filter((a) => isPendingOrUpcoming(a.status));
+    }
+    if (statusFilter === "Completed") {
+      return appointments.filter((a) => isCompleted(a.status));
+    }
+    if (statusFilter === "Cancelled") {
+      return appointments.filter((a) => isCancelled(a.status));
+    }
+    return appointments.filter(
+      (a) =>
+        String(a.status || "").toLowerCase() === statusFilter.toLowerCase(),
+    );
   }, [appointments, statusFilter]);
 
   // Helper to open the Reschedule modal
@@ -183,13 +233,10 @@ export default function AppointmentsPage() {
         updatedPayload,
       );
 
-      // Update local state directly without full page reload
-      setAppointments((prev) =>
-        prev.map((item) =>
-          item.id === selectedAppointment.id
-            ? { ...item, ...(res.data || updatedPayload) }
-            : item,
-        ),
+      // Update in store directly without full page reload
+      updateAppointmentInStore(
+        selectedAppointment.id,
+        res.data || updatedPayload,
       );
 
       setSnackbar({
@@ -216,28 +263,31 @@ export default function AppointmentsPage() {
     setCancelDialogOpen(true);
   };
 
-  // Confirm Delete / Cancellation
+  // Confirm Cancellation (update status to Cancelled)
   const handleConfirmCancel = async () => {
     if (!appointmentToCancel) return;
 
     setIsCancelling(true);
     try {
-      // Execute DELETE request via API layer
-      await deleteAppointment(appointmentToCancel.id);
+      // Update appointment status to "Cancelled" via API layer
+      const res = await updateAppointment(appointmentToCancel.id, {
+        status: "Cancelled",
+      });
 
-      // Immediately remove item from local UI state
-      setAppointments((prev) =>
-        prev.filter((item) => item.id !== appointmentToCancel.id),
+      // Update in Zustand store
+      updateAppointmentInStore(
+        appointmentToCancel.id,
+        res.data || { status: "Cancelled" },
       );
 
       setSnackbar({
         open: true,
-        message: "Appointment cancelled and removed from your schedule.",
+        message: "Appointment moved to Cancelled visits.",
         severity: "info",
       });
       setCancelDialogOpen(false);
     } catch (err) {
-      console.error("Delete failed:", err);
+      console.error("Cancellation failed:", err);
       setSnackbar({
         open: true,
         message: "Failed to cancel appointment. Please try again.",
@@ -245,6 +295,28 @@ export default function AppointmentsPage() {
       });
     } finally {
       setIsCancelling(false);
+    }
+  };
+
+  // Clear all cancelled appointments
+  const handleClearCancelled = async () => {
+    setIsClearingCancelled(true);
+    try {
+      await clearCancelledAppointmentsInStore();
+      setSnackbar({
+        open: true,
+        message: "All cancelled appointments have been cleared.",
+        severity: "success",
+      });
+    } catch (err) {
+      console.error("Clear cancelled failed:", err);
+      setSnackbar({
+        open: true,
+        message: "Failed to clear cancelled appointments. Please try again.",
+        severity: "error",
+      });
+    } finally {
+      setIsClearingCancelled(false);
     }
   };
 
@@ -258,7 +330,17 @@ export default function AppointmentsPage() {
       : DEFAULT_SLOTS;
 
   return (
-    <Box sx={{ maxWidth: 1024, mx: "auto", py: 1, px: { xs: 1.5, sm: 2 }, display: "flex", flexDirection: "column", gap: 3 }}>
+    <Box
+      sx={{
+        maxWidth: 1024,
+        mx: "auto",
+        py: 1,
+        px: { xs: 1.5, sm: 2 },
+        display: "flex",
+        flexDirection: "column",
+        gap: 3,
+      }}
+    >
       {/* Top Header Banner */}
       <Stack
         direction={{ xs: "column", sm: "row" }}
@@ -283,10 +365,7 @@ export default function AppointmentsPage() {
           >
             My Appointments
           </Typography>
-          <Typography
-            variant="body2"
-            sx={{ color: "text.secondary", mt: 0.5 }}
-          >
+          <Typography variant="body2" sx={{ color: "text.secondary", mt: 0.5 }}>
             Manage upcoming consultations, reschedule your dates, or review past
             visit records.
           </Typography>
@@ -447,20 +526,35 @@ export default function AppointmentsPage() {
                     gap: 2,
                   }}
                 >
-                  <Stack direction="row" spacing={2.5} sx={{ alignItems: "center" }}>
+                  <Stack
+                    direction="row"
+                    spacing={2.5}
+                    sx={{ alignItems: "center" }}
+                  >
                     <Skeleton
                       variant="circular"
                       width={64}
                       height={64}
                       sx={{ flexShrink: 0 }}
                     />
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1, minWidth: 200 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 1,
+                        minWidth: 200,
+                      }}
+                    >
                       <Skeleton variant="text" width="70%" height={26} />
                       <Skeleton variant="text" width="45%" height={18} />
                       <Skeleton variant="text" width="90%" height={18} />
                     </Box>
                   </Stack>
-                  <Stack direction="row" spacing={1.5} sx={{ alignSelf: { xs: "flex-end", sm: "auto" } }}>
+                  <Stack
+                    direction="row"
+                    spacing={1.5}
+                    sx={{ alignSelf: { xs: "flex-end", sm: "auto" } }}
+                  >
                     <Skeleton
                       variant="rectangular"
                       width={100}
@@ -529,7 +623,13 @@ export default function AppointmentsPage() {
           </Typography>
           <Typography
             variant="body2"
-            sx={{ color: "text.secondary", fontSize: "0.875rem", mt: 1, mb: 3, lineHeight: 1.6 }}
+            sx={{
+              color: "text.secondary",
+              fontSize: "0.875rem",
+              mt: 1,
+              mb: 3,
+              lineHeight: 1.6,
+            }}
           >
             {statusFilter === "Upcoming"
               ? "You do not have any upcoming visits booked. Check our top verified specialists and schedule an appointment in minutes."
@@ -557,14 +657,84 @@ export default function AppointmentsPage() {
         </Card>
       )}
 
+      {/* Cancelled Tab Header Bar with Clear Cancelled Action */}
+      {!loading &&
+        !error &&
+        statusFilter === "Cancelled" &&
+        filteredAppointments.length > 0 && (
+          <Box
+            sx={(theme) => ({
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              alignItems: { xs: "stretch", sm: "center" },
+              justifyContent: "space-between",
+              gap: 1.5,
+              p: 2,
+              bgcolor:
+                theme.palette.mode === "dark"
+                  ? "rgba(239, 68, 68, 0.08)"
+                  : "rgba(254, 242, 242, 0.8)",
+              border: `1px solid ${
+                theme.palette.mode === "dark"
+                  ? "rgba(239, 68, 68, 0.2)"
+                  : "rgba(254, 202, 202, 0.8)"
+              }`,
+              borderRadius: "16px",
+            })}
+          >
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+              <CancelRoundedIcon sx={{ color: "error.main", fontSize: 20 }} />
+              <Typography
+                variant="body2"
+                sx={{ fontWeight: 600, color: "text.primary" }}
+              >
+                Showing {filteredAppointments.length}{" "}
+                {filteredAppointments.length === 1
+                  ? "cancelled appointment"
+                  : "cancelled appointments"}
+              </Typography>
+            </Stack>
+
+            <Button
+              variant="outlined"
+              color="error"
+              size="small"
+              disabled={isClearingCancelled}
+              onClick={handleClearCancelled}
+              startIcon={
+                isClearingCancelled ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : (
+                  <DeleteSweepRoundedIcon />
+                )
+              }
+              sx={{
+                fontWeight: 700,
+                borderRadius: "12px",
+                textTransform: "none",
+                px: 2,
+                py: 0.75,
+                whiteSpace: "nowrap",
+                "&:hover": {
+                  bgcolor: "error.main",
+                  color: "error.contrastText",
+                },
+              }}
+            >
+              {isClearingCancelled ? "Clearing..." : "Clear Cancelled"}
+            </Button>
+          </Box>
+        )}
+
       {/* Appointments List */}
       {!loading && !error && filteredAppointments.length > 0 && (
         <Stack spacing={3}>
           {filteredAppointments.map((app) => {
-            const isCancelled = app.status === "Cancelled";
-            const isCompleted = app.status === "Completed";
-            const isUpcoming =
-              app.status === "Upcoming" || (!isCancelled && !isCompleted);
+            const isCancelledApp = isCancelled(app.status);
+            const isCompletedApp = isCompleted(app.status);
+            const isUpcomingApp =
+              isPendingOrUpcoming(app.status) ||
+              (!isCancelledApp && !isCompletedApp);
 
             // Enrich doctor info via doctorsMap if available
             const docInfo = doctorsMap[String(app.doctorId)];
@@ -602,7 +772,9 @@ export default function AppointmentsPage() {
                     }}
                   >
                     {/* Left: Doctor Profile & Appointment Metadata */}
-                    <Box sx={{ display: "flex", alignItems: "flex-start", gap: 2 }}>
+                    <Box
+                      sx={{ display: "flex", alignItems: "flex-start", gap: 2 }}
+                    >
                       {/* Doctor Avatar */}
                       <Avatar
                         src={doctorAvatar}
@@ -635,10 +807,21 @@ export default function AppointmentsPage() {
                       </Avatar>
 
                       {/* Doctor & Patient Info */}
-                      <Box sx={{ display: "flex", flexDirection: "column", gap: 0.75, minWidth: 0 }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 0.75,
+                          minWidth: 0,
+                        }}
+                      >
                         <Stack
                           direction="row"
-                          sx={{ alignItems: "center", gap: 1.25, flexWrap: "wrap" }}
+                          sx={{
+                            alignItems: "center",
+                            gap: 1.25,
+                            flexWrap: "wrap",
+                          }}
                         >
                           <Typography
                             variant="h6"
@@ -655,13 +838,20 @@ export default function AppointmentsPage() {
                           {/* Status Badge */}
                           <Chip
                             label={app.status || "Upcoming"}
+                            label={
+                              isCancelledApp
+                                ? "Cancelled"
+                                : isCompletedApp
+                                  ? "Completed"
+                                  : "Upcoming"
+                            }
                             size="small"
                             sx={(theme) => ({
                               fontWeight: 700,
                               fontSize: "0.75rem",
                               borderRadius: "8px",
                               px: 0.25,
-                              ...(isCancelled
+                              ...(isCancelledApp
                                 ? {
                                     bgcolor:
                                       theme.palette.mode === "dark"
@@ -674,31 +864,31 @@ export default function AppointmentsPage() {
                                         : "rgba(239, 68, 68, 0.2)"
                                     }`,
                                   }
-                                : isCompleted
-                                ? {
-                                    bgcolor:
-                                      theme.palette.mode === "dark"
-                                        ? "rgba(59, 130, 246, 0.15)"
-                                        : "rgba(59, 130, 246, 0.1)",
-                                    color: theme.palette.info.main,
-                                    border: `1px solid ${
-                                      theme.palette.mode === "dark"
-                                        ? "rgba(59, 130, 246, 0.3)"
-                                        : "rgba(59, 130, 246, 0.2)"
-                                    }`,
-                                  }
-                                : {
-                                    bgcolor:
-                                      theme.palette.mode === "dark"
-                                        ? "rgba(13, 148, 136, 0.2)"
-                                        : "rgba(13, 148, 136, 0.1)",
-                                    color: theme.palette.primary.main,
-                                    border: `1px solid ${
-                                      theme.palette.mode === "dark"
-                                        ? "rgba(13, 148, 136, 0.3)"
-                                        : "rgba(13, 148, 136, 0.2)"
-                                    }`,
-                                  }),
+                                : isCompletedApp
+                                  ? {
+                                      bgcolor:
+                                        theme.palette.mode === "dark"
+                                          ? "rgba(59, 130, 246, 0.15)"
+                                          : "rgba(59, 130, 246, 0.1)",
+                                      color: theme.palette.info.main,
+                                      border: `1px solid ${
+                                        theme.palette.mode === "dark"
+                                          ? "rgba(59, 130, 246, 0.3)"
+                                          : "rgba(59, 130, 246, 0.2)"
+                                      }`,
+                                    }
+                                  : {
+                                      bgcolor:
+                                        theme.palette.mode === "dark"
+                                          ? "rgba(13, 148, 136, 0.2)"
+                                          : "rgba(13, 148, 136, 0.1)",
+                                      color: theme.palette.primary.main,
+                                      border: `1px solid ${
+                                        theme.palette.mode === "dark"
+                                          ? "rgba(13, 148, 136, 0.3)"
+                                          : "rgba(13, 148, 136, 0.2)"
+                                      }`,
+                                    }),
                             })}
                           />
 
@@ -751,30 +941,48 @@ export default function AppointmentsPage() {
                             flexWrap: "wrap",
                           }}
                         >
-                          <Stack direction="row" sx={{ alignItems: "center", gap: 0.75 }}>
+                          <Stack
+                            direction="row"
+                            sx={{ alignItems: "center", gap: 0.75 }}
+                          >
                             <CalendarMonthRoundedIcon
                               sx={{ fontSize: 16, color: "primary.main" }}
                             />
-                            <Box component="span" sx={{ fontWeight: 500, color: "text.primary" }}>
+                            <Box
+                              component="span"
+                              sx={{ fontWeight: 500, color: "text.primary" }}
+                            >
                               {app.date}
                             </Box>
                           </Stack>
 
-                          <Stack direction="row" sx={{ alignItems: "center", gap: 0.75 }}>
+                          <Stack
+                            direction="row"
+                            sx={{ alignItems: "center", gap: 0.75 }}
+                          >
                             <AccessTimeRoundedIcon
                               sx={{ fontSize: 16, color: "primary.main" }}
                             />
-                            <Box component="span" sx={{ fontWeight: 500, color: "text.primary" }}>
+                            <Box
+                              component="span"
+                              sx={{ fontWeight: 500, color: "text.primary" }}
+                            >
                               {app.timeSlot}
                             </Box>
                           </Stack>
 
                           {app.patientName && (
-                            <Stack direction="row" sx={{ alignItems: "center", gap: 0.75 }}>
+                            <Stack
+                              direction="row"
+                              sx={{ alignItems: "center", gap: 0.75 }}
+                            >
                               <PersonRoundedIcon
                                 sx={{ fontSize: 16, color: "primary.main" }}
                               />
-                              <Box component="span" sx={{ fontWeight: 600, color: "text.primary" }}>
+                              <Box
+                                component="span"
+                                sx={{ fontWeight: 600, color: "text.primary" }}
+                              >
                                 {app.patientName}
                               </Box>
                             </Stack>
@@ -783,19 +991,38 @@ export default function AppointmentsPage() {
 
                         {/* Patient Contacts & Notes */}
                         {(app.phone || app.email || app.notes) && (
-                          <Box sx={{ pt: 1, fontSize: "0.75rem", color: "text.secondary", display: "flex", flexDirection: "column", gap: 0.5 }}>
+                          <Box
+                            sx={{
+                              pt: 1,
+                              fontSize: "0.75rem",
+                              color: "text.secondary",
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: 0.5,
+                            }}
+                          >
                             <Stack
                               direction="row"
-                              sx={{ alignItems: "center", gap: 1.5, flexWrap: "wrap" }}
+                              sx={{
+                                alignItems: "center",
+                                gap: 1.5,
+                                flexWrap: "wrap",
+                              }}
                             >
                               {app.phone && (
-                                <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                                <Stack
+                                  direction="row"
+                                  sx={{ alignItems: "center", gap: 0.5 }}
+                                >
                                   <PhoneOutlinedIcon sx={{ fontSize: 14 }} />
                                   <span>{app.phone}</span>
                                 </Stack>
                               )}
                               {app.email && (
-                                <Stack direction="row" sx={{ alignItems: "center", gap: 0.5 }}>
+                                <Stack
+                                  direction="row"
+                                  sx={{ alignItems: "center", gap: 0.5 }}
+                                >
                                   <EmailOutlinedIcon sx={{ fontSize: 14 }} />
                                   <span>{app.email}</span>
                                 </Stack>
@@ -803,7 +1030,14 @@ export default function AppointmentsPage() {
                             </Stack>
 
                             {app.notes && (
-                              <Stack direction="row" sx={{ alignItems: "flex-start", gap: 0.5, pt: 0.25 }}>
+                              <Stack
+                                direction="row"
+                                sx={{
+                                  alignItems: "flex-start",
+                                  gap: 0.5,
+                                  pt: 0.25,
+                                }}
+                              >
                                 <NotesRoundedIcon
                                   sx={{
                                     fontSize: 14,
@@ -832,7 +1066,7 @@ export default function AppointmentsPage() {
                     </Box>
 
                     {/* Right: Actions for active appointments */}
-                    {isUpcoming && (
+                    {isUpcomingApp && (
                       <Stack
                         direction="row"
                         spacing={1.5}
@@ -915,7 +1149,16 @@ export default function AppointmentsPage() {
           }),
         }}
       >
-        <DialogTitle sx={{ fontWeight: 800, color: "text.primary", pb: 1, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <DialogTitle
+          sx={{
+            fontWeight: 800,
+            color: "text.primary",
+            pb: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           <span>Reschedule / Edit Appointment</span>
           <Chip
             label={selectedAppointment?.type || "In-Clinic"}
@@ -933,10 +1176,17 @@ export default function AppointmentsPage() {
         </DialogTitle>
 
         <form onSubmit={handleConfirmReschedule}>
-          <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
-            <DialogContentText sx={{ fontSize: "0.875rem", color: "text.secondary", mb: 1 }}>
+          <DialogContent
+            sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}
+          >
+            <DialogContentText
+              sx={{ fontSize: "0.875rem", color: "text.secondary", mb: 1 }}
+            >
               Modify consultation timing with{" "}
-              <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
+              <Box
+                component="span"
+                sx={{ fontWeight: 700, color: "text.primary" }}
+              >
                 {selectedAppointment?.doctorName}
               </Box>
               . Changes will take effect immediately.
@@ -996,7 +1246,16 @@ export default function AppointmentsPage() {
               >
                 Select Consultation Time Slot *
               </Typography>
-              <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(2, 1fr)", sm: "repeat(3, 1fr)" }, gap: 1 }}>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: {
+                    xs: "repeat(2, 1fr)",
+                    sm: "repeat(3, 1fr)",
+                  },
+                  gap: 1,
+                }}
+              >
                 {availableSlots.map((slot) => {
                   const isSelected = editSlot === slot;
                   return (
@@ -1080,7 +1339,12 @@ export default function AppointmentsPage() {
               type="button"
               onClick={() => setRescheduleDialogOpen(false)}
               disabled={isUpdating}
-              sx={{ color: "text.secondary", fontWeight: 600, borderRadius: "12px", textTransform: "none" }}
+              sx={{
+                color: "text.secondary",
+                fontWeight: 600,
+                borderRadius: "12px",
+                textTransform: "none",
+              }}
             >
               Cancel
             </Button>
@@ -1095,7 +1359,14 @@ export default function AppointmentsPage() {
                   <EditCalendarRoundedIcon />
                 )
               }
-              sx={{ fontWeight: 700, borderRadius: "12px", px: 2.5, py: 1, boxShadow: 1, textTransform: "none" }}
+              sx={{
+                fontWeight: 700,
+                borderRadius: "12px",
+                px: 2.5,
+                py: 1,
+                boxShadow: 1,
+                textTransform: "none",
+              }}
             >
               {isUpdating ? "Saving Changes..." : "Save Changes"}
             </Button>
@@ -1121,22 +1392,47 @@ export default function AppointmentsPage() {
           }),
         }}
       >
-        <DialogTitle sx={{ fontWeight: 800, color: "text.primary", pb: 0.5, display: "flex", alignItems: "center", gap: 1 }}>
+        <DialogTitle
+          sx={{
+            fontWeight: 800,
+            color: "text.primary",
+            pb: 0.5,
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
           <CancelRoundedIcon sx={{ color: "error.main" }} />
           <span>Cancel Appointment?</span>
         </DialogTitle>
         <DialogContent>
-          <DialogContentText sx={{ fontSize: "0.875rem", color: "text.secondary", lineHeight: 1.6, pt: 0.5 }}>
+          <DialogContentText
+            sx={{
+              fontSize: "0.875rem",
+              color: "text.secondary",
+              lineHeight: 1.6,
+              pt: 0.5,
+            }}
+          >
             Are you sure you want to cancel your appointment with{" "}
-            <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
+            <Box
+              component="span"
+              sx={{ fontWeight: 700, color: "text.primary" }}
+            >
               {appointmentToCancel?.doctorName}
             </Box>{" "}
             scheduled on{" "}
-            <Box component="span" sx={{ fontWeight: 700, color: "primary.main" }}>
+            <Box
+              component="span"
+              sx={{ fontWeight: 700, color: "primary.main" }}
+            >
               {appointmentToCancel?.date}
             </Box>{" "}
             at{" "}
-            <Box component="span" sx={{ fontWeight: 700, color: "primary.main" }}>
+            <Box
+              component="span"
+              sx={{ fontWeight: 700, color: "primary.main" }}
+            >
               {appointmentToCancel?.timeSlot}
             </Box>
             ?
@@ -1160,14 +1456,20 @@ export default function AppointmentsPage() {
             })}
           >
             This action will permanently delete this booking from your active
-            schedule.
+            schedule. This action will move this appointment to your Cancelled
+            tab.
           </Box>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 1.5, pt: 1, gap: 1 }}>
           <Button
             onClick={() => setCancelDialogOpen(false)}
             disabled={isCancelling}
-            sx={{ color: "text.secondary", fontWeight: 600, borderRadius: "12px", textTransform: "none" }}
+            sx={{
+              color: "text.secondary",
+              fontWeight: 600,
+              borderRadius: "12px",
+              textTransform: "none",
+            }}
           >
             Keep Visit
           </Button>
@@ -1183,7 +1485,14 @@ export default function AppointmentsPage() {
                 <CancelRoundedIcon />
               )
             }
-            sx={{ fontWeight: 700, borderRadius: "12px", px: 2, py: 1, boxShadow: 1, textTransform: "none" }}
+            sx={{
+              fontWeight: 700,
+              borderRadius: "12px",
+              px: 2,
+              py: 1,
+              boxShadow: 1,
+              textTransform: "none",
+            }}
           >
             {isCancelling ? "Cancelling..." : "Yes, Cancel Visit"}
           </Button>

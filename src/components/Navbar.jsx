@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router";
 import {
   Box,
@@ -27,6 +27,10 @@ import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import LocalHospitalRoundedIcon from "@mui/icons-material/LocalHospitalRounded";
 import { useThemeStore } from "../stores/useThemeStore";
+import {
+  useAppointmentsStore,
+  isPendingOrUpcoming,
+} from "../stores/useAppointmentsStore";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -37,6 +41,24 @@ export default function Navbar() {
   const themeMode = useThemeStore((state) => state.themeMode);
   const toggleTheme = useThemeStore((state) => state.toggleTheme);
   const isDarkMode = themeMode === "dark";
+
+  // Appointments state from Zustand
+  const appointments = useAppointmentsStore((state) => state.appointments);
+  const fetchAppointments = useAppointmentsStore(
+    (state) => state.fetchAppointments,
+  );
+  const isInitialized = useAppointmentsStore((state) => state.isInitialized);
+
+  useEffect(() => {
+    if (!isInitialized) {
+      fetchAppointments();
+    }
+  }, [isInitialized, fetchAppointments]);
+
+  // Derived pending / upcoming count
+  const pendingCount = useMemo(() => {
+    return appointments.filter((a) => isPendingOrUpcoming(a.status)).length;
+  }, [appointments]);
 
   const isDoctorsActive =
     location.pathname === "/" || location.pathname.startsWith("/doctors");
@@ -55,7 +77,7 @@ export default function Navbar() {
       label: "My Appointments",
       path: "/appointments",
       icon: CalendarMonthRoundedIcon,
-      badgeCount: 2,
+      badgeCount: pendingCount,
       isActive: isAppointmentsActive,
     },
     {
